@@ -1,3 +1,14 @@
 source :rubygems
 
-gem 'tumblr-rb'
+gem 'httparty'
+gem 'eventmachine'
+gem 'daemons'
+
+group :test, :development do
+  gem 'rspec'
+	gem 'autotest'
+	gem 'autotest-growl' 
+	gem 'autotest-fsevent'
+end
+
+
