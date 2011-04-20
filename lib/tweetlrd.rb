@@ -3,8 +3,6 @@ require 'eventmachine'
 require 'logger'
 require_relative './tweetlr.rb'
 
-#Daemons.run('./lib/tweetlr_daemon.rb')
-
 @credentials = {:email => 'MAIL', :password => 'PW'}
 TERM = '%23wirsounterwegs'
 
@@ -12,8 +10,8 @@ Daemons.run_proc('tweetlrd') do
   EventMachine::run {
      @log = Logger.new('tweetlrd.log')
      @log.info('starting tweetlr daemon...')
-     tweetlr = Tweetlr.new(@credentials[:email], @credentials[:password], nil, '60810195688886272', TERM)
-     EventMachine::add_periodic_timer( 5 ) { 
+     tweetlr = Tweetlr.new(@credentials[:email], @credentials[:password], nil, '60825064039399424', TERM)
+     EventMachine::add_periodic_timer( 60*5 ) { 
        @log.info('starting tweetlr crawl...')
        response = tweetlr.lazy_search_twitter
        tweets = response.parsed_response['results']

@@ -7,7 +7,10 @@ class Tweetlr
   RESULT_TYPE = 'recent'
   API_ENDPOINT_TWITTER = 'http://search.twitter.com/search.json';
   API_ENDPOINT_TUMBLR = 'http://www.tumblr.com';
-  GENERATOR = 'tweetlr alpha'
+  GENERATOR = %{tweetlr beta - http://github.com/5v3n/tweetlr}
+  WHITELIST = %w[davidaguirre T210 Lueti HendricRuesch sven_kr _jrg cfischler meyola S_TIMMung filtercake michaelhein talinee 
+    mettyK berlinporr tielefeld newsanalyse carsten_schulz marsti CarolinN yasminlechte tedory crieger menschmithut 
+    mojomatic choanzie malte martinweigert jayzon277 magnusvoss kuemmel_hh]
 
   def initialize(email, password, cookie=nil, since_id=nil, term=nil)
     @log = Logger.new('tweetlr.log')
@@ -122,17 +125,26 @@ class Tweetlr
   end
 
   def generate_tumblr_photo_post tweet
-    @log.debug "tweet: #{tweet}"
-    tumblr_post = {}
-    tumblr_post[:type] = 'photo'
-    tumblr_post[:date] = tweet['created_at']
-    tumblr_post[:source] = extract_image_url tweet
-    user = tweet['from_user']
-    tumblr_post[:caption] = %?@#{user} so: #{tweet['text']}?
+    tumblr_post = nil
+    message = tweet['text']
+    if message && !message.index('RT')
+      @log.debug "tweet: #{tweet}"
+      tumblr_post = {}
+      tumblr_post[:type] = 'photo'
+      tumblr_post[:date] = tweet['created_at']
+      tumblr_post[:source] = extract_image_url tweet
+      user = tweet['from_user']
+      if WHITELIST.member? user
+        state = 'published'
+      else
+        state = 'draft'
+      end
+      tumblr_post[:state] = state
+      tumblr_post[:caption] = %?@#{user} so: #{tweet['text']}?
+    end
     tumblr_post
   end
-
-
+  
 end
 
 
