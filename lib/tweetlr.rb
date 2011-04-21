@@ -13,6 +13,7 @@ class Tweetlr
     mojomatic choanzie malte martinweigert jayzon277 magnusvoss kuemmel_hh]
 
   def initialize(email, password, cookie=nil, since_id=nil, term=nil)
+    WHITELIST.each {|entry| entry.downcase!}
     @log = Logger.new('tweetlr.log')
     #@log.debug('log file created.')
     @email = email
@@ -73,7 +74,7 @@ class Tweetlr
     link = extract_link tweet
     url = nil
     if link
-      url = image_url_instagram link if link.index 'instagr.am'
+      url = image_url_instagram link if (link.index('instagr.am') || link.index('instagram.com'))
       url = image_url_picplz link if link.index 'picplz'
       url = image_url_twitpic link if link.index 'twitpic'
       url = image_url_yfrog link if link.index 'yfrog'
@@ -83,6 +84,7 @@ class Tweetlr
 
   #find the image's url for an instagram link
   def image_url_instagram(link_url)
+    link_url['instagram.com'] = 'instagr.am' if link_url.index 'instagram.com' #instagram's oembed does not work for .com links
     response = HTTParty.get "http://api.instagram.com/oembed?url=#{link_url}"
     response.parsed_response['url']
   end
@@ -127,14 +129,14 @@ class Tweetlr
   def generate_tumblr_photo_post tweet
     tumblr_post = nil
     message = tweet['text']
-    if message && !message.index('RT')
+    if message && !message.index('RT @') #discard retweets
       @log.debug "tweet: #{tweet}"
       tumblr_post = {}
       tumblr_post[:type] = 'photo'
       tumblr_post[:date] = tweet['created_at']
       tumblr_post[:source] = extract_image_url tweet
       user = tweet['from_user']
-      if WHITELIST.member? user
+      if WHITELIST.member? user.downcase
         state = 'published'
       else
         state = 'draft'
