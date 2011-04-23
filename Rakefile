@@ -16,7 +16,7 @@ spec = Gem::Specification.new do |s|
   s.email = 'mail@svenkraeuter.com'
   s.homepage = "http://github.com/5v3n/#{s.name}"
   # s.executables = ['your_executable_here']
-  s.files = %w(LICENSE README.md Rakefile) + Dir.glob("{bin,lib,spec}/**/*")
+  s.files = %w(LICENSE README.md Rakefile) + Dir.glob("{bin,lib}/**/*")
   s.require_path = "lib"
   s.executables  = ['tweetlr']
   s.add_dependency('daemons')

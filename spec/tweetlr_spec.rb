@@ -27,11 +27,11 @@ describe Tweetlr do
     @config_file = File.join( Dir.pwd, 'config', 'tweetlr.yml')
     @tweetlr = Tweetlr.new '', '', @cookie, nil, @searchterm, @config_file
   end
-   it "should post to tumblr" do
-     tweetlr = Tweetlr.new @credentials[:email], @credentials[:password], @cookie, nil, @searchterm, @config_file
-     response = tweetlr.post_to_tumblr({:type => 'regular', :title => "test post", :body => "body of the test post...", :email => @credentials[:email], :password => @credentials[:password]})
-     response.response.should be_kind_of Net::HTTPCreated
-   end
+  #it "should post to tumblr" do
+  #   tweetlr = Tweetlr.new @credentials[:email], @credentials[:password], @cookie, nil, @searchterm, @config_file
+  #   response = tweetlr.post_to_tumblr({:type => 'regular', :title => "test post", :body => "body of the test post...", :email => @credentials[:email], :password => @credentials[:password]})
+  #   response.response.should be_kind_of Net::HTTPCreated
+  # end
   it "should search twitter for a given term" do
     tweetlr = @tweetlr
     response = tweetlr.search_twitter
