@@ -1,23 +1,30 @@
+#!/usr/bin/env ruby
+
 require 'daemons'
 require 'eventmachine'
 require 'logger'
 require 'yaml'
-require_relative './tweetlr.rb'
+require_relative '../lib/tweetlr.rb'
 
-  config_file = File.join(File.dirname(__FILE__), '..',  'config', 'tweetlr.yml')
+begin
+  config_file = File.join( Dir.pwd,  'config', 'tweetlr.yml')
   CONFIG = YAML.load_file(config_file)
   TERM = CONFIG['search_term']
   USER = CONFIG['tumblr_username']
   PW   = CONFIG['tumblr_password']
   TIMESTAMP = CONFIG['twitter_timestamp']
   UPDATE_PERIOD = CONFIG['update_period']
+rescue SystemCallError
+  $stderr.puts "Ooops - looks like there is no ./config/tweetlr.yml found. I'm affraid tweetlr won't work properly until you introduced that configuration file."
+  exit(1)
+end
 
-Daemons.run_proc('tweetlrd') do
-  @log = Logger.new('tweetlrd.log')
+Daemons.run_proc('tweetlr') do
+  @log = Logger.new('tweetlr.log')
   @log.info('starting tweetlr daemon...')
   @log.info "createing a new tweetlr instance using this config: #{CONFIG.inspect}"   
   EventMachine::run { 
-     tweetlr = Tweetlr.new(USER, PW, nil, TIMESTAMP, TERM)
+     tweetlr = Tweetlr.new(USER, PW, nil, TIMESTAMP, TERM, config_file)
      EventMachine::add_periodic_timer( UPDATE_PERIOD ) {
        @log.info('starting tweetlr crawl...')
        response = tweetlr.lazy_search_twitter

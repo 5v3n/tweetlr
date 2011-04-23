@@ -7,15 +7,15 @@ class Tweetlr
 
   GENERATOR = %{tweetlr - http://github.com/5v3n/tweetlr}
 
-  def initialize(email, password, cookie=nil, since_id=nil, term=nil)
+  def initialize(email, password, cookie=nil, since_id=nil, term=nil, config_file) #TODO use a hash or sth more elegant here...
     @log = Logger.new('tweetlr.log')
-    config_file = File.join(File.dirname(__FILE__), '..',  'config', 'tweetlr.yml')
     config = YAML.load_file(config_file)
     @results_per_page = config['results_per_page']
     @result_type = config['result_type']
     @api_endpoint_twitter = config['api_endpoint_twitter']
     @api_endpoint_tumblr = config['api_endpoint_tumblr']
     @whitelist = config['whitelist']
+    @shouts = config['shouts']
     @since_id = since_id
     @search_term = term
     @whitelist.each {|entry| entry.downcase!}
@@ -145,7 +145,7 @@ class Tweetlr
         state = 'draft'
       end
       tumblr_post[:state] = state
-      tumblr_post[:caption] = %?@#{user} so: #{tweet['text']}? #TODO make this a matter of yml configuration
+      tumblr_post[:caption] = %?@#{user} #{@shouts}: #{tweet['text']}? #TODO make this a bigger matter of yml configuration
     end
     tumblr_post
   end

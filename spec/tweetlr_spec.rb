@@ -4,7 +4,7 @@ require 'yaml'
 
 describe Tweetlr do
 
-  config_file = File.join(File.dirname(__FILE__), '..',  'config', 'tweetlr.yml')
+  config_file = File.join( Dir.pwd, 'config', 'tweetlr.yml')
   config = YAML.load_file(config_file)
   USER = config['tumblr_username']
   PW   = config['tumblr_password']
@@ -24,13 +24,14 @@ describe Tweetlr do
       :picplz => "http://picplz.com/2hWv"
       }
     @pic_regexp = /(.*?)\.(jpg|jpeg|png|gif)$|(http:\/\/twitpic.com\/show\/full\/449o2x)/i #naive approach - but should do the trick.
-    @tweetlr = Tweetlr.new '', '', @cookie, nil, @searchterm
+    @config_file = File.join( Dir.pwd, 'config', 'tweetlr.yml')
+    @tweetlr = Tweetlr.new '', '', @cookie, nil, @searchterm, @config_file
   end
-   it "should post to tumblr" do
-     tweetlr = Tweetlr.new @credentials[:email], @credentials[:password], @cookie, nil, @searchterm
-     response = tweetlr.post_to_tumblr({:type => 'regular', :title => "test post", :body => "body of the test post...", :email => @credentials[:email], :password => @credentials[:password]})
-     response.response.should be_kind_of Net::HTTPCreated
-   end
+  #it "should post to tumblr" do
+  #   tweetlr = Tweetlr.new @credentials[:email], @credentials[:password], @cookie, nil, @searchterm, @config_file
+  #   response = tweetlr.post_to_tumblr({:type => 'regular', :title => "test post", :body => "body of the test post...", :email => @credentials[:email], :password => @credentials[:password]})
+  #   response.response.should be_kind_of Net::HTTPCreated
+  # end
   it "should search twitter for a given term" do
     tweetlr = @tweetlr
     response = tweetlr.search_twitter
