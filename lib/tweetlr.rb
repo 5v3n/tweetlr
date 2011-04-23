@@ -1,28 +1,31 @@
 require 'httparty'
 require 'logger'
+require 'yaml'
 
 
 class Tweetlr
-  RESULTS_PER_PAGE = 100
-  RESULT_TYPE = 'recent'
-  API_ENDPOINT_TWITTER = 'http://search.twitter.com/search.json';
-  API_ENDPOINT_TUMBLR = 'http://www.tumblr.com';
-  GENERATOR = %{tweetlr beta - http://github.com/5v3n/tweetlr}
-  WHITELIST = %w[davidaguirre T210 Lueti HendricRuesch sven_kr _jrg cfischler meyola S_TIMMung filtercake michaelhein talinee 
-    mettyK berlinporr tielefeld newsanalyse carsten_schulz marsti CarolinN yasminlechte tedory crieger menschmithut 
-    mojomatic choanzie malte martinweigert jayzon277 magnusvoss kuemmel_hh]
+
+  GENERATOR = %{tweetlr - http://github.com/5v3n/tweetlr}
 
   def initialize(email, password, cookie=nil, since_id=nil, term=nil)
-    WHITELIST.each {|entry| entry.downcase!}
     @log = Logger.new('tweetlr.log')
-    #@log.debug('log file created.')
+    config_file = File.join(File.dirname(__FILE__), '..',  'config', 'tweetlr.yml')
+    config = YAML.load_file(config_file)
+    @results_per_page = config['results_per_page']
+    @result_type = config['result_type']
+    @api_endpoint_twitter = config['api_endpoint_twitter']
+    @api_endpoint_tumblr = config['api_endpoint_tumblr']
+    @whitelist = config['whitelist']
+    @since_id = since_id
+    @search_term = term
+    @whitelist.each {|entry| entry.downcase!}
     @email = email
     @password = password
     @term = term
-    @refresh_url = "#{API_ENDPOINT_TWITTER}?q=#{term}&since_id=#{since_id}" if (since_id && term)
+    @refresh_url = "#{@api_endpoint_twitter}?q=#{term}&since_id=#{since_id}" if (since_id && term)
     if !cookie
       response = HTTParty.post(
-        "#{API_ENDPOINT_TUMBLR}/login",
+        "#{@api_endpoint_tumblr}/login",
         :body => {
           :email => @email,
           :password => password
@@ -46,22 +49,22 @@ class Tweetlr
     #arguments=options.collect { |key, value| "#{key}=#{value}" }.join('&')
     @log.debug("------------********** post_to_tumblr options: #{options.inspect}")
     @log.debug("------------********** post_to_tumblr options: #{{'Cookie' => @cookie}.inspect}")
-    response = HTTParty.post("#{API_ENDPOINT_TUMBLR}/api/write", :body => options, :headers => {'Cookie' => @cookie})
+    response = HTTParty.post("#{@api_endpoint_tumblr}/api/write", :body => options, :headers => {'Cookie' => @cookie})
     @log.debug("------------********** post_to_tumblr response: #{response.inspect}" )
     response
   end
 
   #fire a new search
   def search_twitter()
-    search_call = "#{API_ENDPOINT_TWITTER}?q=#{@term}&result_type=#{RESULT_TYPE}&rpp=#{RESULTS_PER_PAGE}"
+    search_call = "#{@api_endpoint_twitter}?q=#{@search_term}&result_type=#{@result_type}&rpp=#{@results_per_page}"
     @response = HTTParty.get(search_call)
   end
   # lazy update - search for a term or refresh the search if a response is available already
   def lazy_search_twitter()
-    @refresh_url = "#{API_ENDPOINT_TWITTER}#{@response['refresh_url']}" unless (@response.nil? || @response['refresh_url'].nil? || @response['refresh_url'].empty?)
+    @refresh_url = "#{@api_endpoint_twitter}#{@response['refresh_url']}" unless (@response.nil? || @response['refresh_url'].nil? || @response['refresh_url'].empty?)
     if @refresh_url
      #FIXME persist the refresh url - server restart would be a pain elsewise
-     @log.debug "lazy search using '#{@refresh_url}'"
+     @log.info "lazy search using '#{@refresh_url}'"
      @response = HTTParty.get(@refresh_url)
     else
       @log.debug "regular search using '#{term}'"
@@ -136,13 +139,13 @@ class Tweetlr
       tumblr_post[:date] = tweet['created_at']
       tumblr_post[:source] = extract_image_url tweet
       user = tweet['from_user']
-      if WHITELIST.member? user.downcase
+      if @whitelist.member? user.downcase
         state = 'published'
       else
         state = 'draft'
       end
       tumblr_post[:state] = state
-      tumblr_post[:caption] = %?@#{user} so: #{tweet['text']}?
+      tumblr_post[:caption] = %?@#{user} so: #{tweet['text']}? #TODO make this a matter of yml configuration
     end
     tumblr_post
   end

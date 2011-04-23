@@ -1,0 +1,13 @@
+  results_per_page: 100
+  result_type: recent
+  search_term: SEARCHTERM
+  twitter_timestamp: 61847783463854082
+  api_endpoint_twitter: 'http://search.twitter.com/search.json'
+  api_endpoint_tumblr: 'http://www.tumblr.com'
+  tumblr_username: USERNAME
+  tumblr_password: PW
+  update_period: 300 #5 minutes
+  whitelist: 
+    - whitey_mc_whitelist
+    - another_twitter_user
+

@@ -1,17 +1,24 @@
 require 'daemons'
 require 'eventmachine'
 require 'logger'
+require 'yaml'
 require_relative './tweetlr.rb'
 
-@credentials = {:email => 'MAIL', :password => 'PW'}
-TERM = '%23wirsounterwegs'
+  config_file = File.join(File.dirname(__FILE__), '..',  'config', 'tweetlr.yml')
+  CONFIG = YAML.load_file(config_file)
+  TERM = CONFIG['search_term']
+  USER = CONFIG['tumblr_username']
+  PW   = CONFIG['tumblr_password']
+  TIMESTAMP = CONFIG['twitter_timestamp']
+  UPDATE_PERIOD = CONFIG['update_period']
 
 Daemons.run_proc('tweetlrd') do
-  EventMachine::run {
-     @log = Logger.new('tweetlrd.log')
-     @log.info('starting tweetlr daemon...')
-     tweetlr = Tweetlr.new(@credentials[:email], @credentials[:password], nil, '60954983222353920', TERM)
-     EventMachine::add_periodic_timer( 60 * 5 ) {
+  @log = Logger.new('tweetlrd.log')
+  @log.info('starting tweetlr daemon...')
+  @log.info "createing a new tweetlr instance using this config: #{CONFIG.inspect}"   
+  EventMachine::run { 
+     tweetlr = Tweetlr.new(USER, PW, nil, TIMESTAMP, TERM)
+     EventMachine::add_periodic_timer( UPDATE_PERIOD ) {
        @log.info('starting tweetlr crawl...')
        response = tweetlr.lazy_search_twitter
        tweets = response.parsed_response['results']
