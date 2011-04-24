@@ -27,9 +27,11 @@ It's essential that you have a directory called `config` in the directory you ar
 
 ## Usage
 
-Make sure you put the configuration file in it's proper place as mentiones above, then: 
+Make sure you put the configuration file in it's proper place as mentioned above, then: 
 
 start/stop tweetlr using  `tweetlr start`/`tweetlr stop`. Run `tweetlr` without arguments for a list of options concerning the daemon's options. 
 
-enjoy!
+For further details on the configuration part, check out the [tweetlr_demo](http://github.com/5v3n/tweetlr_demo).
+
+Enjoy!
 
