@@ -7,7 +7,7 @@ require 'rake/testtask'
 
 spec = Gem::Specification.new do |s|
   s.name = 'tweetlr'
-  s.version = '0.0.4'
+  s.version = '0.0.5'
   s.has_rdoc = true
   s.extra_rdoc_files = ['README.md', 'LICENSE']
   s.summary = 'an unholy alliance between twitter and tumblr'

@@ -8,7 +8,7 @@ class Tweetlr
   GENERATOR = %{tweetlr - http://github.com/5v3n/tweetlr}
 
   def initialize(email, password, cookie=nil, since_id=nil, term=nil, config_file) #TODO use a hash or sth more elegant here...
-    @log = Logger.new('tweetlr.log')
+    @log = Logger.new(File.join( Dir.pwd, 'tweetlr.log'))
     config = YAML.load_file(config_file)
     @results_per_page = config['results_per_page']
     @result_type = config['result_type']

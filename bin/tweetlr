@@ -8,40 +8,41 @@ require_relative '../lib/tweetlr.rb'
 
 begin
   config_file = File.join( Dir.pwd,  'config', 'tweetlr.yml')
+  @log_file = File.join( Dir.pwd, 'tweetlr.log')
   CONFIG = YAML.load_file(config_file)
   TERM = CONFIG['search_term']
   USER = CONFIG['tumblr_username']
   PW   = CONFIG['tumblr_password']
   TIMESTAMP = CONFIG['twitter_timestamp']
   UPDATE_PERIOD = CONFIG['update_period']
+  @tweetlr = Tweetlr.new(USER, PW, nil, TIMESTAMP, TERM, config_file)
 rescue SystemCallError
   $stderr.puts "Ooops - looks like there is no ./config/tweetlr.yml found. I'm affraid tweetlr won't work properly until you introduced that configuration file."
   exit(1)
 end
 
 Daemons.run_proc('tweetlr') do
-  @log = Logger.new('tweetlr.log')
+  @log = Logger.new(@log_file)
   @log.info('starting tweetlr daemon...')
-  @log.info "createing a new tweetlr instance using this config: #{CONFIG.inspect}"   
+  @log.info "creating a new tweetlr instance using this config: #{CONFIG.inspect}"   
   EventMachine::run { 
-     tweetlr = Tweetlr.new(USER, PW, nil, TIMESTAMP, TERM, config_file)
-     EventMachine::add_periodic_timer( UPDATE_PERIOD ) {
-       @log.info('starting tweetlr crawl...')
-       response = tweetlr.lazy_search_twitter
-       tweets = response.parsed_response['results']
-       if tweets
-         tweets.each do |tweet|
-           tumblr_post = tweetlr.generate_tumblr_photo_post tweet
-           if tumblr_post.nil? ||  tumblr_post[:source].nil?
-              @log.error "could not get image source: #{tumblr_post.inspect}"
-           else
-             @log.debug tumblr_post
-             @log.debug tweetlr.post_to_tumblr tumblr_post
-           end
+    EventMachine::add_periodic_timer( UPDATE_PERIOD ) {
+     @log.info('starting tweetlr crawl...')
+     response = @tweetlr.lazy_search_twitter
+     tweets = response.parsed_response['results']
+     if tweets
+     tweets.each do |tweet|
+         tumblr_post = @tweetlr.generate_tumblr_photo_post tweet
+         if tumblr_post.nil? ||  tumblr_post[:source].nil?
+            @log.error "could not get image source: #{tumblr_post.inspect}"
+       else
+           @log.debug tumblr_post
+           @log.debug @tweetlr.post_to_tumblr tumblr_post
          end
        end
-       @log.info('finished tweetlr crawl.')
-    }
+     end
+     @log.info('finished tweetlr crawl.')
+     }
    }
 
 end
