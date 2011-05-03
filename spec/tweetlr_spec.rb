@@ -22,7 +22,7 @@ describe Tweetlr do
       :twitpic => "http://twitpic.com/449o2x",
       :yfrog => "http://yfrog.com/h4vlfp",
       :picplz => "http://picplz.com/2hWv",
-      :imgly => "http://img.ly/3LdA"
+      :imgly => "http://img.ly/3M1o"
       }
     @pic_regexp = /(.*?)\.(jpg|jpeg|png|gif)$/i 
     @config_file = File.join( Dir.pwd, 'config', 'tweetlr.yml')
@@ -63,10 +63,14 @@ describe Tweetlr do
       check_pic_url_extraction :yfrog
     end
     it "should find a picture's url from the twitpic short url" do
-      check_pic_url_extraction :twitpic
+      tweetlr = @tweetlr
+      image_url = tweetlr.image_url_twitpic @links[:twitpic]
+      image_url.should be
     end
     it "should find a picture's url from the imgly short url" do
-      check_pic_url_extraction :imgly
+      tweetlr = @tweetlr
+      image_url = tweetlr.image_url_imgly @links[:imgly]
+      image_url.should be
     end
   end
   describe "tweet api response processing" do
