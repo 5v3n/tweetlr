@@ -7,15 +7,14 @@ require 'rake/testtask'
 
 spec = Gem::Specification.new do |s|
   s.name = 'tweetlr'
-  s.version = '0.0.5'
+  s.version = '0.0.6'
   s.has_rdoc = true
   s.extra_rdoc_files = ['README.md', 'LICENSE']
-  s.summary = 'an unholy alliance between twitter and tumblr'
+  s.summary = %{tweetlr crawls twitter for a given term, extracts photos out of the collected tweets' short urls and posts the images to tumblr.}
   s.description = s.summary
   s.author = 'Sven Kraeuter'
   s.email = 'mail@svenkraeuter.com'
   s.homepage = "http://github.com/5v3n/#{s.name}"
-  # s.executables = ['your_executable_here']
   s.files = %w(LICENSE README.md Rakefile) + Dir.glob("{bin,lib}/**/*")
   s.require_path = "lib"
   s.executables  = ['tweetlr']

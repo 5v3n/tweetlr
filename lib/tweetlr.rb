@@ -1,12 +1,15 @@
 require 'httparty'
 require 'logger'
 require 'yaml'
+require 'curb'
 
 
 class Tweetlr
 
   GENERATOR = %{tweetlr - http://github.com/5v3n/tweetlr}
-
+  LOCATION_START_INDICATOR = 'Location: '
+  LOCATION_STOP_INDICATOR  = "\r\n"
+  
   def initialize(email, password, cookie=nil, since_id=nil, term=nil, config_file) #TODO use a hash or sth more elegant here...
     @log = Logger.new(File.join( Dir.pwd, 'tweetlr.log'))
     config = YAML.load_file(config_file)
@@ -81,6 +84,7 @@ class Tweetlr
       url = image_url_picplz link if link.index 'picplz'
       url = image_url_twitpic link if link.index 'twitpic'
       url = image_url_yfrog link if link.index 'yfrog'
+      url = image_url_imgly link if link.index 'img.ly'
     end
     url
   end
@@ -104,12 +108,28 @@ class Tweetlr
   end
   #find the image's url for a twitpic link
   def image_url_twitpic(link_url)
-    "http://twitpic.com/show/full/#{extract_id link_url}"
+    image_url_redirect link_url, "http://twitpic.com/show/full/"
   end
   #find the image'S url for a yfrog link
   def image_url_yfrog(link_url)
     response = HTTParty.get("http://www.yfrog.com/api/oembed?url=#{link_url}")
     response.parsed_response['url']
+  end
+  #find the image's url for a img.ly link
+  def image_url_imgly(link_url)
+    image_url_redirect link_url, "http://img.ly/show/full/", "\r\n"
+  end
+  
+  # extract image url from services like twitpic & img.ly that do not offer oembed interfaces
+  def image_url_redirect(link_url, service_endpoint, stop_indicator = LOCATION_STOP_INDICATOR)
+    resp = Curl::Easy.http_get("#{service_endpoint}#{extract_id link_url}") { |res| res.follow_location = true }
+    if(resp.header_str.index(LOCATION_START_INDICATOR) && resp.header_str.index(stop_indicator))
+      start = resp.header_str.index(LOCATION_START_INDICATOR) + LOCATION_START_INDICATOR.size
+      stop  = resp.header_str.index(stop_indicator, start)
+      resp.header_str[start...stop]
+    else
+      nil
+    end
   end
 
   #extract the pic id from a given <code>link</code>

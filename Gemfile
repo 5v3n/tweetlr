@@ -3,6 +3,7 @@ source :rubygems
 gem 'httparty'
 gem 'eventmachine'
 gem 'daemons'
+gem 'curb'
 
 group :test, :development do
   gem 'rspec'

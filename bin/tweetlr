@@ -8,7 +8,7 @@ require_relative '../lib/tweetlr.rb'
 
 begin
   config_file = File.join( Dir.pwd,  'config', 'tweetlr.yml')
-  @log_file = File.join( Dir.pwd, 'tweetlr.log')
+  @log_file = File.join( Dir.pwd, 'tweetlrd.log')
   CONFIG = YAML.load_file(config_file)
   TERM = CONFIG['search_term']
   USER = CONFIG['tumblr_username']
