@@ -14,16 +14,17 @@ describe Tweetlr do
     @credentials = {:email => USER, :password => PW}
     @cookie = "tmgioct=as3u4KJr9COyJA9j4nwr6ZAn"
     @searchterm = 'fail'
-    @twitter_response = {"from_user_id_str"=>"1915714", "profile_image_url"=>"http://a0.twimg.com/profile_images/386000279/2_normal.jpg", "created_at"=>"Sun, 17 Apr 2011 16:48:42 +0000", "from_user"=>"whitey_Mc_whIteLIst", "id_str"=>"59659561224765440", "metadata"=>{"result_type"=>"recent"}, "to_user_id"=>nil, "text"=>"Rigaer #wirsounterwegs   @ Augenarzt Dr. Lierow http://instagr.am/p/DQWAj/", "id"=>59659561224765440, "from_user_id"=>1915714, "geo"=>{"type"=>"Point", "coordinates"=>[52.5182, 13.454]}, "iso_language_code"=>"de", "place"=>{"id"=>"3078869807f9dd36", "type"=>"city", "full_name"=>"Berlin, Berlin"}, "to_user_id_str"=>nil, "source"=>"&lt;a href=&quot;http://instagr.am&quot; rel=&quot;nofollow&quot;&gt;instagram&lt;/a&gt;"}
+    @twitter_response = {"from_user_id_str"=>"1915714", "profile_image_url"=>"http://a0.twimg.com/profile_images/386000279/2_normal.jpg", "created_at"=>"Sun, 17 Apr 2011 16:48:42 +0000", "from_user"=>"whitey_Mc_whIteLIst", "id_str"=>"59659561224765440", "metadata"=>{"result_type"=>"recent"}, "to_user_id"=>nil, "text"=>"Rigaer #wirsounterwegs   @ Augenarzt Dr. Lierow http://instagr.am/p/DzCWn/", "id"=>59659561224765440, "from_user_id"=>1915714, "geo"=>{"type"=>"Point", "coordinates"=>[52.5182, 13.454]}, "iso_language_code"=>"de", "place"=>{"id"=>"3078869807f9dd36", "type"=>"city", "full_name"=>"Berlin, Berlin"}, "to_user_id_str"=>nil, "source"=>"&lt;a href=&quot;http://instagr.am&quot; rel=&quot;nofollow&quot;&gt;instagram&lt;/a&gt;"}
     @non_whitelist_tweet = @twitter_response.merge 'from_user' => 'nonwhitelist user' 
     @retweet = @twitter_response.merge "text" => "bla bla RT @fgd: tueddelkram"
     @links = {
-      :instagram => "http://instagr.am/p/DQWAj/",
+      :instagram => "http://instagr.am/p/DzCWn/",
       :twitpic => "http://twitpic.com/449o2x",
       :yfrog => "http://yfrog.com/h4vlfp",
-      :picplz => "http://picplz.com/2hWv"
+      :picplz => "http://picplz.com/2hWv",
+      :imgly => "http://img.ly/3LdA"
       }
-    @pic_regexp = /(.*?)\.(jpg|jpeg|png|gif)$|(http:\/\/twitpic.com\/show\/full\/449o2x)/i #naive approach - but should do the trick.
+    @pic_regexp = /(.*?)\.(jpg|jpeg|png|gif)$/i 
     @config_file = File.join( Dir.pwd, 'config', 'tweetlr.yml')
     @tweetlr = Tweetlr.new '', '', @cookie, nil, @searchterm, @config_file
   end
@@ -63,6 +64,9 @@ describe Tweetlr do
     end
     it "should find a picture's url from the twitpic short url" do
       check_pic_url_extraction :twitpic
+    end
+    it "should find a picture's url from the imgly short url" do
+      check_pic_url_extraction :imgly
     end
   end
   describe "tweet api response processing" do
