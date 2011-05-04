@@ -21,27 +21,29 @@ rescue SystemCallError
   exit(1)
 end
 
-Daemons.run_proc('tweetlr') do
-  @log = Logger.new(@log_file)
-  @log.info('starting tweetlr daemon...')
-  @log.info "creating a new tweetlr instance using this config: #{CONFIG.inspect}"   
+Daemons.run_proc('tweetlr', :dir_mode => :script, :dir => './', :backtrace => true, :log_output => true) do
+  #@log = Logger.new(@log_file)
+  puts('starting tweetlr daemon...')
+  puts "creating a new tweetlr instance using this config: #{CONFIG.inspect}"   
   EventMachine::run { 
     EventMachine::add_periodic_timer( UPDATE_PERIOD ) {
-     @log.info('starting tweetlr crawl...')
+     puts 'starting tweetlr crawl...'
      response = @tweetlr.lazy_search_twitter
      tweets = response.parsed_response['results']
      if tweets
      tweets.each do |tweet|
          tumblr_post = @tweetlr.generate_tumblr_photo_post tweet
          if tumblr_post.nil? ||  tumblr_post[:source].nil?
-            @log.error "could not get image source: #{tumblr_post.inspect}"
+            puts "could not get image source: #{tumblr_post.inspect}"
        else
-           @log.debug tumblr_post
-           @log.debug @tweetlr.post_to_tumblr tumblr_post
+           #@log.debug tumblr_post
+           #@log.debug @tweetlr.post_to_tumblr tumblr_post
+           puts tumblr_post
+           puts @tweetlr.post_to_tumblr tumblr_post
          end
        end
      end
-     @log.info('finished tweetlr crawl.')
+     puts('finished tweetlr crawl.')
      }
    }
 

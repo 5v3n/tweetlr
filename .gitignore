@@ -3,3 +3,4 @@
 pkg
 *.pid
 config
+*.output

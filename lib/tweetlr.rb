@@ -68,6 +68,7 @@ class Tweetlr
     if @refresh_url
      #FIXME persist the refresh url - server restart would be a pain elsewise
      @log.info "lazy search using '#{@refresh_url}'"
+     puts "lazy search using '#{@refresh_url}'" #workaround to get refresh url logged w/ the Daemons gem
      @response = HTTParty.get(@refresh_url)
     else
       @log.debug "regular search using '#{term}'"
