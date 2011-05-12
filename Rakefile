@@ -7,7 +7,7 @@ require 'rake/testtask'
 
 spec = Gem::Specification.new do |s|
   s.name = 'tweetlr'
-  s.version = '0.0.7pre'
+  s.version = '0.0.7'
   s.has_rdoc = true
   s.extra_rdoc_files = ['README.md', 'LICENSE']
   s.summary = %{tweetlr crawls twitter for a given term, extracts photos out of the collected tweets' short urls and posts the images to tumblr.}
@@ -20,7 +20,6 @@ spec = Gem::Specification.new do |s|
   s.executables  = ['tweetlr']
   s.add_dependency('daemons')
   s.add_dependency('eventmachine')
-  s.add_dependency('httparty')
   s.add_dependency('curb')
 end
 

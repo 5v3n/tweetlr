@@ -29,7 +29,7 @@ Daemons.run_proc('tweetlr', :dir_mode => :script, :dir => './', :backtrace => tr
     EventMachine::add_periodic_timer( UPDATE_PERIOD ) {
      puts 'starting tweetlr crawl...'
      response = @tweetlr.lazy_search_twitter
-     tweets = response.parsed_response['results']
+     tweets = response['results']
      if tweets
      tweets.each do |tweet|
          tumblr_post = @tweetlr.generate_tumblr_photo_post tweet

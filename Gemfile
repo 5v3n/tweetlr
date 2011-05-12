@@ -1,6 +1,5 @@
 source :rubygems
 
-gem 'httparty'
 gem 'eventmachine'
 gem 'daemons'
 gem 'curb'

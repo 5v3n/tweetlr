@@ -8,19 +8,20 @@ GEM
       sys-uname
     autotest-growl (0.2.9)
     crack (0.1.8)
-    daemons (1.1.2)
+    curb (0.7.15)
+    daemons (1.1.3)
     diff-lcs (1.1.2)
     eventmachine (0.12.10)
-    httparty (0.7.4)
+    httparty (0.7.7)
       crack (= 0.1.8)
-    rspec (2.5.0)
-      rspec-core (~> 2.5.0)
-      rspec-expectations (~> 2.5.0)
-      rspec-mocks (~> 2.5.0)
-    rspec-core (2.5.1)
-    rspec-expectations (2.5.0)
+    rspec (2.6.0)
+      rspec-core (~> 2.6.0)
+      rspec-expectations (~> 2.6.0)
+      rspec-mocks (~> 2.6.0)
+    rspec-core (2.6.0)
+    rspec-expectations (2.6.0)
       diff-lcs (~> 1.1.2)
-    rspec-mocks (2.5.0)
+    rspec-mocks (2.6.0)
     sys-uname (0.8.5)
 
 PLATFORMS
@@ -30,6 +31,7 @@ DEPENDENCIES
   autotest
   autotest-fsevent
   autotest-growl
+  curb
   daemons
   eventmachine
   httparty

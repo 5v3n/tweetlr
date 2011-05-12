@@ -1,7 +1,7 @@
-require 'httparty'
 require 'logger'
 require 'yaml'
 require 'curb'
+require 'json'
 
 
 class Tweetlr
@@ -27,7 +27,7 @@ class Tweetlr
     @term = term
     @refresh_url = "#{@api_endpoint_twitter}?q=#{term}&since_id=#{since_id}" if (since_id && term)
     if !cookie
-      response = HTTParty.post(
+      response = Curl::Easy.http_post(
         "#{@api_endpoint_tumblr}/login",
         :body => {
           :email => @email,
@@ -45,22 +45,25 @@ class Tweetlr
   end
 
   def post_to_tumblr(options={})
-    options[:generator] = GENERATOR
-    options[:email] = @email #TODO get cookie auth working!
-    options[:password] = @password
-    #options[:headers] = {'Cookie' => @cookie}
-    #arguments=options.collect { |key, value| "#{key}=#{value}" }.join('&')
-    @log.debug("------------********** post_to_tumblr options: #{options.inspect}")
-    @log.debug("------------********** post_to_tumblr options: #{{'Cookie' => @cookie}.inspect}")
-    response = HTTParty.post("#{@api_endpoint_tumblr}/api/write", :body => options, :headers => {'Cookie' => @cookie})
-    @log.debug("------------********** post_to_tumblr response: #{response.inspect}" )
+    if options[:type] && options[:date] && options[:source] && options[:caption] && options[:state]
+      response = Curl::Easy.http_post("#{@api_endpoint_tumblr}/api/write", 
+      Curl::PostField.content('generator', GENERATOR),
+      Curl::PostField.content('email', @email), 
+      Curl::PostField.content('password', @password),
+      Curl::PostField.content('type', options[:type]),
+      Curl::PostField.content('date', options[:date]),
+      Curl::PostField.content('source', options[:source]),
+      Curl::PostField.content('caption', options[:caption]),
+      Curl::PostField.content('state', options[:state])
+      )
+    end
     response
   end
 
   #fire a new search
   def search_twitter()
     search_call = "#{@api_endpoint_twitter}?q=#{@search_term}&result_type=#{@result_type}&rpp=#{@results_per_page}"
-    @response = HTTParty.get(search_call)
+    http_get search_call
   end
   # lazy update - search for a term or refresh the search if a response is available already
   def lazy_search_twitter()
@@ -69,7 +72,7 @@ class Tweetlr
      #FIXME persist the refresh url - server restart would be a pain elsewise
      @log.info "lazy search using '#{@refresh_url}'"
      puts "lazy search using '#{@refresh_url}'" #workaround to get refresh url logged w/ the Daemons gem
-     @response = HTTParty.get(@refresh_url)
+     http_get @refresh_url
     else
       @log.debug "regular search using '#{term}'"
       @response = search_twitter()
@@ -93,15 +96,15 @@ class Tweetlr
   #find the image's url for an instagram link
   def image_url_instagram(link_url)
     link_url['instagram.com'] = 'instagr.am' if link_url.index 'instagram.com' #instagram's oembed does not work for .com links
-    response = HTTParty.get "http://api.instagram.com/oembed?url=#{link_url}"
-    response.parsed_response['url']
+    response = http_get "http://api.instagram.com/oembed?url=#{link_url}"
+    response['url']
   end
 
   #find the image's url for a picplz short/longlink
   def image_url_picplz(link_url)
     id = extract_id link_url
     #try short url
-    response = HTTParty.get "http://picplz.com/api/v2/pic.json?shorturl_ids=#{id}"
+    response = http_get "http://picplz.com/api/v2/pic.json?shorturl_ids=#{id}"
     #if short url fails, try long url
     #response = HTTParty.get "http://picplz.com/api/v2/pic.json?longurl_ids=#{id}"
     #extract url
@@ -113,8 +116,8 @@ class Tweetlr
   end
   #find the image'S url for a yfrog link
   def image_url_yfrog(link_url)
-    response = HTTParty.get("http://www.yfrog.com/api/oembed?url=#{link_url}")
-    response.parsed_response['url']
+    response = http_get("http://www.yfrog.com/api/oembed?url=#{link_url}")
+    response['url']
   end
   #find the image's url for a img.ly link
   def image_url_imgly(link_url)
@@ -169,6 +172,14 @@ class Tweetlr
       tumblr_post[:caption] = %?@#{user} #{@shouts}: #{tweet['text']}? #TODO make this a bigger matter of yml configuration
     end
     tumblr_post
+  end
+  
+  private
+  
+  #convenience method for curl http get calls
+  def http_get(request)
+    res = Curl::Easy.http_get(request)
+    JSON.parse res.body_str
   end
   
 end
