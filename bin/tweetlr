@@ -34,12 +34,13 @@ Daemons.run_proc('tweetlr', :dir_mode => :script, :dir => './', :backtrace => tr
      tweets.each do |tweet|
          tumblr_post = @tweetlr.generate_tumblr_photo_post tweet
          if tumblr_post.nil? ||  tumblr_post[:source].nil?
-            puts "could not get image source: #{tumblr_post.inspect}"
+            puts "could not get image source: tweet: #{tweet} --- tumblr post: #{tumblr_post.inspect}"
        else
            #@log.debug tumblr_post
            #@log.debug @tweetlr.post_to_tumblr tumblr_post
-           puts tumblr_post
-           puts @tweetlr.post_to_tumblr tumblr_post
+           #puts "tumblr post: #{tumblr_post}"
+           res = @tweetlr.post_to_tumblr tumblr_post
+           #puts "tumblr response: #{res.header_str} #{res.body_str}"
          end
        end
      end
