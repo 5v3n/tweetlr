@@ -40,7 +40,7 @@ Daemons.run_proc('tweetlr', :dir_mode => :script, :dir => './', :backtrace => tr
            #@log.debug @tweetlr.post_to_tumblr tumblr_post
            #puts "tumblr post: #{tumblr_post}"
            res = @tweetlr.post_to_tumblr tumblr_post
-           #puts "tumblr response: #{res.header_str} #{res.body_str}"
+           puts "tumblr response: #{res.header_str} #{res.body_str}" unless res.response_code == 201
          end
        end
      end
