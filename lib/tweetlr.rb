@@ -63,16 +63,17 @@ class Tweetlr
   #fire a new search
   def search_twitter()
     search_call = "#{@api_endpoint_twitter}?q=#{@search_term}&result_type=#{@result_type}&rpp=#{@results_per_page}"
-    http_get search_call
+    @response = http_get search_call
   end
   # lazy update - search for a term or refresh the search if a response is available already
   def lazy_search_twitter()
+    puts "@response: #{@response.inspect}"
     @refresh_url = "#{@api_endpoint_twitter}#{@response['refresh_url']}" unless (@response.nil? || @response['refresh_url'].nil? || @response['refresh_url'].empty?)
     if @refresh_url
      #FIXME persist the refresh url - server restart would be a pain elsewise
      @log.info "lazy search using '#{@refresh_url}'"
      puts "lazy search using '#{@refresh_url}'" #workaround to get refresh url logged w/ the Daemons gem
-     http_get @refresh_url
+     @response = http_get @refresh_url
     else
       @log.debug "regular search using '#{term}'"
       @response = search_twitter()
