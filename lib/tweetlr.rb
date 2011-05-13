@@ -3,7 +3,6 @@ require 'yaml'
 require 'curb'
 require 'json'
 
-
 class Tweetlr
 
   GENERATOR = %{tweetlr - http://github.com/5v3n/tweetlr}
@@ -80,18 +79,29 @@ class Tweetlr
     end
   end
   
-  #extract the linked image file's url
+  #extract the linked image file's url from a tweet
   def extract_image_url(tweet)
     link = extract_link tweet
+    find_image_url link
+  end
+  
+  #extract the linked image file's url from a tweet
+  def find_image_url(link)
     url = nil
-    if link
+    if !link.nil?
       url = image_url_instagram link if (link.index('instagr.am') || link.index('instagram.com'))
       url = image_url_picplz link if link.index 'picplz'
       url = image_url_twitpic link if link.index 'twitpic'
       url = image_url_yfrog link if link.index 'yfrog'
       url = image_url_imgly link if link.index 'img.ly'
+      url = image_url_tco link if link.index 't.co'
     end
     url
+  end
+  
+  def image_url_tco(link_url)
+    service_url = link_url_redirect link_url
+    find_image_url service_url
   end
 
   #find the image's url for an instagram link
@@ -127,7 +137,11 @@ class Tweetlr
   
   # extract image url from services like twitpic & img.ly that do not offer oembed interfaces
   def image_url_redirect(link_url, service_endpoint, stop_indicator = LOCATION_STOP_INDICATOR)
-    resp = Curl::Easy.http_get("#{service_endpoint}#{extract_id link_url}") { |res| res.follow_location = true }
+    link_url_redirect "#{service_endpoint}#{extract_id link_url}", stop_indicator
+  end
+  
+  def link_url_redirect(short_url, stop_indicator = LOCATION_STOP_INDICATOR)
+    resp = Curl::Easy.http_get(short_url) { |res| res.follow_location = true }
     if(resp.header_str.index(LOCATION_START_INDICATOR) && resp.header_str.index(stop_indicator))
       start = resp.header_str.index(LOCATION_START_INDICATOR) + LOCATION_START_INDICATOR.size
       stop  = resp.header_str.index(stop_indicator, start)
@@ -171,7 +185,7 @@ class Tweetlr
         state = 'draft'
       end
       tumblr_post[:state] = state
-      tumblr_post[:caption] = %?@#{user} #{@shouts}: #{tweet['text']}? #TODO make this a bigger matter of yml configuration
+      tumblr_post[:caption] = %?<a href="http://twitter.com/#{user}" alt="#{user}">@#{user}</a> #{@shouts}: #{tweet['text']}? #TODO make this a bigger matter of yml configuration
     end
     tumblr_post
   end

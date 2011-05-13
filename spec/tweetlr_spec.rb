@@ -22,7 +22,8 @@ describe Tweetlr do
       :twitpic => "http://twitpic.com/449o2x",
       :yfrog => "http://yfrog.com/h4vlfp",
       :picplz => "http://picplz.com/2hWv",
-      :imgly => "http://img.ly/3M1o"
+      :imgly => "http://img.ly/3M1o",
+      :tco => 'http://t.co/MUGNayA'
       }
     @pic_regexp = /(.*?)\.(jpg|jpeg|png|gif)$/i 
     @config_file = File.join( Dir.pwd, 'config', 'tweetlr.yml')
@@ -30,7 +31,7 @@ describe Tweetlr do
   end
   # it "should post to tumblr" do
   #   tweetlr = Tweetlr.new @credentials[:email], @credentials[:password], @cookie, nil, @searchterm, @config_file
-  #   response = tweetlr.post_to_tumblr({:type => 'photo', :caption => "test post", :date => "Thu, 12 May 2011 17:15:16 +0000", :source => "http://s3.amazonaws.com/twitpic/photos/full/288286427.jpg?AWSAccessKeyId=AKIAJF3XCCKACR3QDMOA&Expires=1305277526&Signature=40B8DvOJU4L%2BsXp%2BLUYSnmT4wqs%3D", :state => "published", :email => @credentials[:email], :password => @credentials[:password]})
+  #   response = tweetlr.post_to_tumblr({:type => 'photo', :caption => %?<a href="http://nourl">link</a> says: meep meep!?, :date => "Thu, 12 May 2011 17:15:16 +0000", :source => "http://s3.amazonaws.com/twitpic/photos/full/288286427.jpg?AWSAccessKeyId=AKIAJF3XCCKACR3QDMOA&Expires=1305277526&Signature=40B8DvOJU4L%2BsXp%2BLUYSnmT4wqs%3D", :state => "published", :email => @credentials[:email], :password => @credentials[:password]})
   #   response.should be
   #   response.response_code.should be 201
   # end
@@ -72,6 +73,11 @@ describe Tweetlr do
       tweetlr = @tweetlr
       image_url = tweetlr.image_url_imgly @links[:imgly]
       image_url.should be
+    end
+    it "should find a picture's url from the t.co short url" do
+      tweetlr = @tweetlr
+      image_url = tweetlr.image_url_imgly @links[:tco]
+      check_pic_url_extraction :tco
     end
   end
   describe "tweet api response processing" do
