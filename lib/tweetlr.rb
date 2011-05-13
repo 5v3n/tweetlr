@@ -67,7 +67,6 @@ class Tweetlr
   end
   # lazy update - search for a term or refresh the search if a response is available already
   def lazy_search_twitter()
-    puts "@response: #{@response.inspect}"
     @refresh_url = "#{@api_endpoint_twitter}#{@response['refresh_url']}" unless (@response.nil? || @response['refresh_url'].nil? || @response['refresh_url'].empty?)
     if @refresh_url
      #FIXME persist the refresh url - server restart would be a pain elsewise
