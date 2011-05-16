@@ -42,7 +42,7 @@ class Tweetlr
     end
     
   end
-
+  #post a tumblr photo entry. required arguments are :type, :date, :source, :caption, :state
   def post_to_tumblr(options={})
     if options[:type] && options[:date] && options[:source] && options[:caption] && options[:state]
       response = Curl::Easy.http_post("#{@api_endpoint_tumblr}/api/write", 
@@ -57,6 +57,29 @@ class Tweetlr
       )
     end
     response
+  end
+  
+  #generate the data for a tumblr photo entry by parsing a tweet
+  def generate_tumblr_photo_post tweet
+    tumblr_post = nil
+    message = tweet['text']
+    if message && !message.index('RT @') #discard retweets
+      #@log.debug "tweet: #{tweet}"
+      #puts "tweet: #{tweet}"
+      tumblr_post = {}
+      tumblr_post[:type] = 'photo'
+      tumblr_post[:date] = tweet['created_at']
+      tumblr_post[:source] = extract_image_url tweet
+      user = tweet['from_user']
+      if @whitelist.member? user.downcase
+        state = 'published'
+      else
+        state = 'draft'
+      end
+      tumblr_post[:state] = state
+      tumblr_post[:caption] = %?<a href="http://twitter.com/#{user}" alt="#{user}">@#{user}</a> #{@shouts}: #{tweet['text']}? #TODO make this a bigger matter of yml configuration
+    end
+    tumblr_post
   end
 
   #fire a new search
@@ -167,35 +190,19 @@ class Tweetlr
       end
     end
   end
-
-  def generate_tumblr_photo_post tweet
-    tumblr_post = nil
-    message = tweet['text']
-    if message && !message.index('RT @') #discard retweets
-      #@log.debug "tweet: #{tweet}"
-      #puts "tweet: #{tweet}"
-      tumblr_post = {}
-      tumblr_post[:type] = 'photo'
-      tumblr_post[:date] = tweet['created_at']
-      tumblr_post[:source] = extract_image_url tweet
-      user = tweet['from_user']
-      if @whitelist.member? user.downcase
-        state = 'published'
-      else
-        state = 'draft'
-      end
-      tumblr_post[:state] = state
-      tumblr_post[:caption] = %?<a href="http://twitter.com/#{user}" alt="#{user}">@#{user}</a> #{@shouts}: #{tweet['text']}? #TODO make this a bigger matter of yml configuration
-    end
-    tumblr_post
-  end
   
   private
   
   #convenience method for curl http get calls
   def http_get(request)
-    res = Curl::Easy.http_get(request)
-    JSON.parse res.body_str
+    begin
+      res = Curl::Easy.http_get(request)
+      JSON.parse res.body_str
+    rescue Curl::Err::ConnectionFailedError => err
+      #@log.error "Connection failed: #{err}"
+      puts "Connection failed: #{err}"
+      nil
+    end
   end
   
 end
