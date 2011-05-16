@@ -42,7 +42,7 @@ class Tweetlr
     end
     
   end
-
+  #post a tumblr photo entry. required arguments are :type, :date, :source, :caption, :state
   def post_to_tumblr(options={})
     if options[:type] && options[:date] && options[:source] && options[:caption] && options[:state]
       response = Curl::Easy.http_post("#{@api_endpoint_tumblr}/api/write", 
@@ -57,6 +57,29 @@ class Tweetlr
       )
     end
     response
+  end
+  
+  #generate the data for a tumblr photo entry by parsing a tweet
+  def generate_tumblr_photo_post tweet
+    tumblr_post = nil
+    message = tweet['text']
+    if message && !message.index('RT @') #discard retweets
+      #@log.debug "tweet: #{tweet}"
+      #puts "tweet: #{tweet}"
+      tumblr_post = {}
+      tumblr_post[:type] = 'photo'
+      tumblr_post[:date] = tweet['created_at']
+      tumblr_post[:source] = extract_image_url tweet
+      user = tweet['from_user']
+      if @whitelist.member? user.downcase
+        state = 'published'
+      else
+        state = 'draft'
+      end
+      tumblr_post[:state] = state
+      tumblr_post[:caption] = %?<a href="http://twitter.com/#{user}" alt="#{user}">@#{user}</a> #{@shouts}: #{tweet['text']}? #TODO make this a bigger matter of yml configuration
+    end
+    tumblr_post
   end
 
   #fire a new search
@@ -108,7 +131,7 @@ class Tweetlr
   def image_url_instagram(link_url)
     link_url['instagram.com'] = 'instagr.am' if link_url.index 'instagram.com' #instagram's oembed does not work for .com links
     response = http_get "http://api.instagram.com/oembed?url=#{link_url}"
-    response['url']
+    response['url'] if response
   end
 
   #find the image's url for a picplz short/longlink
@@ -119,7 +142,7 @@ class Tweetlr
     #if short url fails, try long url
     #response = HTTParty.get "http://picplz.com/api/v2/pic.json?longurl_ids=#{id}"
     #extract url
-    response['value']['pics'].first['pic_files']['640r']['img_url']
+    response['value']['pics'].first['pic_files']['640r']['img_url'] if response
   end
   #find the image's url for a twitpic link
   def image_url_twitpic(link_url)
@@ -128,7 +151,7 @@ class Tweetlr
   #find the image'S url for a yfrog link
   def image_url_yfrog(link_url)
     response = http_get("http://www.yfrog.com/api/oembed?url=#{link_url}")
-    response['url']
+    response['url'] if response
   end
   #find the image's url for a img.ly link
   def image_url_imgly(link_url)
@@ -142,7 +165,7 @@ class Tweetlr
   
   def link_url_redirect(short_url, stop_indicator = LOCATION_STOP_INDICATOR)
     resp = Curl::Easy.http_get(short_url) { |res| res.follow_location = true }
-    if(resp.header_str.index(LOCATION_START_INDICATOR) && resp.header_str.index(stop_indicator))
+    if(resp && resp.header_str.index(LOCATION_START_INDICATOR) && resp.header_str.index(stop_indicator))
       start = resp.header_str.index(LOCATION_START_INDICATOR) + LOCATION_START_INDICATOR.size
       stop  = resp.header_str.index(stop_indicator, start)
       resp.header_str[start...stop]
@@ -167,35 +190,19 @@ class Tweetlr
       end
     end
   end
-
-  def generate_tumblr_photo_post tweet
-    tumblr_post = nil
-    message = tweet['text']
-    if message && !message.index('RT @') #discard retweets
-      #@log.debug "tweet: #{tweet}"
-      #puts "tweet: #{tweet}"
-      tumblr_post = {}
-      tumblr_post[:type] = 'photo'
-      tumblr_post[:date] = tweet['created_at']
-      tumblr_post[:source] = extract_image_url tweet
-      user = tweet['from_user']
-      if @whitelist.member? user.downcase
-        state = 'published'
-      else
-        state = 'draft'
-      end
-      tumblr_post[:state] = state
-      tumblr_post[:caption] = %?<a href="http://twitter.com/#{user}" alt="#{user}">@#{user}</a> #{@shouts}: #{tweet['text']}? #TODO make this a bigger matter of yml configuration
-    end
-    tumblr_post
-  end
   
   private
   
   #convenience method for curl http get calls
   def http_get(request)
-    res = Curl::Easy.http_get(request)
-    JSON.parse res.body_str
+    begin
+      res = Curl::Easy.http_get(request)
+      JSON.parse res.body_str
+    rescue Curl::Err::ConnectionFailedError => err
+      #@log.error "Connection failed: #{err}"
+      puts "Connection failed: #{err}"
+      nil
+    end
   end
   
 end
