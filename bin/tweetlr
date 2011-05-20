@@ -23,28 +23,32 @@ end
 
 Daemons.run_proc('tweetlr', :dir_mode => :script, :dir => './', :backtrace => true, :log_output => true) do
   #@log = Logger.new(@log_file)
-  puts('starting tweetlr daemon...')
+  puts "#{Time.now} - starting tweetlr daemon..." 
   puts "creating a new tweetlr instance using this config: #{CONFIG.inspect}"   
   EventMachine::run { 
     EventMachine::add_periodic_timer( UPDATE_PERIOD ) {
-     puts 'starting tweetlr crawl...'
+     puts "#{Time.now} - starting tweetlr crawl..."
      response = @tweetlr.lazy_search_twitter
-     tweets = response['results']
-     if tweets
-     tweets.each do |tweet|
-         tumblr_post = @tweetlr.generate_tumblr_photo_post tweet
-         if tumblr_post.nil? ||  tumblr_post[:source].nil?
-            puts "could not get image source: tweet: #{tweet} --- tumblr post: #{tumblr_post.inspect}"
-       else
-           #@log.debug tumblr_post
-           #@log.debug @tweetlr.post_to_tumblr tumblr_post
-           #puts "tumblr post: #{tumblr_post}"
-           res = @tweetlr.post_to_tumblr tumblr_post
-           puts "tumblr response: #{res.header_str} #{res.body_str}" unless res.response_code == 201
+     if response
+       tweets = response['results']
+       if tweets
+       tweets.each do |tweet|
+           tumblr_post = @tweetlr.generate_tumblr_photo_post tweet
+           if tumblr_post.nil? ||  tumblr_post[:source].nil?
+              puts "could not get image source: tweet: #{tweet} --- tumblr post: #{tumblr_post.inspect}"
+         else
+             #@log.debug tumblr_post
+             #@log.debug @tweetlr.post_to_tumblr tumblr_post
+             #puts "tumblr post: #{tumblr_post}"
+             res = @tweetlr.post_to_tumblr tumblr_post
+             puts "tumblr response: #{res.header_str} #{res.body_str}" unless res.response_code == 201
+           end
          end
        end
+     else
+       puts "#{Time.now} - twitter serach returned no response. Hail the whale!"
      end
-     puts('finished tweetlr crawl.')
+     puts "#{Time.now} - finished tweetlr crawl."
      }
    }
 
