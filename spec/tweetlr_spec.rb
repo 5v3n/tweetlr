@@ -17,6 +17,7 @@ describe Tweetlr do
     @twitter_response = {"from_user_id_str"=>"1915714", "profile_image_url"=>"http://a0.twimg.com/profile_images/386000279/2_normal.jpg", "created_at"=>"Sun, 17 Apr 2011 16:48:42 +0000", "from_user"=>"whitey_Mc_whIteLIst", "id_str"=>"59659561224765440", "metadata"=>{"result_type"=>"recent"}, "to_user_id"=>nil, "text"=>"Rigaer #wirsounterwegs   @ Augenarzt Dr. Lierow http://instagr.am/p/DzCWn/", "id"=>59659561224765440, "from_user_id"=>1915714, "geo"=>{"type"=>"Point", "coordinates"=>[52.5182, 13.454]}, "iso_language_code"=>"de", "place"=>{"id"=>"3078869807f9dd36", "type"=>"city", "full_name"=>"Berlin, Berlin"}, "to_user_id_str"=>nil, "source"=>"&lt;a href=&quot;http://instagr.am&quot; rel=&quot;nofollow&quot;&gt;instagram&lt;/a&gt;"}
     @non_whitelist_tweet = @twitter_response.merge 'from_user' => 'nonwhitelist user' 
     @retweet = @twitter_response.merge "text" => "bla bla RT @fgd: tueddelkram"
+    @new_style_retweet = @twitter_response.merge "text" => "and it scales! \u201c@moeffju: http://t.co/8gUSPKu #hktbl1 #origami success! :)\u201d"
     @links = {
       :instagram => "http://instagr.am/p/DzCWn/",
       :twitpic => "http://twitpic.com/449o2x",
@@ -52,6 +53,10 @@ describe Tweetlr do
   end
   it "should not use retweets which would produce double blog posts" do
     post = @tweetlr.generate_tumblr_photo_post @retweet
+    post.should_not be
+  end
+  it "should not use new style retweets which would produce double blog posts" do
+    post = @tweetlr.generate_tumblr_photo_post @new_style_retweet
     post.should_not be
   end
   describe "image url processing" do

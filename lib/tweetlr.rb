@@ -9,7 +9,7 @@ class Tweetlr
   LOCATION_START_INDICATOR = 'Location: '
   LOCATION_STOP_INDICATOR  = "\r\n"
   
-  def initialize(email, password, cookie=nil, since_id=nil, term=nil, config_file) #TODO use a hash or sth more elegant here...
+  def initialize(email, password, cookie=nil, since_id=nil, terms=nil, config_file) #TODO use a hash or sth more elegant here...
     @log = Logger.new(File.join( Dir.pwd, 'tweetlr.log'))
     config = YAML.load_file(config_file)
     @results_per_page = config['results_per_page']
@@ -19,12 +19,11 @@ class Tweetlr
     @whitelist = config['whitelist']
     @shouts = config['shouts']
     @since_id = since_id
-    @search_term = term
+    @search_term = terms
     @whitelist.each {|entry| entry.downcase!}
     @email = email
     @password = password
-    @term = term
-    @refresh_url = "#{@api_endpoint_twitter}?q=#{term}&since_id=#{since_id}" if (since_id && term)
+    @refresh_url = "#{@api_endpoint_twitter}?ors=#{terms}&since_id=#{since_id}&rpp=#{@results_per_page}&result_type=#{@result_type}" if (since_id && terms)
     if !cookie
       response = Curl::Easy.http_post(
         "#{@api_endpoint_tumblr}/login",
@@ -63,7 +62,7 @@ class Tweetlr
   def generate_tumblr_photo_post tweet
     tumblr_post = nil
     message = tweet['text']
-    if message && !message.index('RT @') #discard retweets
+    if !retweet? message
       #@log.debug "tweet: #{tweet}"
       #puts "tweet: #{tweet}"
       tumblr_post = {}
@@ -71,20 +70,27 @@ class Tweetlr
       tumblr_post[:date] = tweet['created_at']
       tumblr_post[:source] = extract_image_url tweet
       user = tweet['from_user']
+      tweet_id = tweet['id']
       if @whitelist.member? user.downcase
         state = 'published'
       else
         state = 'draft'
       end
       tumblr_post[:state] = state
-      tumblr_post[:caption] = %?<a href="http://twitter.com/#{user}" alt="#{user}">@#{user}</a> #{@shouts}: #{tweet['text']}? #TODO make this a bigger matter of yml configuration
+      shouts = " #{@shouts}" if @shouts
+      tumblr_post[:caption] = %?<a href="http://twitter.com/#{user}/statuses/#{tweet_id}" alt="#{user}">@#{user}</a>#{shouts}: #{tweet['text']}? #TODO make this a bigger matter of yml configuration
     end
     tumblr_post
+  end
+  
+  #checks if the message is a retweet
+  def retweet?(message)
+    message.index('RT @') || message.index(%{ "@}) || message.index(" \u201c@") #detect retweets
   end
 
   #fire a new search
   def search_twitter()
-    search_call = "#{@api_endpoint_twitter}?q=#{@search_term}&result_type=#{@result_type}&rpp=#{@results_per_page}"
+    search_call = "#{@api_endpoint_twitter}?ors=#{@search_term}&result_type=#{@result_type}&rpp=#{@results_per_page}"
     @response = http_get search_call
   end
   # lazy update - search for a term or refresh the search if a response is available already
@@ -93,11 +99,12 @@ class Tweetlr
     if @refresh_url
      #FIXME persist the refresh url - server restart would be a pain elsewise
      #@log.info "lazy search using '#{@refresh_url}'"
-     puts "lazy search using '#{@refresh_url}'" #workaround to get refresh url logged w/ the Daemons gem
-     @response = http_get @refresh_url
+     search_url = "#{@refresh_url}&result_type=#{@result_type}&rpp=#{@results_per_page}"
+     puts "lazy search using '#{search_url}'" #workaround to get refresh url logged w/ the Daemons gem
+     @response = http_get search_url
     else
       #@log.debug "regular search using '#{term}'"
-      puts "regular search using '#{term}'"
+      puts "regular search using '#{@search_term}'"
       @response = search_twitter()
     end
   end
