@@ -202,18 +202,40 @@ class Tweetlr
   
   #convenience method for curl http get calls
   def http_get(request)
+    tries = 3
     begin
       res = Curl::Easy.http_get(request)
       JSON.parse res.body_str
     rescue Curl::Err::ConnectionFailedError => err
       #@log.error "Connection failed: #{err}"
       puts "Connection failed: #{err}"
-      nil
+      tries -= 1
+      sleep 3
+      if tries_left > 0
+          retry
+      else
+          nil
+      end
+    rescue Curl::Err::RecvError => err
+      #@log.error "Failure when receiving data from the peer: #{err}"
+      puts "Failure when receiving data from the peer: #{err}"
+      tries -= 1
+      sleep 3
+      if tries_left > 0
+          retry
+      else
+          nil
+      end
+    rescue Curl::Err => err
+      #@log.error "Failure in Curl call: #{err}"
+      puts "Failure in Curl call: #{err}"
+      tries -= 1
+      sleep 3
+      if tries_left > 0
+          retry
+      else
+          nil
+      end
     end
-  end
-  
+  end  
 end
-
-
-
-
