@@ -128,12 +128,16 @@ class Tweetlr
     end
     url
   end
-  
+  #find the image's url for a lockerz link
+  def image_url_lockerz(link_url)
+    response = http_get "http://api.plixi.com/api/tpapi.svc/json/metadatafromurl?details=false&url=#{link_url}"
+    response['BigImageUrl'] if response
+  end
+  #find the image's url for an twitter shortened link
   def image_url_tco(link_url)
     service_url = link_url_redirect link_url
     find_image_url service_url
   end
-
   #find the image's url for an instagram link
   def image_url_instagram(link_url)
     link_url['instagram.com'] = 'instagr.am' if link_url.index 'instagram.com' #instagram's oembed does not work for .com links

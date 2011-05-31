@@ -24,7 +24,8 @@ describe Tweetlr do
       :yfrog => "http://yfrog.com/h4vlfp",
       :picplz => "http://picplz.com/2hWv",
       :imgly => "http://img.ly/3M1o",
-      :tco => 'http://t.co/MUGNayA'
+      :tco => 'http://t.co/MUGNayA',
+      :lockerz => 'http://lockerz.com/s/100269159'
       }
     @pic_regexp = /(.*?)\.(jpg|jpeg|png|gif)$/i 
     @config_file = File.join( Dir.pwd, 'config', 'tweetlr.yml')
@@ -83,6 +84,11 @@ describe Tweetlr do
       tweetlr = @tweetlr
       image_url = tweetlr.image_url_imgly @links[:tco]
       check_pic_url_extraction :tco
+    end
+    it "should find a picture's url from the lockerz short url" do
+      tweetlr = @tweetlr
+      image_url = tweetlr.image_url_lockerz @links[:lockerz]
+      image_url.should be
     end
   end
   describe "tweet api response processing" do
