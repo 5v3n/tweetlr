@@ -44,6 +44,7 @@ class Tweetlr
   #post a tumblr photo entry. required arguments are :type, :date, :source, :caption, :state
   def post_to_tumblr(options={})
     if options[:type] && options[:date] && options[:source] && options[:caption] && options[:state]
+      tags = options[:tags]
       response = Curl::Easy.http_post("#{@api_endpoint_tumblr}/api/write", 
       Curl::PostField.content('generator', GENERATOR),
       Curl::PostField.content('email', @email), 
@@ -52,7 +53,8 @@ class Tweetlr
       Curl::PostField.content('date', options[:date]),
       Curl::PostField.content('source', options[:source]),
       Curl::PostField.content('caption', options[:caption]),
-      Curl::PostField.content('state', options[:state])
+      Curl::PostField.content('state', options[:state]),
+      Curl::PostField.content('tags', tags)
       )
     end
     response
@@ -70,6 +72,7 @@ class Tweetlr
       tumblr_post[:date] = tweet['created_at']
       tumblr_post[:source] = extract_image_url tweet
       user = tweet['from_user']
+      tumblr_post[:tags] = user
       tweet_id = tweet['id']
       if @whitelist.member? user.downcase
         state = 'published'
@@ -78,7 +81,7 @@ class Tweetlr
       end
       tumblr_post[:state] = state
       shouts = " #{@shouts}" if @shouts
-      tumblr_post[:caption] = %?<a href="http://twitter.com/#{user}/statuses/#{tweet_id}" alt="#{user}">@#{user}</a>#{shouts}: #{tweet['text']}? #TODO make this a bigger matter of yml configuration
+      tumblr_post[:caption] = %?<a href="http://twitter.com/#{user}/statuses/#{tweet_id}" alt="tweet">@#{user}</a>#{shouts}: #{tweet['text']}? #TODO make this a bigger matter of yml configuration
     end
     tumblr_post
   end

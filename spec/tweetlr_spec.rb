@@ -31,12 +31,14 @@ describe Tweetlr do
     @config_file = File.join( Dir.pwd, 'config', 'tweetlr.yml')
     @tweetlr = Tweetlr.new '', '', @cookie, nil, @searchterm, @config_file
   end
-  # it "should post to tumblr" do
-  #   tweetlr = Tweetlr.new @credentials[:email], @credentials[:password], @cookie, nil, @searchterm, @config_file
-  #   response = tweetlr.post_to_tumblr({:type => 'photo', :caption => %?<a href="http://nourl">link</a> says: meep meep!?, :date => "Thu, 12 May 2011 17:15:16 +0000", :source => "http://s3.amazonaws.com/twitpic/photos/full/288286427.jpg?AWSAccessKeyId=AKIAJF3XCCKACR3QDMOA&Expires=1305277526&Signature=40B8DvOJU4L%2BsXp%2BLUYSnmT4wqs%3D", :state => "published", :email => @credentials[:email], :password => @credentials[:password]})
-  #   response.should be
-  #   response.response_code.should be 201
-  # end
+  it "should post to tumblr" do
+    tweetlr = Tweetlr.new @credentials[:email], @credentials[:password], @cookie, nil, @searchterm, @config_file
+    tumblr_post = tweetlr.generate_tumblr_photo_post @twitter_response
+    tumblr_post[:date] = Time.now.to_s
+    response = tweetlr.post_to_tumblr tumblr_post
+    response.should be
+    response.response_code.should be 201
+  end
   it "should search twitter for a given term" do
     tweetlr = @tweetlr
     response = tweetlr.search_twitter
