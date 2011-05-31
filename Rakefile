@@ -7,7 +7,7 @@ require 'rake/testtask'
 
 spec = Gem::Specification.new do |s|
   s.name = 'tweetlr'
-  s.version = '0.0.10'
+  s.version = '0.1.0pre'
   s.has_rdoc = true
   s.extra_rdoc_files = ['README.md', 'LICENSE']
   s.summary = %{tweetlr crawls twitter for a given term, extracts photos out of the collected tweets' short urls and posts the images to tumblr.}

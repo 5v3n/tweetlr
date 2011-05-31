@@ -149,7 +149,11 @@ class Tweetlr
     #if short url fails, try long url
     #response = HTTParty.get "http://picplz.com/api/v2/pic.json?longurl_ids=#{id}"
     #extract url
-    response['value']['pics'].first['pic_files']['640r']['img_url'] if response
+    if response && response['value'] && response['value']['pics'] && response['value']['pics'].first && response['value']['pics'].first['pic_files'] && response['value']['pics'].first['pic_files']['640r']
+      response['value']['pics'].first['pic_files']['640r']['img_url'] 
+    else
+      nil
+    end
   end
   #find the image's url for a twitpic link
   def image_url_twitpic(link_url)
