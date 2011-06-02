@@ -41,21 +41,34 @@ class Tweetlr
     end
     
   end
-  #post a tumblr photo entry. required arguments are :type, :date, :source, :caption, :state
+  #post a tumblr photo entry. required arguments are :type, :date, :source, :caption, :state. optional argument: :tags 
   def post_to_tumblr(options={})
+    tries = 3
     if options[:type] && options[:date] && options[:source] && options[:caption] && options[:state]
       tags = options[:tags]
-      response = Curl::Easy.http_post("#{@api_endpoint_tumblr}/api/write", 
-      Curl::PostField.content('generator', GENERATOR),
-      Curl::PostField.content('email', @email), 
-      Curl::PostField.content('password', @password),
-      Curl::PostField.content('type', options[:type]),
-      Curl::PostField.content('date', options[:date]),
-      Curl::PostField.content('source', options[:source]),
-      Curl::PostField.content('caption', options[:caption]),
-      Curl::PostField.content('state', options[:state]),
-      Curl::PostField.content('tags', tags)
-      )
+      begin
+        response = Curl::Easy.http_post("#{@api_endpoint_tumblr}/api/write", 
+        Curl::PostField.content('generator', GENERATOR),
+        Curl::PostField.content('email', @email), 
+        Curl::PostField.content('password', @password),
+        Curl::PostField.content('type', options[:type]),
+        Curl::PostField.content('date', options[:date]),
+        Curl::PostField.content('source', options[:source]),
+        Curl::PostField.content('caption', options[:caption]),
+        Curl::PostField.content('state', options[:state]),
+        Curl::PostField.content('tags', tags)
+        )
+      rescue Curl::Err => err
+        #@log.error "Failure in Curl call: #{err}"
+        puts "Failure in Curl call: #{err}"
+        tries -= 1
+        sleep 3
+        if tries > 0
+            retry
+        else
+            response = nil
+        end
+      end
     end
     response
   end
@@ -222,7 +235,7 @@ class Tweetlr
       puts "Connection failed: #{err}"
       tries -= 1
       sleep 3
-      if tries_left > 0
+      if tries > 0
           retry
       else
           nil
@@ -232,7 +245,7 @@ class Tweetlr
       puts "Failure when receiving data from the peer: #{err}"
       tries -= 1
       sleep 3
-      if tries_left > 0
+      if tries > 0
           retry
       else
           nil
@@ -242,7 +255,7 @@ class Tweetlr
       puts "Failure in Curl call: #{err}"
       tries -= 1
       sleep 3
-      if tries_left > 0
+      if tries > 0
           retry
       else
           nil

@@ -31,14 +31,14 @@ describe Tweetlr do
     @config_file = File.join( Dir.pwd, 'config', 'tweetlr.yml')
     @tweetlr = Tweetlr.new '', '', @cookie, nil, @searchterm, @config_file
   end
-  it "should post to tumblr" do
-    tweetlr = Tweetlr.new @credentials[:email], @credentials[:password], @cookie, nil, @searchterm, @config_file
-    tumblr_post = tweetlr.generate_tumblr_photo_post @twitter_response
-    tumblr_post[:date] = Time.now.to_s
-    response = tweetlr.post_to_tumblr tumblr_post
-    response.should be
-    response.response_code.should be 201
-  end
+  # it "should post to tumblr" do
+  #   tweetlr = Tweetlr.new @credentials[:email], @credentials[:password], @cookie, nil, @searchterm, @config_file
+  #   tumblr_post = tweetlr.generate_tumblr_photo_post @twitter_response
+  #   tumblr_post[:date] = Time.now.to_s
+  #   response = tweetlr.post_to_tumblr tumblr_post
+  #   response.should be
+  #   response.response_code.should be 201
+  # end
   it "should search twitter for a given term" do
     tweetlr = @tweetlr
     response = tweetlr.search_twitter
