@@ -63,34 +63,12 @@ describe Tweetlr do
     post.should_not be
   end
   describe "image url processing" do
-    it "should find a picture's url from the instagram short url" do
-      check_pic_url_extraction :instagram
-    end
-    it "should find a picture's url from the picplz short url" do
-      check_pic_url_extraction :picplz
-    end
-    it "should find a picture's url from the yfrog short url" do
-      check_pic_url_extraction :yfrog
-    end
-    it "should find a picture's url from the twitpic short url" do
-      tweetlr = @tweetlr
-      image_url = tweetlr.image_url_twitpic @links[:twitpic]
-      image_url.should be
-    end
-    it "should find a picture's url from the imgly short url" do
-      tweetlr = @tweetlr
-      image_url = tweetlr.image_url_imgly @links[:imgly]
-      image_url.should be
-    end
-    it "should find a picture's url from the t.co short url" do
-      tweetlr = @tweetlr
-      image_url = tweetlr.image_url_imgly @links[:tco]
-      check_pic_url_extraction :tco
-    end
-    it "should find a picture's url from the lockerz short url" do
-      tweetlr = @tweetlr
-      image_url = tweetlr.image_url_lockerz @links[:lockerz]
-      image_url.should be
+    it "should find a picture's url from the supported services" do
+      @links.each do |key,value|
+        url = @tweetlr.find_image_url value
+        url.should be
+        check_pic_url_extraction key if [:instagram,:picplz,:yfrog,:tco].index key
+      end
     end
   end
   describe "tweet api response processing" do

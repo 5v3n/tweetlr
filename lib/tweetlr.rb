@@ -140,13 +140,14 @@ class Tweetlr
       url = image_url_yfrog link if link.index 'yfrog'
       url = image_url_imgly link if link.index 'img.ly'
       url = image_url_tco link if link.index 't.co'
+      url = image_url_lockerz link if link.index 'lockerz.com'
     end
     url
   end
   #find the image's url for a lockerz link
   def image_url_lockerz(link_url)
     response = http_get "http://api.plixi.com/api/tpapi.svc/json/metadatafromurl?details=false&url=#{link_url}"
-    response['BigImageUrl'] if response
+    response["BigImageUrl"] if response
   end
   #find the image's url for an twitter shortened link
   def image_url_tco(link_url)
