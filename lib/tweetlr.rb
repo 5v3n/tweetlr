@@ -9,35 +9,38 @@ class Tweetlr
   LOCATION_START_INDICATOR = 'Location: '
   LOCATION_STOP_INDICATOR  = "\r\n"
   
-  def initialize(email, password, cookie=nil, since_id=nil, terms=nil, config_file) #TODO use a hash or sth more elegant here...
-    @log = Logger.new(File.join( Dir.pwd, 'tweetlr.log'))
+  def initialize(email, password, config_file, args={:cookie => nil, :since_id=>nil, :terms=>nil, :loglevel=>Logger::INFO})
+    @log = Logger.new(STDOUT)
+    @log.level = args[:loglevel] if (Logger::DEBUG..Logger::UNKNOWN).to_a.index(args[:loglevel])
+    @log.debug "log level set to #{@log.level}"
     config = YAML.load_file(config_file)
+    @email = email
+    @password = password
+    @since_id = args[:since_id]
+    @search_term = args[:terms]
+    @cookie = args[:cookie]
     @results_per_page = config['results_per_page']
     @result_type = config['result_type']
     @api_endpoint_twitter = config['api_endpoint_twitter']
     @api_endpoint_tumblr = config['api_endpoint_tumblr']
     @whitelist = config['whitelist']
     @shouts = config['shouts']
-    @since_id = since_id
-    @search_term = terms
     @whitelist.each {|entry| entry.downcase!}
-    @email = email
-    @password = password
-    @refresh_url = "#{@api_endpoint_twitter}?ors=#{terms}&since_id=#{since_id}&rpp=#{@results_per_page}&result_type=#{@result_type}" if (since_id && terms)
-    if !cookie
+    @refresh_url = "#{@api_endpoint_twitter}?ors=#{@search_term}&since_id=#{@since_id}&rpp=#{@results_per_page}&result_type=#{@result_type}" if (@since_id && @search_term)
+    if !@cookie
       response = Curl::Easy.http_post(
         "#{@api_endpoint_tumblr}/login",
         :body => {
           :email => @email,
-          :password => password
+          :password => @password
         }
       )
-      @log.debug("initial login response: #{response}")
+      @log.debug("initial login response header: #{response.header_str}") if response
       @cookie = response.headers['Set-Cookie']
-      @log.debug("--------login cookie via new login: #{@cookie.inspect}")
+      @log.debug("login cookie via new login: #{@cookie.inspect}")
     else
-      @cookie = cookie
-      @log.debug("--------login cookie via argument: #{@cookie.inspect}")
+      @cookie = args[:cookie]
+      @log.debug("login cookie via argument: #{@cookie.inspect}")
     end
     
   end
@@ -59,8 +62,7 @@ class Tweetlr
         Curl::PostField.content('tags', tags)
         )
       rescue Curl::Err => err
-        #@log.error "Failure in Curl call: #{err}"
-        puts "Failure in Curl call: #{err}"
+        @log.error "Failure in Curl call: #{err}"
         tries -= 1
         sleep 3
         if tries > 0
@@ -78,8 +80,7 @@ class Tweetlr
     tumblr_post = nil
     message = tweet['text']
     if !retweet? message
-      #@log.debug "tweet: #{tweet}"
-      #puts "tweet: #{tweet}"
+      @log.debug "tweet: #{tweet}"
       tumblr_post = {}
       tumblr_post[:type] = 'photo'
       tumblr_post[:date] = tweet['created_at']
@@ -114,13 +115,11 @@ class Tweetlr
     @refresh_url = "#{@api_endpoint_twitter}#{@response['refresh_url']}" unless (@response.nil? || @response['refresh_url'].nil? || @response['refresh_url'].empty?)
     if @refresh_url
      #FIXME persist the refresh url - server restart would be a pain elsewise
-     #@log.info "lazy search using '#{@refresh_url}'"
      search_url = "#{@refresh_url}&result_type=#{@result_type}&rpp=#{@results_per_page}"
-     puts "lazy search using '#{search_url}'" #workaround to get refresh url logged w/ the Daemons gem
+     @log.info "lazy search using '#{search_url}'" #workaround to get refresh url logged w/ the Daemons gem
      @response = http_get search_url
     else
-      #@log.debug "regular search using '#{term}'"
-      puts "regular search using '#{@search_term}'"
+      @log.debug "regular search using '#{@search_term}'"
       @response = search_twitter()
     end
   end
@@ -231,8 +230,7 @@ class Tweetlr
       res = Curl::Easy.http_get(request)
       JSON.parse res.body_str
     rescue Curl::Err::ConnectionFailedError => err
-      #@log.error "Connection failed: #{err}"
-      puts "Connection failed: #{err}"
+      @log.error "Connection failed: #{err}"
       tries -= 1
       sleep 3
       if tries > 0
@@ -241,8 +239,7 @@ class Tweetlr
           nil
       end
     rescue Curl::Err::RecvError => err
-      #@log.error "Failure when receiving data from the peer: #{err}"
-      puts "Failure when receiving data from the peer: #{err}"
+      @log.error "Failure when receiving data from the peer: #{err}"
       tries -= 1
       sleep 3
       if tries > 0
@@ -251,8 +248,7 @@ class Tweetlr
           nil
       end
     rescue Curl::Err => err
-      #@log.error "Failure in Curl call: #{err}"
-      puts "Failure in Curl call: #{err}"
+      @log.error "Failure in Curl call: #{err}"
       tries -= 1
       sleep 3
       if tries > 0

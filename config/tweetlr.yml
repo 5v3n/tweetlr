@@ -8,6 +8,7 @@ tumblr_username: YOUR_TUMBLR_EMAIL
 tumblr_password: YOUR_TUMBLR_PW
 update_period: 300 #check for updates every 300 secs = 5 minutes
 shouts: 'says' # will be concatenated after the username, before the message: @mr_x says: awesome things on a photo!
+loglevel: 0 # 0: debug, 1: info (default), 2: warn, 3: error, 5: fatal
 whitelist: #twitter accounts in that list will have their tweets published immediately. post from others will be saved as drafts
   - whitey_mc_whitelist
   - sven_kr

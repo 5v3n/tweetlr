@@ -8,26 +8,26 @@ require_relative '../lib/tweetlr.rb'
 
 begin
   config_file = File.join( Dir.pwd,  'config', 'tweetlr.yml')
-  @log_file = File.join( Dir.pwd, 'tweetlrd.log')
   CONFIG = YAML.load_file(config_file)
   TERM = CONFIG['search_term']
   USER = CONFIG['tumblr_username']
   PW   = CONFIG['tumblr_password']
   TIMESTAMP = CONFIG['twitter_timestamp']
   UPDATE_PERIOD = CONFIG['update_period']
-  @tweetlr = Tweetlr.new(USER, PW, nil, TIMESTAMP, TERM, config_file)
+  LOGLEVEL = CONFIG['loglevel'] || Logger::INFO
+  @tweetlr = Tweetlr.new(USER, PW, config_file, {:since_id => TIMESTAMP, :terms => TERM, :loglevel => LOGLEVEL})
 rescue SystemCallError
   $stderr.puts "Ooops - looks like there is no ./config/tweetlr.yml found. I'm affraid tweetlr won't work properly until you introduced that configuration file."
   exit(1)
 end
 
 Daemons.run_proc('tweetlr', :dir_mode => :script, :dir => './', :backtrace => true, :log_output => true) do
-  #@log = Logger.new(@log_file)
-  puts "#{Time.now} - starting tweetlr daemon..." 
-  puts "creating a new tweetlr instance using this config: #{CONFIG.inspect}"   
+  @log = Logger.new(STDOUT)
+  @log.info "starting tweetlr daemon..." 
+  @log.info "creating a new tweetlr instance using this config: #{CONFIG.inspect}"   
   EventMachine::run { 
     EventMachine::add_periodic_timer( UPDATE_PERIOD ) {
-     puts "#{Time.now} - starting tweetlr crawl..."
+     @log.info "starting tweetlr crawl..."
      response = @tweetlr.lazy_search_twitter
      if response
        tweets = response['results']
@@ -35,20 +35,20 @@ Daemons.run_proc('tweetlr', :dir_mode => :script, :dir => './', :backtrace => tr
        tweets.each do |tweet|
            tumblr_post = @tweetlr.generate_tumblr_photo_post tweet
            if tumblr_post.nil? ||  tumblr_post[:source].nil?
-              puts "could not get image source: tweet: #{tweet} --- tumblr post: #{tumblr_post.inspect}"
-         else
+              @log.warn "could not get image source: tweet: #{tweet} --- tumblr post: #{tumblr_post.inspect}"
+           else
              #@log.debug tumblr_post
              #@log.debug @tweetlr.post_to_tumblr tumblr_post
              #puts "tumblr post: #{tumblr_post}"
              res = @tweetlr.post_to_tumblr tumblr_post
-             puts "tumblr response: #{res.header_str} #{res.body_str}" unless res.response_code == 201
+             @log.warn "tumblr response: #{res.header_str} #{res.body_str}" unless res.response_code == 201
            end
          end
        end
      else
-       puts "#{Time.now} - twitter serach returned no response. Hail the whale!"
+       @log.error "twitter serach returned no response. hail the failwhale!"
      end
-     puts "#{Time.now} - finished tweetlr crawl."
+     @log.info "finished tweetlr crawl."
      }
    }
 

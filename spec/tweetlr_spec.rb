@@ -29,7 +29,7 @@ describe Tweetlr do
       }
     @pic_regexp = /(.*?)\.(jpg|jpeg|png|gif)$/i 
     @config_file = File.join( Dir.pwd, 'config', 'tweetlr.yml')
-    @tweetlr = Tweetlr.new '', '', @cookie, nil, @searchterm, @config_file
+    @tweetlr = Tweetlr.new(USER, PW, @config_file, {:since_id => TIMESTAMP, :terms => @searchterm, :loglevel => 4, :cookie => @cookie})
   end
   # it "should post to tumblr" do
   #   tweetlr = Tweetlr.new @credentials[:email], @credentials[:password], @cookie, nil, @searchterm, @config_file
