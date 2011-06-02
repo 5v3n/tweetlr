@@ -5,13 +5,14 @@ tweetlr crawls twitter for a given term, extracts photos out of the collected tw
 ## Supported image sharing services
 
 tweetlr supports
+
 - instagram
 - picplz
 - twitpic
 - yfrog
 - imgly
 - lockerz / the service formerly known as plixi
-- tco shortened links to pictures
+- t.co shortened links to pictures
 
 ## Installation
 
