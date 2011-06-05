@@ -5,7 +5,9 @@ require 'json'
 
 class Tweetlr
 
+  VERSION = '0.1.2'
   GENERATOR = %{tweetlr - http://github.com/5v3n/tweetlr}
+  USER_AGENT = %{Mozilla/5.0 (compatible; tweetlr/#{VERSION};)}
   LOCATION_START_INDICATOR = 'Location: '
   LOCATION_STOP_INDICATOR  = "\r\n"
   
@@ -141,8 +143,14 @@ class Tweetlr
       url = image_url_imgly link if link.index 'img.ly'
       url = image_url_tco link if link.index 't.co'
       url = image_url_lockerz link if link.index 'lockerz.com'
+      url = image_url_foursquare link if link.index '4sq.com'
     end
     url
+  end
+  #find the image's url for a foursquare link
+  def image_url_foursquare(link_url)
+    response = http_get "http://api.embed.ly/1/oembed?url=#{link_url}"
+    response['url'] if response
   end
   #find the image's url for a lockerz link
   def image_url_lockerz(link_url)
@@ -224,12 +232,14 @@ class Tweetlr
   
   private
   
-  #convenience method for curl http get calls
+  #convenience method for curl http get calls and parsing them to json.
   def http_get(request)
     tries = 3
     begin
-      res = Curl::Easy.http_get(request)
-      JSON.parse res.body_str
+      curl = Curl::Easy.new request
+      curl.useragent = USER_AGENT
+      curl.perform
+      JSON.parse curl.body_str
     rescue Curl::Err::ConnectionFailedError => err
       @log.error "Connection failed: #{err}"
       tries -= 1

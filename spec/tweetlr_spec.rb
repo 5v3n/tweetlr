@@ -25,7 +25,8 @@ describe Tweetlr do
       :picplz => "http://picplz.com/2hWv",
       :imgly => "http://img.ly/3M1o",
       :tco => 'http://t.co/MUGNayA',
-      :lockerz => 'http://lockerz.com/s/100269159'
+      :lockerz => 'http://lockerz.com/s/100269159',
+      :foursquare => 'http://4sq.com/mLKDdF' 
       }
     @pic_regexp = /(.*?)\.(jpg|jpeg|png|gif)$/i 
     @config_file = File.join( Dir.pwd, 'config', 'tweetlr.yml')
@@ -66,8 +67,8 @@ describe Tweetlr do
     it "should find a picture's url from the supported services" do
       @links.each do |key,value|
         url = @tweetlr.find_image_url value
-        url.should be
-        check_pic_url_extraction key if [:instagram,:picplz,:yfrog,:tco].index key
+        url.should be, "service #{key} not working!"
+        check_pic_url_extraction key if [:instagram,:picplz,:yfrog,:tco,:foursquare].index key
       end
     end
   end

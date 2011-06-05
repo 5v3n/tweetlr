@@ -1,13 +1,13 @@
 require 'rubygems'
 require 'rake'
 require 'rake/clean'
-require 'rake/gempackagetask'
-require 'rake/rdoctask'
+require 'rubygems/package_task'
+require 'rdoc/task'
 require 'rake/testtask'
 
 spec = Gem::Specification.new do |s|
   s.name = 'tweetlr'
-  s.version = '0.1.1'
+  s.version = '0.1.2'
   s.has_rdoc = true
   s.extra_rdoc_files = ['README.md', 'LICENSE']
   s.summary = %{tweetlr crawls twitter for a given term, extracts photos out of the collected tweets' short urls and posts the images to tumblr.}
@@ -23,13 +23,13 @@ spec = Gem::Specification.new do |s|
   s.add_dependency('curb')
 end
 
-Rake::GemPackageTask.new(spec) do |p|
+Gem::PackageTask.new(spec) do |p|
   p.gem_spec = spec
   p.need_tar = true
   p.need_zip = true
 end
 
-Rake::RDocTask.new do |rdoc|
+RDoc::Task.new do |rdoc|
   files =['README.md', 'LICENSE', 'lib/**/*.rb']
   rdoc.rdoc_files.add(files)
   rdoc.main = "README.md" # page to start on

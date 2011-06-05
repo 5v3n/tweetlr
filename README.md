@@ -12,6 +12,7 @@ tweetlr supports
 - yfrog
 - imgly
 - lockerz / the service formerly known as plixi
+- foursquare
 - t.co shortened links to pictures
 
 ## Installation
