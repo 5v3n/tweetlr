@@ -26,7 +26,8 @@ describe Tweetlr do
       :imgly => "http://img.ly/3M1o",
       :tco => 'http://t.co/MUGNayA',
       :lockerz => 'http://lockerz.com/s/100269159',
-      :foursquare => 'http://4sq.com/mLKDdF' 
+      :foursquare => 'http://4sq.com/mLKDdF',
+      :embedly => 'http://flic.kr/p/973hTv' #if no service matches, just try embedly
       }
     @pic_regexp = /(.*?)\.(jpg|jpeg|png|gif)$/i 
     @config_file = File.join( Dir.pwd, 'config', 'tweetlr.yml')
@@ -68,8 +69,11 @@ describe Tweetlr do
       @links.each do |key,value|
         url = @tweetlr.find_image_url value
         url.should be, "service #{key} not working!"
-        check_pic_url_extraction key if [:instagram,:picplz,:yfrog,:tco,:foursquare].index key
+        check_pic_url_extraction key if [:instagram,:picplz,:yfrog,:tco,:foursquare, :not_listed].index key
       end
+    end
+    it "should not crash if embedly fallback won't find a link" do
+      url = @tweetlr.find_image_url "http://mopskopf"     
     end
   end
   describe "tweet api response processing" do

@@ -5,9 +5,9 @@ require 'json'
 
 class Tweetlr
 
-  VERSION = '0.1.2'
+  VERSION = '0.1.3'
   GENERATOR = %{tweetlr - http://github.com/5v3n/tweetlr}
-  USER_AGENT = %{Mozilla/5.0 (compatible; tweetlr/#{VERSION};)}
+  USER_AGENT = %{Mozilla/5.0 (compatible; tweetlr/#{VERSION}; +http://github.com/5v3n/tweetlr/wiki)}
   LOCATION_START_INDICATOR = 'Location: '
   LOCATION_STOP_INDICATOR  = "\r\n"
   
@@ -144,13 +144,19 @@ class Tweetlr
       url = image_url_tco link if link.index 't.co'
       url = image_url_lockerz link if link.index 'lockerz.com'
       url = image_url_foursquare link if link.index '4sq.com'
+      url = image_url_embedly link if url.nil? #just try embed.ly for anything else. could do all image url processing w/ embedly, but there's probably some kind of rate limit invovled.
     end
     url
   end
-  #find the image's url for a foursquare link
-  def image_url_foursquare(link_url)
+  
+  #find the image's url via embed.ly
+  def image_url_embedly(link_url)
     response = http_get "http://api.embed.ly/1/oembed?url=#{link_url}"
     response['url'] if response
+  end
+  #find the image's url for a foursquare link
+  def image_url_foursquare(link_url)
+    image_url_embedly link_url
   end
   #find the image's url for a lockerz link
   def image_url_lockerz(link_url)
@@ -239,7 +245,12 @@ class Tweetlr
       curl = Curl::Easy.new request
       curl.useragent = USER_AGENT
       curl.perform
-      JSON.parse curl.body_str
+      begin
+        JSON.parse curl.body_str
+      rescue JSON::ParserError => err
+        @log.warn "Could not parse response for #{request} - this is probably not a json response: #{curl.body_str}"
+        return nil
+      end
     rescue Curl::Err::ConnectionFailedError => err
       @log.error "Connection failed: #{err}"
       tries -= 1
