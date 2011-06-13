@@ -267,6 +267,10 @@ class Tweetlr
       else
           nil
       end
-    end
+    rescue Exception => err
+      # catch all other exceptions e.g. body_str != json
+      @log.error "oO - #{err}"
+      nil
+    end  
   end  
 end
