@@ -1,6 +1,4 @@
-require_relative '../lib/tweetlr.rb'
-require 'net/http'
-require 'yaml'
+require 'spec_helper'
 
 describe Tweetlr do
 
