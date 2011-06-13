@@ -19,6 +19,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency "autotest",         "~> 4.4.6"
   s.add_development_dependency "autotest-growl",   "~> 0.2.9"
   s.add_development_dependency "autotest-fsevent", "~> 0.2.5"
+  s.add_development_dependency "rdoc"
 
   s.files         = `git ls-files`.split("\n")
   s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
