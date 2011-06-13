@@ -4,7 +4,7 @@ require 'daemons'
 require 'eventmachine'
 require 'logger'
 require 'yaml'
-require_relative '../lib/tweetlr.rb'
+require 'tweetlr'
 
 begin
   config_file = File.join( Dir.pwd,  'config', 'tweetlr.yml')
@@ -51,6 +51,4 @@ Daemons.run_proc('tweetlr', :dir_mode => :script, :dir => './', :backtrace => tr
      @log.info "finished tweetlr crawl."
      }
    }
-
 end
-
