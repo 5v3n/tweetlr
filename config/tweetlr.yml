@@ -1,11 +1,11 @@
 results_per_page: 100
 result_type: recent
-search_term: 'dog' #find tweets containing any of these terms
+search_term: 'cat+dog+unicorn' #find tweets containing any of these terms
 start_at_tweet_id: 61847783463854082 # the tweet id to start searching at
 api_endpoint_twitter: 'http://search.twitter.com/search.json'
 api_endpoint_tumblr: 'http://www.tumblr.com'
 tumblr_username: YOUR_TUMBLR_EMAIL
-tumblr_password:  YOUR_TUMBLR_PW
+tumblr_password: YOUR_TUMBLR_PW
 update_period: 300 #check for updates every 300 secs = 5 minutes
 shouts: 'says' # will be concatenated after the username, before the message: @mr_x says: awesome things on a photo!
 loglevel: 0 # 0: debug, 1: info (default), 2: warn, 3: error, 5: fatal
