@@ -6,3 +6,4 @@ config
 *.output
 .rvmrc
 Gemfile.lock
+tweetlr.tid
