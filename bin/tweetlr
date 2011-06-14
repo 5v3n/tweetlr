@@ -18,11 +18,11 @@ begin
     	end
   }.call
   CONFIG = YAML.load_file(config_file)
-  CONFIG['start_at_tweet_id'] = start_at_tweet_id || CONFIG['start_at_tweet_id']
+  CONFIG['start_at_tweet_id'] = start_at_tweet_id || CONFIG['start_at_tweet_id'] || CONFIG['twitter_timestamp'] #check the latter for backwards compability
   TERM = CONFIG['search_term']
   USER = CONFIG['tumblr_username']
   PW   = CONFIG['tumblr_password']
-  TIMESTAMP = start_at_tweet_id || CONFIG['start_at_tweet_id']
+  TIMESTAMP = start_at_tweet_id || CONFIG['start_at_tweet_id'] 
   UPDATE_PERIOD = CONFIG['update_period']
   LOGLEVEL = CONFIG['loglevel'] || Logger::INFO
   @tweetlr = Tweetlr.new(USER, PW, config_file, {:since_id => TIMESTAMP, :terms => TERM, :loglevel => LOGLEVEL})
@@ -47,9 +47,7 @@ Daemons.run_proc('tweetlr', :dir_mode => :script, :dir => './', :backtrace => tr
            if tumblr_post.nil? ||  tumblr_post[:source].nil?
               @log.warn "could not get image source: tweet: #{tweet} --- tumblr post: #{tumblr_post.inspect}"
            else
-             #@log.debug tumblr_post
-             #@log.debug @tweetlr.post_to_tumblr tumblr_post
-             #puts "tumblr post: #{tumblr_post}"
+             @log.debug "tumblr post: #{tumblr_post}"
              res = @tweetlr.post_to_tumblr tumblr_post
              @log.warn "tumblr response: #{res.header_str} #{res.body_str}" unless res.response_code == 201
            end
@@ -58,7 +56,7 @@ Daemons.run_proc('tweetlr', :dir_mode => :script, :dir => './', :backtrace => tr
          end
        end
      else
-       @log.error "twitter serach returned no response. hail the failwhale!"
+       @log.error "twitter search returned no response. hail the failwhale!"
      end
      @log.info "finished tweetlr crawl."
      }

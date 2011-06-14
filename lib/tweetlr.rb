@@ -248,7 +248,7 @@ class Tweetlr
       begin
         JSON.parse curl.body_str
       rescue JSON::ParserError => err
-        @log.warn "Could not parse response for #{request} - this is probably not a json response: #{curl.body_str}"
+        @log.warn "#{err}: Could not parse response for #{request} - this is probably not a json response: #{curl.body_str}"
         return nil
       end
     rescue Curl::Err::ConnectionFailedError => err
@@ -278,10 +278,6 @@ class Tweetlr
       else
           nil
       end
-    rescue Exception => err
-      # catch all other exceptions e.g. body_str != json
-      @log.error "oO - #{err}"
-      nil
-    end  
+    end 
   end  
 end
