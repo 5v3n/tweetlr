@@ -22,7 +22,7 @@ begin
   TERM = CONFIG['search_term']
   USER = CONFIG['tumblr_username']
   PW   = CONFIG['tumblr_password']
-  TIMESTAMP = start_at_tweet_id || CONFIG['start_at_tweet_id'] 
+  TIMESTAMP = CONFIG['start_at_tweet_id'] 
   UPDATE_PERIOD = CONFIG['update_period']
   LOGLEVEL = CONFIG['loglevel'] || Logger::INFO
   @tweetlr = Tweetlr.new(USER, PW, config_file, {:since_id => TIMESTAMP, :terms => TERM, :loglevel => LOGLEVEL})
