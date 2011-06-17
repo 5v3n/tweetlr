@@ -51,8 +51,8 @@ Daemons.run_proc('tweetlr', :dir_mode => :script, :dir => './', :backtrace => tr
              res = @tweetlr.post_to_tumblr tumblr_post
              @log.warn "tumblr response: #{res.header_str} #{res.body_str}" unless res.response_code == 201
            end
-           # save the last received tweet id to tweetlr.tid 
-           File.open(tid_file, "w+") { |io| io.write(tweets.last['id']) }
+           # store the highest tweet id
+           File.open(tid_file, "w+") { |io| io.write(tweets.first['id']) }
          end
        end
      else
