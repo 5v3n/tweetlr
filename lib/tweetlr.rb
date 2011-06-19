@@ -5,7 +5,7 @@ require 'json'
 
 class Tweetlr
 
-  VERSION = '0.1.3'
+  VERSION = '0.1.4pre'
   GENERATOR = %{tweetlr - http://github.com/5v3n/tweetlr}
   USER_AGENT = %{Mozilla/5.0 (compatible; tweetlr/#{VERSION}; +http://github.com/5v3n/tweetlr/wiki)}
   LOCATION_START_INDICATOR = 'Location: '
