@@ -22,7 +22,7 @@ begin
   TERM = CONFIG['search_term']
   USER = CONFIG['tumblr_username']
   PW   = CONFIG['tumblr_password']
-  TIMESTAMP = start_at_tweet_id || CONFIG['start_at_tweet_id'] 
+  TIMESTAMP = CONFIG['start_at_tweet_id'] 
   UPDATE_PERIOD = CONFIG['update_period']
   LOGLEVEL = CONFIG['loglevel'] || Logger::INFO
   @tweetlr = Tweetlr.new(USER, PW, config_file, {:since_id => TIMESTAMP, :terms => TERM, :loglevel => LOGLEVEL})
@@ -51,8 +51,8 @@ Daemons.run_proc('tweetlr', :dir_mode => :script, :dir => './', :backtrace => tr
              res = @tweetlr.post_to_tumblr tumblr_post
              @log.warn "tumblr response: #{res.header_str} #{res.body_str}" unless res.response_code == 201
            end
-           # save the last received tweet id to tweetlr.tid 
-           File.open(tid_file, "w+") { |io| io.write(tweets.last['id']) }
+           # store the highest tweet id
+           File.open(tid_file, "w+") { |io| io.write(tweets.first['id']) }
          end
        end
      else

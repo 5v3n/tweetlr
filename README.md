@@ -27,7 +27,7 @@ It's essential that you have a directory called `config` in the directory you ar
 results_per_page: 100
 result_type: recent
 search_term: 'cat+dog+unicorn' #find tweets containing any of these terms
-twitter_timestamp: 61847783463854082 # the timestamp you want to start searching at
+start_at_tweet_id: 61847783463854082 # the tweet id to start searching at
 api_endpoint_twitter: 'http://search.twitter.com/search.json'
 api_endpoint_tumblr: 'http://www.tumblr.com'
 tumblr_username: YOUR_TUMBLR_EMAIL
