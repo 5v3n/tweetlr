@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name        = "tweetlr"
-  s.version     = "0.1.4pre"
+  s.version     = "0.1.4pre2"
   s.author      = "Sven Kraeuter"
   s.email       = "mail@svenkraeuter.com"
   s.homepage    = "http://github.com/5v3n/#{s.name}"

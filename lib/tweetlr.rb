@@ -1,3 +1,4 @@
+# encode: UTF-8
 require 'logger'
 require 'yaml'
 require 'curb'
@@ -5,7 +6,7 @@ require 'json'
 
 class Tweetlr
 
-  VERSION = '0.1.4pre'
+  VERSION = '0.1.4pre2'
   GENERATOR = %{tweetlr - http://github.com/5v3n/tweetlr}
   USER_AGENT = %{Mozilla/5.0 (compatible; tweetlr/#{VERSION}; +http://github.com/5v3n/tweetlr/wiki)}
   LOCATION_START_INDICATOR = 'Location: '
@@ -248,8 +249,12 @@ class Tweetlr
       begin
         JSON.parse curl.body_str
       rescue JSON::ParserError => err
-        @log.warn "#{err}: Could not parse response for #{request} - this is probably not a json response: #{curl.body_str}"
-        return nil
+        begin
+          @log.warn "#{err}: Could not parse response for #{request} - this is probably not a json response: #{curl.body_str}"
+          return nil
+        rescue Encoding::CompatibilityError => err
+          @log.error "Trying to rescue a JSON::ParserError for '#{requet}' we got stuck in a Encoding::CompatibilityError."
+        end
       end
     rescue Curl::Err::ConnectionFailedError => err
       @log.error "Connection failed: #{err}"

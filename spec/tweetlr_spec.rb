@@ -73,6 +73,9 @@ describe Tweetlr do
     it "should not crash if embedly fallback won't find a link" do
       url = @tweetlr.find_image_url "http://mopskopf"     
     end
+    it "should not crash with an encoding error when instagram says 'No URL Match'" do
+      url = @tweetlr.find_image_url "http://api.instagram.com/oembed?url=http://instagr.am/p/Gx%E2%80%946/"
+    end
   end
   describe "tweet api response processing" do
     it "should extract links" do
@@ -83,6 +86,7 @@ describe Tweetlr do
       link.should == @links[:instagram].chop
     end
   end
+  
   def check_pic_url_extraction(service)
     tweetlr = @tweetlr
     image_url = tweetlr.send "image_url_#{service}".to_sym, @links[service]
