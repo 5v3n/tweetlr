@@ -15,6 +15,7 @@ Gem::Specification.new do |s|
   s.add_dependency "curb",         "~> 0.7.15"
   s.add_dependency "json",         "~> 1.5.1"
 
+  s.add_development_dependency "rspec",            "~> 0.8.7"
   s.add_development_dependency "rspec",            "~> 2.6.0"
   s.add_development_dependency "rdoc"
 
