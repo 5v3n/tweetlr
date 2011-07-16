@@ -16,9 +16,6 @@ Gem::Specification.new do |s|
   s.add_dependency "json",         "~> 1.5.1"
 
   s.add_development_dependency "rspec",            "~> 2.6.0"
-  s.add_development_dependency "autotest",         "~> 4.4.6"
-  s.add_development_dependency "autotest-growl",   "~> 0.2.9"
-  s.add_development_dependency "autotest-fsevent", "~> 0.2.5"
   s.add_development_dependency "rdoc"
 
   s.files         = `git ls-files`.split("\n")
