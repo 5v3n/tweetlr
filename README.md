@@ -2,7 +2,7 @@
 
 tweetlr crawls twitter for a given term, extracts photos out of the collected tweets' short urls and posts the images to tumblr. 
 
-![travis-ci](http://travis-ci.org/5v3n/tweetlr.png)
+<a href="http://travis-ci.org/#!/5v3n/tweetlr">![travis-ci](http://travis-ci.org/5v3n/tweetlr.png)</a>
 
 ## Supported image sharing services
 
