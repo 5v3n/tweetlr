@@ -90,8 +90,7 @@ Etag: 0fe3c085839afa6e42ce28973192704a
 Cache-Control: maxage=10000
 Expires: Sun, 17 Jul 2011 03:50:23 GMT
 Pragma: public
-Location: http://s3.amazonaws.com/twitpic/photos/full/249034281.jpg?AWSAccessKeyId=AKIAJF3XCCKACR3QDMOA&Expires=1310865623&Signature=KNFdFAK%2Bu0u3maMaguUjsm2MbaM%3D
-
+Location: http://s3.amazonaws.com/twitpic/photos/full/249034281.jpg?AWSAccessKeyId=AKIAJF3XCCKACR3QDMOA&Expires=1310865623&Signature=KNFdFAK%2Bu0u3maMaguUjsm2MbaM%3D\r\n
 |
 end
 
