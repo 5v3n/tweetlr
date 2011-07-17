@@ -2,6 +2,8 @@
 
 tweetlr crawls twitter for a given term, extracts photos out of the collected tweets' short urls and posts the images to tumblr. 
 
+![travis-ci](http://travis-ci.org/5v3n/tweetlr.png)
+
 ## Supported image sharing services
 
 tweetlr supports
@@ -14,6 +16,7 @@ tweetlr supports
 - lockerz / the service formerly known as plixi
 - foursquare
 - t.co shortened links to pictures
+- every service accessible via embed.ly
 
 ## Installation
 
