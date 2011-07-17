@@ -12,7 +12,7 @@ class Tweetlr
   LOCATION_START_INDICATOR = 'Location: '
   LOCATION_STOP_INDICATOR  = "\r\n"
   
-  def initialize(email, password, config_file, args={:cookie => nil, :since_id=>nil, :terms=>nil, :loglevel=>Logger::INFO})
+  def initialize(email, password, config_file, args={:cookie => nil, :since_id=>nil, :results_per_page => nil, :terms=>nil, :loglevel=>Logger::INFO})
     @log = Logger.new(STDOUT)
     @log.level = args[:loglevel] if (Logger::DEBUG..Logger::UNKNOWN).to_a.index(args[:loglevel])
     @log.debug "log level set to #{@log.level}"
@@ -22,7 +22,7 @@ class Tweetlr
     @since_id = args[:since_id]
     @search_term = args[:terms]
     @cookie = args[:cookie]
-    @results_per_page = config['results_per_page']
+    @results_per_page = args[:results_per_page] || config['results_per_page'] #TODO decide how to trade args vs config file
     @result_type = config['result_type']
     @api_endpoint_twitter = config['api_endpoint_twitter']
     @api_endpoint_tumblr = config['api_endpoint_tumblr']
@@ -253,7 +253,8 @@ class Tweetlr
           @log.warn "#{err}: Could not parse response for #{request} - this is probably not a json response: #{curl.body_str}"
           return nil
         rescue Encoding::CompatibilityError => err
-          @log.error "Trying to rescue a JSON::ParserError for '#{requet}' we got stuck in a Encoding::CompatibilityError."
+          @log.error "Trying to rescue a JSON::ParserError for '#{request}' we got stuck in a Encoding::CompatibilityError."
+          return nil
         end
       end
     rescue Curl::Err::ConnectionFailedError => err

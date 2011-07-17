@@ -25,11 +25,12 @@ describe Tweetlr do
       :tco => 'http://t.co/MUGNayA',
       :lockerz => 'http://lockerz.com/s/100269159',
       :foursquare => 'http://4sq.com/mLKDdF',
-      :embedly => 'http://flic.kr/p/973hTv' #if no service matches, just try embedly
+      :embedly => 'http://flic.kr/p/973hTv' 
       }
     @pic_regexp = /(.*?)\.(jpg|jpeg|png|gif)$/i 
     @config_file = File.join( Dir.pwd, 'config', 'tweetlr.yml')
-    @tweetlr = Tweetlr.new(USER, PW, @config_file, {:since_id => TIMESTAMP, :terms => @searchterm, :loglevel => 4, :cookie => @cookie})
+    @tweetlr = Tweetlr.new(USER, PW, @config_file, {:results_per_page => 5, :since_id => TIMESTAMP, :terms => @searchterm, :loglevel => 4, :cookie => @cookie})
+    mock_reset
   end
   # it "should post to tumblr" do
   #   tweetlr = Tweetlr.new @credentials[:email], @credentials[:password], @cookie, nil, @searchterm, @config_file
@@ -40,6 +41,7 @@ describe Tweetlr do
   #   response.response_code.should be 201
   # end
   it "should search twitter for a given term" do
+    mock_twitter
     tweetlr = @tweetlr
     response = tweetlr.search_twitter
     tweets = response['results']
@@ -47,10 +49,12 @@ describe Tweetlr do
     tweets.should_not be_empty
   end
   it "should mark whitelist users' tweets as published" do
+    mock_instagram
     post = @tweetlr.generate_tumblr_photo_post @twitter_response
     post[:state].should == 'published' 
   end
   it "should mark non whitelist users' tweets as drafts" do
+    mock_instagram
     post = @tweetlr.generate_tumblr_photo_post @non_whitelist_tweet
     post[:state].should == 'draft' 
   end
@@ -65,15 +69,18 @@ describe Tweetlr do
   describe "image url processing" do
     it "should find a picture's url from the supported services" do
       @links.each do |key,value|
+        send "mock_#{key}"
         url = @tweetlr.find_image_url value
         url.should be, "service #{key} not working!"
-        check_pic_url_extraction key if [:instagram,:picplz,:yfrog,:tco,:foursquare, :not_listed].index key
+        check_pic_url_extraction key if [:instagram,:picplz,:yfrog,:imgly,:foursquare,:not_listed].index key
       end
     end
     it "should not crash if embedly fallback won't find a link" do
+      mock_bad_request
       url = @tweetlr.find_image_url "http://mopskopf"     
     end
-    it "should not crash with an encoding error when instagram says 'No URL Match'" do
+    it "should not crash with an encoding error when response is non-us-ascii" do
+      mock_utf8_response
       url = @tweetlr.find_image_url "http://api.instagram.com/oembed?url=http://instagr.am/p/Gx%E2%80%946/"
     end
   end
@@ -84,6 +91,11 @@ describe Tweetlr do
       link.should == @links[:instagram]
       link = tweetlr.extract_link @twitter_response.merge 'text' => @links[:instagram].chop #check if it works w/o the trailing slash
       link.should == @links[:instagram].chop
+    end 
+    it "follows redirects" do
+      mock_imgly
+      link = @tweetlr.link_url_redirect 'im mocked anyways'
+      link.should == 'http://s3.amazonaws.com/imgly_production/899582/full.jpg'
     end
   end
   
