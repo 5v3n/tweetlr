@@ -16,7 +16,7 @@ tweetlr supports
 - lockerz / the service formerly known as plixi
 - foursquare
 - t.co shortened links to pictures
-- every service accessible via embed.ly
+- every service accessible via embed.ly (see [photo providers](http://embed.ly/providers))
 
 ## Installation
 
