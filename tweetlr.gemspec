@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name        = "tweetlr"
-  s.version     = "0.1.4pre3"
+  s.version     = "0.1.4pre4"
   s.author      = "Sven Kraeuter"
   s.email       = "mail@svenkraeuter.com"
   s.homepage    = "http://github.com/5v3n/#{s.name}"
@@ -10,13 +10,13 @@ Gem::Specification.new do |s|
   s.rubyforge_project = s.name
   s.extra_rdoc_files = %w(README.md LICENSE)
 
-  s.add_dependency "daemons",      "~> 1.1.3"
-  s.add_dependency "eventmachine", "~> 0.12.10"
-  s.add_dependency "curb",         "~> 0.7.15"
-  s.add_dependency "json",         "~> 1.5.1"
+  s.add_dependency "daemons"
+  s.add_dependency "eventmachine"
+  s.add_dependency "curb"
+  s.add_dependency "json"
 
   s.add_development_dependency "rake",            "~> 0.8.7"
-  s.add_development_dependency "rspec",            "~> 2.6.0"
+  s.add_development_dependency "rspec"
   s.add_development_dependency "rdoc"
 
   s.files         = `git ls-files`.split("\n")

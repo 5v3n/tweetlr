@@ -210,7 +210,19 @@ class Tweetlr
   end
   
   def link_url_redirect(short_url, stop_indicator = LOCATION_STOP_INDICATOR)
-    resp = Curl::Easy.http_get(short_url) { |res| res.follow_location = true }
+    tries = 3
+    begin
+      resp = Curl::Easy.http_get(short_url) { |res| res.follow_location = true }
+    rescue => err
+        @log.error "Curl::Easy.http_get failed: #{err}"
+        tries -= 1
+        sleep 3
+        if tries > 0
+            retry
+        else
+           return nil
+        end
+    end
     if(resp && resp.header_str.index(LOCATION_START_INDICATOR) && resp.header_str.index(stop_indicator))
       start = resp.header_str.index(LOCATION_START_INDICATOR) + LOCATION_START_INDICATOR.size
       stop  = resp.header_str.index(stop_indicator, start)
