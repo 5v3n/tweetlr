@@ -1,3 +1,0 @@
-# Include plugins
-require 'autotest/fsevent'
-require 'autotest/growl'
