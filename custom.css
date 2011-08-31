@@ -9,7 +9,16 @@ body{
 
 .share-buttons{
 	width: 100%;
+	padding-top: 25px;
 	margin-left: auto;
 	margin-right: auto;
+	text-align: center;
+}
+
+.centered{
+	width: auto;
+	margin-left: auto;
+	margin-right: auto;
+	padding: 12px 0 12px;
 	text-align: center;
 }
