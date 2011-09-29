@@ -3,7 +3,7 @@ Gem::Specification.new do |s|
   s.version     = "0.1.4pre4"
   s.author      = "Sven Kraeuter"
   s.email       = "mail@svenkraeuter.com"
-  s.homepage    = "http://github.com/5v3n/#{s.name}"
+  s.homepage    = "http://tweetlr.5v3n.com"
   s.summary     = "tweetlr crawls twitter for a given term, extracts photos out of the collected tweets' short urls and posts the images to tumblr."
   s.description = s.summary
 
