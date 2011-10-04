@@ -7,10 +7,10 @@ describe Tweetlr do
   USER = config['tumblr_username']
   PW   = config['tumblr_password']
   TIMESTAMP = config['twitter_timestamp']
+  WHITELIST = config['whitelist']
 
   before :each do
     @credentials = {:email => USER, :password => PW}
-    @cookie = "tmgioct=as3u4KJr9COyJA9j4nwr6ZAn"
     @searchterm = 'fail'
     @twitter_response = {"from_user_id_str"=>"1915714", "profile_image_url"=>"http://a0.twimg.com/profile_images/386000279/2_normal.jpg", "created_at"=>"Sun, 17 Apr 2011 16:48:42 +0000", "from_user"=>"whitey_Mc_whIteLIst", "id_str"=>"59659561224765440", "metadata"=>{"result_type"=>"recent"}, "to_user_id"=>nil, "text"=>"Rigaer #wirsounterwegs   @ Augenarzt Dr. Lierow http://instagr.am/p/DzCWn/", "id"=>59659561224765440, "from_user_id"=>1915714, "geo"=>{"type"=>"Point", "coordinates"=>[52.5182, 13.454]}, "iso_language_code"=>"de", "place"=>{"id"=>"3078869807f9dd36", "type"=>"city", "full_name"=>"Berlin, Berlin"}, "to_user_id_str"=>nil, "source"=>"&lt;a href=&quot;http://instagr.am&quot; rel=&quot;nofollow&quot;&gt;instagram&lt;/a&gt;"}
     @non_whitelist_tweet = @twitter_response.merge 'from_user' => 'nonwhitelist user' 
@@ -29,19 +29,17 @@ describe Tweetlr do
       }
     @pic_regexp = /(.*?)\.(jpg|jpeg|png|gif)$/i 
     @config_file = File.join( Dir.pwd, 'config', 'tweetlr.yml')
-    @tweetlr = Tweetlr.new(USER, PW, @config_file, {:results_per_page => 5, :since_id => TIMESTAMP, :terms => @searchterm, :loglevel => 4, :cookie => @cookie})
-    mock_reset
+    @tweetlr = Tweetlr.new(USER, PW, {:whitelist => WHITELIST, :results_per_page => 5, :since_id => TIMESTAMP, :terms => @searchterm, :loglevel => 4, :cookie => @cookie})
   end
   # it "should post to tumblr" do
-  #   tweetlr = Tweetlr.new @credentials[:email], @credentials[:password], @cookie, nil, @searchterm, @config_file
-  #   tumblr_post = tweetlr.generate_tumblr_photo_post @twitter_response
+  #   tumblr_post = @tweetlr.generate_tumblr_photo_post @twitter_response
   #   tumblr_post[:date] = Time.now.to_s
-  #   response = tweetlr.post_to_tumblr tumblr_post
+  #   response = @tweetlr.post_to_tumblr tumblr_post
   #   response.should be
   #   response.response_code.should be 201
   # end
   it "should search twitter for a given term" do
-    mock_twitter
+    stub_twitter
     tweetlr = @tweetlr
     response = tweetlr.search_twitter
     tweets = response['results']
@@ -49,12 +47,12 @@ describe Tweetlr do
     tweets.should_not be_empty
   end
   it "should mark whitelist users' tweets as published" do
-    mock_instagram
+    stub_instagram
     post = @tweetlr.generate_tumblr_photo_post @twitter_response
     post[:state].should == 'published' 
   end
   it "should mark non whitelist users' tweets as drafts" do
-    mock_instagram
+    stub_instagram
     post = @tweetlr.generate_tumblr_photo_post @non_whitelist_tweet
     post[:state].should == 'draft' 
   end
@@ -69,18 +67,18 @@ describe Tweetlr do
   describe "image url processing" do
     it "should find a picture's url from the supported services" do
       @links.each do |key,value|
-        send "mock_#{key}"
+        send "stub_#{key}"
         url = @tweetlr.find_image_url value
         url.should be, "service #{key} not working!"
         check_pic_url_extraction key if [:instagram,:picplz,:yfrog,:imgly,:foursquare,:not_listed].index key
       end
     end
     it "should not crash if embedly fallback won't find a link" do
-      mock_bad_request
+      stub_bad_request
       url = @tweetlr.find_image_url "http://mopskopf"     
     end
     it "should not crash with an encoding error when response is non-us-ascii" do
-      mock_utf8_response
+      stub_utf8_response
       url = @tweetlr.find_image_url "http://api.instagram.com/oembed?url=http://instagr.am/p/Gx%E2%80%946/"
     end
   end
@@ -93,7 +91,7 @@ describe Tweetlr do
       link.should == @links[:instagram].chop
     end 
     it "follows redirects" do
-      mock_imgly
+      stub_imgly
       link = @tweetlr.link_url_redirect 'im mocked anyways'
       link.should == 'http://s3.amazonaws.com/imgly_production/899582/full.jpg'
     end

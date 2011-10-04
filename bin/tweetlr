@@ -19,13 +19,21 @@ begin
   }.call
   CONFIG = YAML.load_file(config_file)
   CONFIG['start_at_tweet_id'] = start_at_tweet_id || CONFIG['start_at_tweet_id'] || CONFIG['twitter_timestamp'] #check the latter for backwards compability
-  TERM = CONFIG['search_term']
-  USER = CONFIG['tumblr_username']
-  PW   = CONFIG['tumblr_password']
-  TIMESTAMP = CONFIG['start_at_tweet_id'] 
-  UPDATE_PERIOD = CONFIG['update_period']
-  LOGLEVEL = CONFIG['loglevel'] || Logger::INFO
-  @tweetlr = Tweetlr.new(USER, PW, config_file, {:since_id => TIMESTAMP, :terms => TERM, :loglevel => LOGLEVEL})
+   
+  UPDATE_PERIOD = CONFIG['update_period']  
+  
+  @tweetlr = Tweetlr.new(CONFIG['tumblr_username'], CONFIG['tumblr_password'], {
+    :whitelist => CONFIG['whitelist'], 
+    :shouts => CONFIG['shouts'], 
+    :since_id => CONFIG['start_at_tweet_id'] , 
+    :terms => CONFIG['search_term'], 
+    :loglevel => CONFIG['loglevel'],
+    :update_period => UPDATE_PERIOD,
+    :api_endpoint_tumblr => CONFIG['api_endpoint_tumblr'],
+    :api_endpoint_twitter => CONFIG['api_endpoint_twitter'],
+    :results_per_page => CONFIG['results_per_page'],
+    :result_type => CONFIG['result_type']
+    })
 rescue SystemCallError
   $stderr.puts "Ooops - looks like there is no ./config/tweetlr.yml found. I'm affraid tweetlr won't work properly until you introduced that configuration file."
   exit(1)

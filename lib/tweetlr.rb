@@ -6,46 +6,40 @@ require 'json'
 
 class Tweetlr
 
-  VERSION = '0.1.4pre3'
-  GENERATOR = %{tweetlr - http://github.com/5v3n/tweetlr}
+  VERSION = '0.1.5'
+  GENERATOR = %{tweetlr - http://tweetlr.5v3n.com}
   USER_AGENT = %{Mozilla/5.0 (compatible; tweetlr/#{VERSION}; +http://tweetlr.5v3n.com)}
   LOCATION_START_INDICATOR = 'Location: '
   LOCATION_STOP_INDICATOR  = "\r\n"
   
-  def initialize(email, password, config_file, args={:cookie => nil, :since_id=>nil, :results_per_page => nil, :terms=>nil, :loglevel=>Logger::INFO})
+  API_ENDPOINT_TWITTER = 'http://search.twitter.com/search.json'
+  API_ENDPOINT_TUMBLR = 'http://www.tumblr.com'
+  TWITTER_RESULTS_PER_PAGE = 100
+  TWITTER_RESULTS_TYPE = 'recent'
+  UPDATE_PERIOD = 600 #10 minutes
+  
+  def initialize(email, password, args={:terms=>nil, :whitelist => nil, :shouts => nil, :since_id=>nil, :results_per_page => nil, :loglevel=>nil, :result_type => nil})
     @log = Logger.new(STDOUT)
-    @log.level = args[:loglevel] if (Logger::DEBUG..Logger::UNKNOWN).to_a.index(args[:loglevel])
+    if (Logger::DEBUG..Logger::UNKNOWN).to_a.index(args[:loglevel])
+      @log.level = args[:loglevel] 
+    else
+      @log.level = Logger::INFO
+    end
     @log.debug "log level set to #{@log.level}"
-    config = YAML.load_file(config_file)
     @email = email
     @password = password
     @since_id = args[:since_id]
     @search_term = args[:terms]
     @cookie = args[:cookie]
-    @results_per_page = args[:results_per_page] || config['results_per_page'] #TODO decide how to trade args vs config file
-    @result_type = config['result_type']
-    @api_endpoint_twitter = config['api_endpoint_twitter']
-    @api_endpoint_tumblr = config['api_endpoint_tumblr']
-    @whitelist = config['whitelist']
-    @shouts = config['shouts']
+    @results_per_page = args[:results_per_page] || TWITTER_RESULTS_PER_PAGE
+    @result_type = args[:result_type] || TWITTER_RESULTS_TYPE
+    @api_endpoint_twitter = args[:api_endpoint_twitter] || API_ENDPOINT_TWITTER
+    @api_endpoint_tumblr = args[:api_endpoint_tumblr] || API_ENDPOINT_TUMBLR
+    @whitelist = args[:whitelist] || []
+    @shouts = args[:shouts]
+    @update_period = args[:update_period] || UPDATE_PERIOD
     @whitelist.each {|entry| entry.downcase!}
-    @refresh_url = "#{@api_endpoint_twitter}?ors=#{@search_term}&since_id=#{@since_id}&rpp=#{@results_per_page}&result_type=#{@result_type}" if (@since_id && @search_term)
-    if !@cookie
-      response = Curl::Easy.http_post(
-        "#{@api_endpoint_tumblr}/login",
-        :body => {
-          :email => @email,
-          :password => @password
-        }
-      )
-      @log.debug("initial login response header: #{response.header_str}") if response
-      @cookie = response.headers['Set-Cookie']
-      @log.debug("login cookie via new login: #{@cookie.inspect}")
-    else
-      @cookie = args[:cookie]
-      @log.debug("login cookie via argument: #{@cookie.inspect}")
-    end
-    
+    @refresh_url = "#{@api_endpoint_twitter}?ors=#{@search_term}&since_id=#{@since_id}&rpp=#{@results_per_page}&result_type=#{@result_type}" if (@since_id && @search_term)  
   end
   #post a tumblr photo entry. required arguments are :type, :date, :source, :caption, :state. optional argument: :tags 
   def post_to_tumblr(options={})
@@ -117,9 +111,8 @@ class Tweetlr
   def lazy_search_twitter()
     @refresh_url = "#{@api_endpoint_twitter}#{@response['refresh_url']}" unless (@response.nil? || @response['refresh_url'].nil? || @response['refresh_url'].empty?)
     if @refresh_url
-     #FIXME persist the refresh url - server restart would be a pain elsewise
      search_url = "#{@refresh_url}&result_type=#{@result_type}&rpp=#{@results_per_page}"
-     @log.info "lazy search using '#{search_url}'" #workaround to get refresh url logged w/ the Daemons gem
+     @log.info "lazy search using '#{search_url}'"
      @response = http_get search_url
     else
       @log.debug "regular search using '#{@search_term}'"

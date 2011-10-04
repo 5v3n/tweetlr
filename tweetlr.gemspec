@@ -1,8 +1,8 @@
 Gem::Specification.new do |s|
   s.name        = "tweetlr"
-  s.version     = "0.1.4pre4"
+  s.version     = "0.1.5"
   s.author      = "Sven Kraeuter"
-  s.email       = "mail@svenkraeuter.com"
+  s.email       = "sven.kraeuter@gmail.com"
   s.homepage    = "http://tweetlr.5v3n.com"
   s.summary     = "tweetlr crawls twitter for a given term, extracts photos out of the collected tweets' short urls and posts the images to tumblr."
   s.description = s.summary
