@@ -8,7 +8,7 @@ class Tweetlr
 
   VERSION = '0.1.4pre3'
   GENERATOR = %{tweetlr - http://github.com/5v3n/tweetlr}
-  USER_AGENT = %{Mozilla/5.0 (compatible; tweetlr/#{VERSION}; +http://github.com/5v3n/tweetlr/wiki)}
+  USER_AGENT = %{Mozilla/5.0 (compatible; tweetlr/#{VERSION}; +http://tweetlr.5v3n.com)}
   LOCATION_START_INDICATOR = 'Location: '
   LOCATION_STOP_INDICATOR  = "\r\n"
   
