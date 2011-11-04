@@ -6,7 +6,7 @@ require 'json'
 
 class Tweetlr
 
-  VERSION = '0.1.5'
+  VERSION = '0.1.6'
   GENERATOR = %{tweetlr - http://tweetlr.5v3n.com}
   USER_AGENT = %{Mozilla/5.0 (compatible; tweetlr/#{VERSION}; +http://tweetlr.5v3n.com)}
   LOCATION_START_INDICATOR = 'Location: '
@@ -17,6 +17,8 @@ class Tweetlr
   TWITTER_RESULTS_PER_PAGE = 100
   TWITTER_RESULTS_TYPE = 'recent'
   UPDATE_PERIOD = 600 #10 minutes
+  
+  PIC_REGEXP = /(.*?)\.(jpg|jpeg|png|gif)/i 
   
   def initialize(email, password, args={:terms=>nil, :whitelist => nil, :shouts => nil, :since_id=>nil, :results_per_page => nil, :loglevel=>nil, :result_type => nil})
     @log = Logger.new(STDOUT)
@@ -35,10 +37,10 @@ class Tweetlr
     @result_type = args[:result_type] || TWITTER_RESULTS_TYPE
     @api_endpoint_twitter = args[:api_endpoint_twitter] || API_ENDPOINT_TWITTER
     @api_endpoint_tumblr = args[:api_endpoint_tumblr] || API_ENDPOINT_TUMBLR
-    @whitelist = args[:whitelist] || []
+    @whitelist = args[:whitelist]
     @shouts = args[:shouts]
     @update_period = args[:update_period] || UPDATE_PERIOD
-    @whitelist.each {|entry| entry.downcase!}
+    @whitelist.each {|entry| entry.downcase!} if @whitelist
     @refresh_url = "#{@api_endpoint_twitter}?ors=#{@search_term}&since_id=#{@since_id}&rpp=#{@results_per_page}&result_type=#{@result_type}" if (@since_id && @search_term)  
   end
   #post a tumblr photo entry. required arguments are :type, :date, :source, :caption, :state. optional argument: :tags 
@@ -85,14 +87,15 @@ class Tweetlr
       user = tweet['from_user']
       tumblr_post[:tags] = user
       tweet_id = tweet['id']
-      if @whitelist.member? user.downcase
+      if !@whitelist || @whitelist.member?(user.downcase)
         state = 'published'
       else
         state = 'draft'
       end
       tumblr_post[:state] = state
       shouts = " #{@shouts}" if @shouts
-      tumblr_post[:caption] = %?<a href="http://twitter.com/#{user}/statuses/#{tweet_id}" alt="tweet">@#{user}</a>#{shouts}: #{tweet['text']}? #TODO make this a bigger matter of yml configuration
+      tumblr_post[:caption] = %?<a href="http://twitter.com/#{user}/statuses/#{tweet_id}" alt="tweet">@#{user}</a>#{shouts}: #{tweet['text']}? 
+      #TODO make the caption a bigger matter of yml/ general configuration
     end
     tumblr_post
   end
@@ -120,10 +123,17 @@ class Tweetlr
     end
   end
   
-  #extract the linked image file's url from a tweet
+  #extract a linked image file's url from a tweet. first found image will be used.
   def extract_image_url(tweet)
-    link = extract_link tweet
-    find_image_url link
+    links = extract_links tweet
+    image_url = nil
+    if links
+      links.each do |link|
+        image_url = find_image_url(link)
+        return image_url if image_url =~ PIC_REGEXP 
+      end
+    end
+    image_url
   end
   
   #extract the linked image file's url from a tweet
@@ -206,7 +216,7 @@ class Tweetlr
     tries = 3
     begin
       resp = Curl::Easy.http_get(short_url) { |res| res.follow_location = true }
-    rescue => err
+    rescue Curl::Err => err
         @log.error "Curl::Easy.http_get failed: #{err}"
         tries -= 1
         sleep 3
@@ -230,15 +240,11 @@ class Tweetlr
     link.split('/').last if link.split('/')
   end
 
-  #extract the link from a given tweet
-  def extract_link(tweet)
+  #extract the links from a given tweet
+  def extract_links(tweet)
     if tweet
       text = tweet['text']
-      start = text.index('http') if text
-      if start
-        stop = text.index(' ', start) || 0
-        text[start..stop-1]
-      end
+      text.gsub(/https?:\/\/[\S]+/).to_a if text
     end
   end
   
@@ -261,24 +267,6 @@ class Tweetlr
           @log.error "Trying to rescue a JSON::ParserError for '#{request}' we got stuck in a Encoding::CompatibilityError."
           return nil
         end
-      end
-    rescue Curl::Err::ConnectionFailedError => err
-      @log.error "Connection failed: #{err}"
-      tries -= 1
-      sleep 3
-      if tries > 0
-          retry
-      else
-          nil
-      end
-    rescue Curl::Err::RecvError => err
-      @log.error "Failure when receiving data from the peer: #{err}"
-      tries -= 1
-      sleep 3
-      if tries > 0
-          retry
-      else
-          nil
       end
     rescue Curl::Err => err
       @log.error "Failure in Curl call: #{err}"

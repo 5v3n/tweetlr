@@ -13,8 +13,7 @@ tweetlr supports
 - twitpic
 - yfrog
 - imgly
-- lockerz / the service formerly known as plixi
-- foursquare
+- twitter / photobucket
 - t.co shortened links to pictures
 - every service accessible via embed.ly (see [photo providers](http://embed.ly/providers))
 
@@ -38,7 +37,7 @@ tumblr_password: YOUR_TUMBLR_PW
 update_period: 300 #check for updates every 300 secs = 5 minutes
 shouts: 'says' # will be concatenated after the username, before the message: @mr_x says: awesome things on a photo!
 loglevel: 1 # 0: debug, 1: info (default), 2: warn, 3: error, 5: fatal
-whitelist: #twitter accounts in that list will have their tweets published immediately. post from others will be saved as drafts
+whitelist: #twitter accounts in that list will have their tweets published immediately. post from others will be saved as drafts. blank list will publish all tweets immediately.
   - whitey_mc_whitelist
   - sven_kr
 ```

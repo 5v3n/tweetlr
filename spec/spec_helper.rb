@@ -7,6 +7,11 @@ def stub_twitter
   Curl::Easy.any_instance.stub(:perform).and_return Curl::Easy.new
 end
 
+def stub_twitter_pics
+  Curl::Easy.any_instance.stub(:body_str).and_return %|{"url": "http://pic.twitter.com/stubbedpic.jpg:large"}|
+  Curl::Easy.any_instance.stub(:perform).and_return Curl::Easy.new
+end
+
 def stub_instagram
   Curl::Easy.any_instance.stub(:body_str).and_return %|{"provider_url": "http://instagram.com/", "title": "Curse you tweets. See what you have done to me?!!!", "url": "http://distillery.s3.amazonaws.com/media/2011/05/02/d25df62b9cec4a138967a3ad027d055b_7.jpg", "author_name": "loswhit", "height": 612, "width": 612, "version": "1.0", "author_url": "http://instagram.com/", "provider_name": "Instagram", "type": "photo"}|
   Curl::Easy.any_instance.stub(:perform).and_return Curl::Easy.new
@@ -58,7 +63,8 @@ Server: nginx/1.0.0 + Phusion Passenger 3.0.7 (mod_rails/mod_rack)
 end
 
 def stub_twitpic
-  Curl::Easy.any_instance.stub(:perform).and_return Curl::Easy.new
+  curl = Curl::Easy.new
+  Curl::Easy.any_instance.stub(:perform).and_return curl
   Curl::Easy.any_instance.stub(:header_str).and_return %|HTTP/1.1 302 Moved Temporarily
 Server: nginx
 Date: Sun, 17 Jul 2011 01:03:43 GMT
@@ -73,6 +79,9 @@ Expires: Sun, 17 Jul 2011 03:50:23 GMT
 Pragma: public
 Location: http://s3.amazonaws.com/twitpic/photos/full/249034281.jpg?AWSAccessKeyId=AKIAJF3XCCKACR3QDMOA&Expires=1310865623&Signature=KNFdFAK%2Bu0u3maMaguUjsm2MbaM%3D\r\n
 |
+  #stub redirected call's response
+  Curl::Easy.stub!(:http_get).and_return curl
+  Curl::Easy.any_instance.stub(:body_str).and_return %|http://s3.amazonaws.com/twitpic/photos/full/249034281.jpg?AWSAccessKeyId=AKIAJF3XCCKACR3QDMOA&Expires=1310865623&Signature=KNFdFAK%2Bu0u3maMaguUjsm2MbaM%3D\r\n|
 end
 
 def stub_tco
