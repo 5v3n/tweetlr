@@ -3,12 +3,15 @@ require 'logger'
 require 'yaml'
 require 'curb'
 require 'json'
+require 'twitter_processor'
+require 'http_processor'
 
 class Tweetlr
+  
+  attr_accessor :twitter_config
 
-  VERSION = '0.1.6'
+  VERSION = '0.1.7pre'
   GENERATOR = %{tweetlr - http://tweetlr.5v3n.com}
-  USER_AGENT = %{Mozilla/5.0 (compatible; tweetlr/#{VERSION}; +http://tweetlr.5v3n.com)}
   LOCATION_START_INDICATOR = 'Location: '
   LOCATION_STOP_INDICATOR  = "\r\n"
   
@@ -28,21 +31,33 @@ class Tweetlr
       @log.level = Logger::INFO
     end
     @log.debug "log level set to #{@log.level}"
+    HttpProcessor.log=@log
+    @twitter_config = {
+      :since_id => args[:since_id],
+      :search_term => args[:terms],
+      :results_per_page => args[:results_per_page] || TWITTER_RESULTS_PER_PAGE,
+      :result_type => args[:result_type] || TWITTER_RESULTS_TYPE,  
+      :api_endpoint_twitter => args[:api_endpoint_twitter] || API_ENDPOINT_TWITTER
+    }
+    @twitter_config[:refresh_url] = "?ors=#{@twitter_config[:search_term]}&since_id=#{@twitter_config[:since_id]}&rpp=#{@twitter_config[:results_per_page]}&result_type=#{@twitter_config[:result_type]}" if (@twitter_config[:since_id] && @twitter_config[:search_term])
+    @twitter_config[:logger] = @log
+    
     @email = email
     @password = password
-    @since_id = args[:since_id]
-    @search_term = args[:terms]
     @cookie = args[:cookie]
-    @results_per_page = args[:results_per_page] || TWITTER_RESULTS_PER_PAGE
-    @result_type = args[:result_type] || TWITTER_RESULTS_TYPE
-    @api_endpoint_twitter = args[:api_endpoint_twitter] || API_ENDPOINT_TWITTER
+    @api_endpoint_twitter = 
     @api_endpoint_tumblr = args[:api_endpoint_tumblr] || API_ENDPOINT_TUMBLR
     @whitelist = args[:whitelist]
     @shouts = args[:shouts]
     @update_period = args[:update_period] || UPDATE_PERIOD
     @whitelist.each {|entry| entry.downcase!} if @whitelist
-    @refresh_url = "#{@api_endpoint_twitter}?ors=#{@search_term}&since_id=#{@since_id}&rpp=#{@results_per_page}&result_type=#{@result_type}" if (@since_id && @search_term)  
   end
+  
+  def lazy_search_twitter(refresh_url=nil)
+    @twitter_config[:refresh_url] = refresh_url if refresh_url
+    TwitterProcessor::lazy_search(@twitter_config)
+  end
+  
   #post a tumblr photo entry. required arguments are :type, :date, :source, :caption, :state. optional argument: :tags 
   def post_to_tumblr(options={})
     tries = 3
@@ -78,7 +93,7 @@ class Tweetlr
   def generate_tumblr_photo_post tweet
     tumblr_post = nil
     message = tweet['text']
-    if !retweet? message
+    if !TwitterProcessor::retweet? message
       @log.debug "tweet: #{tweet}"
       tumblr_post = {}
       tumblr_post[:type] = 'photo'
@@ -98,29 +113,6 @@ class Tweetlr
       #TODO make the caption a bigger matter of yml/ general configuration
     end
     tumblr_post
-  end
-  
-  #checks if the message is a retweet
-  def retweet?(message)
-    message.index('RT @') || message.index(%{ "@}) || message.index(" \u201c@") #detect retweets
-  end
-
-  #fire a new search
-  def search_twitter()
-    search_call = "#{@api_endpoint_twitter}?ors=#{@search_term}&result_type=#{@result_type}&rpp=#{@results_per_page}"
-    @response = http_get search_call
-  end
-  # lazy update - search for a term or refresh the search if a response is available already
-  def lazy_search_twitter()
-    @refresh_url = "#{@api_endpoint_twitter}#{@response['refresh_url']}" unless (@response.nil? || @response['refresh_url'].nil? || @response['refresh_url'].empty?)
-    if @refresh_url
-     search_url = "#{@refresh_url}&result_type=#{@result_type}&rpp=#{@results_per_page}"
-     @log.info "lazy search using '#{search_url}'"
-     @response = http_get search_url
-    else
-      @log.debug "regular search using '#{@search_term}'"
-      @response = search_twitter()
-    end
   end
   
   #extract a linked image file's url from a tweet. first found image will be used.
@@ -155,7 +147,7 @@ class Tweetlr
   
   #find the image's url via embed.ly
   def image_url_embedly(link_url)
-    response = http_get "http://api.embed.ly/1/oembed?url=#{link_url}"
+    response = HttpProcessor::http_get "http://api.embed.ly/1/oembed?url=#{link_url}"
     response['url'] if response
   end
   #find the image's url for a foursquare link
@@ -164,7 +156,7 @@ class Tweetlr
   end
   #find the image's url for a lockerz link
   def image_url_lockerz(link_url)
-    response = http_get "http://api.plixi.com/api/tpapi.svc/json/metadatafromurl?details=false&url=#{link_url}"
+    response = HttpProcessor::http_get "http://api.plixi.com/api/tpapi.svc/json/metadatafromurl?details=false&url=#{link_url}"
     response["BigImageUrl"] if response
   end
   #find the image's url for an twitter shortened link
@@ -175,7 +167,7 @@ class Tweetlr
   #find the image's url for an instagram link
   def image_url_instagram(link_url)
     link_url['instagram.com'] = 'instagr.am' if link_url.index 'instagram.com' #instagram's oembed does not work for .com links
-    response = http_get "http://api.instagram.com/oembed?url=#{link_url}"
+    response = HttpProcessor::http_get "http://api.instagram.com/oembed?url=#{link_url}"
     response['url'] if response
   end
 
@@ -183,7 +175,7 @@ class Tweetlr
   def image_url_picplz(link_url)
     id = extract_id link_url
     #try short url
-    response = http_get "http://picplz.com/api/v2/pic.json?shorturl_ids=#{id}"
+    response = HttpProcessor::http_get "http://picplz.com/api/v2/pic.json?shorturl_ids=#{id}"
     #if short url fails, try long url
     #response = HTTParty.get "http://picplz.com/api/v2/pic.json?longurl_ids=#{id}"
     #extract url
@@ -199,7 +191,7 @@ class Tweetlr
   end
   #find the image'S url for a yfrog link
   def image_url_yfrog(link_url)
-    response = http_get("http://www.yfrog.com/api/oembed?url=#{link_url}")
+    response = HttpProcessor::http_get("http://www.yfrog.com/api/oembed?url=#{link_url}")
     response['url'] if response
   end
   #find the image's url for a img.ly link
@@ -247,36 +239,4 @@ class Tweetlr
       text.gsub(/https?:\/\/[\S]+/).to_a if text
     end
   end
-  
-  private
-  
-  #convenience method for curl http get calls and parsing them to json.
-  def http_get(request)
-    tries = 3
-    begin
-      curl = Curl::Easy.new request
-      curl.useragent = USER_AGENT
-      curl.perform
-      begin
-        JSON.parse curl.body_str
-      rescue JSON::ParserError => err
-        begin
-          @log.warn "#{err}: Could not parse response for #{request} - this is probably not a json response: #{curl.body_str}"
-          return nil
-        rescue Encoding::CompatibilityError => err
-          @log.error "Trying to rescue a JSON::ParserError for '#{request}' we got stuck in a Encoding::CompatibilityError."
-          return nil
-        end
-      end
-    rescue Curl::Err => err
-      @log.error "Failure in Curl call: #{err}"
-      tries -= 1
-      sleep 3
-      if tries > 0
-          retry
-      else
-          nil
-      end
-    end 
-  end  
 end

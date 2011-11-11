@@ -46,22 +46,24 @@ Daemons.run_proc('tweetlr', :dir_mode => :script, :dir => './', :backtrace => tr
   EventMachine::run { 
     EventMachine::add_periodic_timer( UPDATE_PERIOD ) {
      @log.info "starting tweetlr crawl..."
-     response = @tweetlr.lazy_search_twitter
+     response = {}
+     response = @tweetlr.lazy_search_twitter(@tweetlr.twitter_config["refresh_url"]) #looks awkward, but the refresh url will come from the db soon and make sense then...
      if response
        tweets = response['results']
        if tweets
        tweets.each do |tweet|
-           tumblr_post = @tweetlr.generate_tumblr_photo_post tweet
-           if tumblr_post.nil? ||  tumblr_post[:source].nil?
-              @log.warn "could not get image source: tweet: #{tweet} --- tumblr post: #{tumblr_post.inspect}"
-           else
-             @log.debug "tumblr post: #{tumblr_post}"
-             res = @tweetlr.post_to_tumblr tumblr_post
-             @log.warn "tumblr response: #{res.header_str} #{res.body_str}" unless res.response_code == 201
-           end
-           # store the highest tweet id
-           File.open(tid_file, "w+") { |io| io.write(tweets.first['id']) }
+         tumblr_post = @tweetlr.generate_tumblr_photo_post tweet
+         if tumblr_post.nil? ||  tumblr_post[:source].nil?
+            @log.warn "could not get image source: tweet: #{tweet} --- tumblr post: #{tumblr_post.inspect}"
+         else
+           @log.debug "tumblr post: #{tumblr_post}"
+           res = @tweetlr.post_to_tumblr tumblr_post
+           @log.warn "tumblr response: #{res.header_str} #{res.body_str}" unless res.response_code == 201
          end
+        end
+         # store the highest tweet id
+         @tweetlr.twitter_config[:refresh_url]=response['refresh_url']
+         File.open(tid_file, "w+") { |io| io.write(response['max_id']) }
        end
      else
        @log.error "twitter search returned no response. hail the failwhale!"

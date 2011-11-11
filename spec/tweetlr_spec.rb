@@ -41,6 +41,7 @@ describe Tweetlr do
     @non_whitelist_tweet = @twitter_response.merge 'from_user' => 'nonwhitelist user' 
     @retweet = @twitter_response.merge "text" => "bla bla RT @fgd: tueddelkram"
     @new_style_retweet = @twitter_response.merge "text" => "and it scales! \u201c@moeffju: http://t.co/8gUSPKu #hktbl1 #origami success! :)\u201d"
+    @new_style_retweet_no_addition = @twitter_response.merge "text" => "\u201c@moeffju: http://t.co/8gUSPKu #hktbl1 #origami success! :)\u201d"
     @pic_regexp = /(.*?)\.(jpg|jpeg|png|gif)/i 
     @config_file = File.join( Dir.pwd, 'config', 'tweetlr.yml')
     @tweetlr = Tweetlr.new(USER, PW, {:whitelist => WHITELIST, :results_per_page => 5, :since_id => TIMESTAMP, :terms => @searchterm, :loglevel => 4})
@@ -55,7 +56,7 @@ describe Tweetlr do
   it "should search twitter for a given term" do
     stub_twitter
     tweetlr = @tweetlr
-    response = tweetlr.search_twitter
+    response = tweetlr.lazy_search_twitter
     tweets = response['results']
     tweets.should be
     tweets.should_not be_empty
@@ -94,9 +95,15 @@ describe Tweetlr do
     post = @tweetlr.generate_tumblr_photo_post @retweet
     post.should_not be
   end
-  it "should not use new style retweets which would produce double blog posts" do
-    post = @tweetlr.generate_tumblr_photo_post @new_style_retweet
-    post.should_not be
+  context "should not use new style retweets which would produce double blog posts" do
+    it "for quotes in context" do
+      post = @tweetlr.generate_tumblr_photo_post @new_style_retweet
+      post.should_not be
+    end
+    it "for quotes without further text addition" do
+      post = @tweetlr.generate_tumblr_photo_post @new_style_retweet_no_addition
+      post.should_not be
+    end
   end
   context "image url processing" do
     it "should find a picture's url from the supported services" do

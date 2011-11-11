@@ -1,0 +1,3 @@
+module PhotoServiceProcessor
+
+end

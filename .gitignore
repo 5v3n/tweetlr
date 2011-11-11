@@ -2,8 +2,8 @@
 *.log
 pkg
 *.pid
-config
 *.output
 .rvmrc
 Gemfile.lock
 tweetlr.tid
+tweetlr.yml.dev
