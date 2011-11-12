@@ -12,17 +12,6 @@ describe Tweetlr do
   before :each do
     @credentials = {:email => USER, :password => PW}
     @searchterm = 'fail'
-    @links = {
-      :instagram => "http://instagr.am/p/DzCWn/",
-      :twitpic => "http://twitpic.com/449o2x",
-      :yfrog => "http://yfrog.com/h4vlfp",
-      :picplz => "http://picplz.com/2hWv",
-      :imgly => "http://img.ly/3M1o",
-      :tco => 'http://t.co/MUGNayA',
-      :lockerz => 'http://lockerz.com/s/100269159',
-      :embedly => 'http://flic.kr/p/973hTv',
-      :twitter_pics => 'http://t.co/FmyBGfyY' 
-      }
     @tweets = {
       :instagram => {'text' => "jadda jadda http://instagr.am/p/DzCWn/"},
       :twitpic => {'text' => "jadda jadda http://twitpic.com/449o2x"},
@@ -34,15 +23,25 @@ describe Tweetlr do
       :embedly => {'text' => "jadda jadda http://flic.kr/p/973hTv"},
       :twitter_pics => {'text' => "jadda jadda http://t.co/FmyBGfyY"} 
       }
+      @links = {
+        :instagram => "http://instagr.am/p/DzCWn/",
+        :twitpic => "http://twitpic.com/449o2x",
+        :yfrog => "http://yfrog.com/h4vlfp",
+        :picplz => "http://picplz.com/2hWv",
+        :imgly => "http://img.ly/3M1o",
+        :tco => 'http://t.co/MUGNayA',
+        :lockerz => 'http://lockerz.com/s/100269159',
+        :embedly => 'http://flic.kr/p/973hTv',
+        :twitter_pics => 'http://t.co/FmyBGfyY' 
+        }
     @first_link = "http://url.com"
-    @second_link = @links[:instagram]
+    @second_link = "http://instagr.am/p/DzCWn/"
     @third_link = "https://imageurl.com"
     @twitter_response = {"from_user_id_str"=>"1915714", "profile_image_url"=>"http://a0.twimg.com/profile_images/386000279/2_normal.jpg", "created_at"=>"Sun, 17 Apr 2011 16:48:42 +0000", "from_user"=>"whitey_Mc_whIteLIst", "id_str"=>"59659561224765440", "metadata"=>{"result_type"=>"recent"}, "to_user_id"=>nil, "text"=>"Rigaer #wirsounterwegs #{@first_link}  @ Augenarzt Dr. Lierow #{@second_link} #{@third_link}", "id"=>59659561224765440, "from_user_id"=>1915714, "geo"=>{"type"=>"Point", "coordinates"=>[52.5182, 13.454]}, "iso_language_code"=>"de", "place"=>{"id"=>"3078869807f9dd36", "type"=>"city", "full_name"=>"Berlin, Berlin"}, "to_user_id_str"=>nil, "source"=>"&lt;a href=&quot;http://instagr.am&quot; rel=&quot;nofollow&quot;&gt;instagram&lt;/a&gt;"}
     @non_whitelist_tweet = @twitter_response.merge 'from_user' => 'nonwhitelist user' 
     @retweet = @twitter_response.merge "text" => "bla bla RT @fgd: tueddelkram"
     @new_style_retweet = @twitter_response.merge "text" => "and it scales! \u201c@moeffju: http://t.co/8gUSPKu #hktbl1 #origami success! :)\u201d"
     @new_style_retweet_no_addition = @twitter_response.merge "text" => "\u201c@moeffju: http://t.co/8gUSPKu #hktbl1 #origami success! :)\u201d"
-    @pic_regexp = /(.*?)\.(jpg|jpeg|png|gif)/i 
     @config_file = File.join( Dir.pwd, 'config', 'tweetlr.yml')
     @tweetlr = Tweetlr.new(USER, PW, {:whitelist => WHITELIST, :results_per_page => 5, :since_id => TIMESTAMP, :terms => @searchterm, :loglevel => 4})
   end
@@ -105,44 +104,8 @@ describe Tweetlr do
       post.should_not be
     end
   end
-  context "image url processing" do
-    it "should find a picture's url from the supported services" do
-      @links.each do |key,value|
-        send "stub_#{key}"
-        url = @tweetlr.find_image_url value
-        url.should be, "service #{key} not working!"
-        check_pic_url_extraction key if [:instagram,:picplz,:yfrog,:imgly,:not_listed].index key
-      end
-    end
-    it "should not crash if embedly fallback won't find a link" do
-      stub_bad_request
-      url = @tweetlr.find_image_url "http://mopskopf"     
-    end
-    it "should not crash with an encoding error when response is non-us-ascii" do
-      stub_utf8_response
-      url = @tweetlr.find_image_url "http://api.instagram.com/oembed?url=http://instagr.am/p/Gx%E2%80%946/"
-    end
-  end
-  describe "tweet api response processing" do
-    it "extracts links" do
-      links = @tweetlr.extract_links ''
-      links.should be_nil
-      links = @tweetlr.extract_links @twitter_response
-      links[0].should == @first_link
-      links[1].should == @second_link
-      links[2].should == @third_link
-    end 
-    it "uses the first image link found in a tweet with multiple links" do
-      stub_instagram
-      link = @tweetlr.extract_image_url @twitter_response
-      link.should == 'http://distillery.s3.amazonaws.com/media/2011/05/02/d25df62b9cec4a138967a3ad027d055b_7.jpg'
-    end
-    it "follows redirects" do
-      stub_imgly
-      link = @tweetlr.link_url_redirect 'im mocked anyways'
-      link.should == 'http://s3.amazonaws.com/imgly_production/899582/full.jpg'
-    end
-    it "extracts pictures from links" do
+  context "handles pictures in tweets" do
+    it "extracting their corresponding links" do
       @tweets.each do |key,value|
         send "stub_#{key}"
         url = @tweetlr.extract_image_url value
@@ -150,12 +113,15 @@ describe Tweetlr do
         check_pic_url_extraction key if [:instagram,:picplz,:yfrog,:imgly,:not_listed].index key
       end
     end
+    it "using the first image link found in a tweet with multiple links" do
+      stub_instagram
+      link = @tweetlr.extract_image_url @twitter_response
+      link.should == 'http://distillery.s3.amazonaws.com/media/2011/05/02/d25df62b9cec4a138967a3ad027d055b_7.jpg'
+    end
+    it "not returning links that do not belong to images" do
+      stub_no_image_link
+      link = @tweetlr.extract_image_url @twitter_response
+      link.should_not be
+    end
   end
-  
-  def check_pic_url_extraction(service)
-    image_url = @tweetlr.send "image_url_#{service}".to_sym, @links[service]
-    image_url.should =~ @pic_regexp 
-  end
-  
 end
-

@@ -6,6 +6,14 @@ module TwitterProcessor
   def self.retweet?(message)
     message.index('RT @') || message.index(%{"@}) || message.index("\u201c@") #detect retweets
   end
+  
+  #extract the links from a given tweet
+  def self.extract_links(tweet)
+    if tweet
+      text = tweet['text']
+      text.gsub(/https?:\/\/[\S]+/).to_a if text
+    end
+  end
 
   #fire a new search
   def self.search(config)

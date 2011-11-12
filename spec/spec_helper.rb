@@ -2,6 +2,11 @@
 require "bundler"
 Bundler.require :default, :development, :test
 
+def check_pic_url_extraction(service)
+  image_url = PhotoServiceProcessor::send "image_url_#{service}".to_sym, @links[service]
+  image_url.should =~ PhotoServiceProcessor::PIC_REGEXP
+end
+
 def stub_twitter
   Curl::Easy.any_instance.stub(:body_str).and_return %|{"results":[{"from_user_id_str":"220650275","profile_image_url":"http://a2.twimg.com/profile_images/668619338/9729_148876458070_505518070_2628895_7160219_n_normal.jpg","created_at":"Sat, 16 Jul 2011 23:20:01 +0000","from_user":"LoMuma","id_str":"92372947855093760","metadata":{"result_type":"recent"},"to_user_id":null,"text":"Need to stop procrastinating! 5 quizzes and personal responses due tomorrow... #fail","id":92372947855093760,"from_user_id":220650275,"geo":null,"iso_language_code":"en","to_user_id_str":null,"source":"&lt;a href=&quot;http://twitter.com/&quot;&gt;web&lt;/a&gt;"},{"from_user_id_str":"129718556","profile_image_url":"http://a2.twimg.com/profile_images/1428268221/twitter_normal.png","created_at":"Sat, 16 Jul 2011 23:20:01 +0000","from_user":"priiislopes","id_str":"92372947846692865","metadata":{"result_type":"recent"},"to_user_id":null,"text":"Esse jogo do Flu foi uma vergonha. Se ele fez o melhor dele no brasileiro semana passada, hj fez o pior de todos os tempos. #Fail","id":92372947846692865,"from_user_id":129718556,"geo":null,"iso_language_code":"pt","to_user_id_str":null,"source":"&lt;a href=&quot;http://twitter.com/&quot;&gt;web&lt;/a&gt;"},{"from_user_id_str":"259930166","profile_image_url":"http://a3.twimg.com/profile_images/1425221519/foto_normal.jpg","created_at":"Sat, 16 Jul 2011 23:20:00 +0000","from_user":"YamiiG4","id_str":"92372943132303360","metadata":{"result_type":"recent"},"to_user_id":null,"text":"vaya que eran 2 minutos..#FAIL!","id":92372943132303360,"from_user_id":259930166,"geo":null,"iso_language_code":"es","to_user_id_str":null,"source":"&lt;a href=&quot;http://www.tweetdeck.com&quot; rel=&quot;nofollow&quot;&gt;TweetDeck&lt;/a&gt;"},{"from_user_id_str":"321557905","profile_image_url":"http://a0.twimg.com/profile_images/1445672626/profile_normal.png","created_at":"Sat, 16 Jul 2011 23:20:00 +0000","from_user":"JasWafer_FFOE","id_str":"92372941379088384","metadata":{"result_type":"recent"},"to_user_id":null,"text":"RT @eye_OFBEHOLDER: RT @JasWafer_FFOE #Oomf said that he'll NEVER eat pussy! O.o --#FAIL","id":92372941379088384,"from_user_id":321557905,"geo":null,"iso_language_code":"en","to_user_id_str":null,"source":"&lt;a href=&quot;http://twidroyd.com&quot; rel=&quot;nofollow&quot;&gt;Twidroyd for Android&lt;/a&gt;"},{"from_user_id_str":"279395613","profile_image_url":"http://a0.twimg.com/profile_images/1334871419/lnnsquare_normal.jpg","created_at":"Sat, 16 Jul 2011 23:19:59 +0000","from_user":"LanguageNewsNet","id_str":"92372940640890881","metadata":{"result_type":"recent"},"to_user_id":null,"text":"Questioning the Inca Paradox: Did the civilization behind Machu Picchu really fail to develop a written la... http://tinyurl.com/5sfos23","id":92372940640890881,"from_user_id":279395613,"geo":null,"iso_language_code":"en","to_user_id_str":null,"source":"&lt;a href=&quot;http://twitterfeed.com&quot; rel=&quot;nofollow&quot;&gt;twitterfeed&lt;/a&gt;"}],"max_id":92372947855093760,"since_id":0,"refresh_url":"?since_id=92372947855093760&q=+fail","next_page":"?page=2&max_id=92372947855093760&rpp=5&q=+fail","results_per_page":5,"page":1,"completed_in":0.022152,"since_id_str":"0","max_id_str":"92372947855093760","query":"+fail"}|
   Curl::Easy.any_instance.stub(:perform).and_return Curl::Easy.new
@@ -15,6 +20,11 @@ end
 def stub_instagram
   Curl::Easy.any_instance.stub(:body_str).and_return %|{"provider_url": "http://instagram.com/", "title": "Curse you tweets. See what you have done to me?!!!", "url": "http://distillery.s3.amazonaws.com/media/2011/05/02/d25df62b9cec4a138967a3ad027d055b_7.jpg", "author_name": "loswhit", "height": 612, "width": 612, "version": "1.0", "author_url": "http://instagram.com/", "provider_name": "Instagram", "type": "photo"}|
   Curl::Easy.any_instance.stub(:perform).and_return Curl::Easy.new
+end
+
+#instagram syntax but without a valid image link
+def stub_no_image_link
+  Curl::Easy.any_instance.stub(:body_str).and_return %|{"url":"http://noimageurl"}|
 end
 
 def stub_bad_request
