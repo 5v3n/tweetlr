@@ -28,7 +28,7 @@ module HttpProcessor
           return nil
         end
       end
-    rescue Curl::Err => err
+    rescue Curl::Err::CurlError => err
       log.error "Failure in Curl call: #{err}" if log
       tries -= 1
       sleep 3

@@ -25,6 +25,7 @@ end
 #instagram syntax but without a valid image link
 def stub_no_image_link
   Curl::Easy.any_instance.stub(:body_str).and_return %|{"url":"http://noimageurl"}|
+  Curl::Easy.any_instance.stub(:perform).and_return Curl::Easy.new
 end
 
 def stub_bad_request

@@ -96,7 +96,7 @@ module PhotoServiceProcessor
     tries = 3
     begin
       resp = Curl::Easy.http_get(short_url) { |res| res.follow_location = true }
-    rescue Curl::Err => err
+    rescue Curl::Err::CurlError => err
         log.error "Curl::Easy.http_get failed: #{err}"
         tries -= 1
         sleep 3

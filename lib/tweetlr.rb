@@ -73,7 +73,7 @@ class Tweetlr
         Curl::PostField.content('state', options[:state]),
         Curl::PostField.content('tags', tags)
         )
-      rescue Curl::Err => err
+      rescue Curl::Err::CurlError => err
         @log.error "Failure in Curl call: #{err}"
         tries -= 1
         sleep 3
