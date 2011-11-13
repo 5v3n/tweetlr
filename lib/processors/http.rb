@@ -7,9 +7,13 @@ module Processors
     include LogAware
   
     USER_AGENT = %{Mozilla/5.0 (compatible; tweetlr; +http://tweetlr.5v3n.com)}
+    
+    def self.log
+      LogAware.log #TODO why doesn't the include make the log method accessible?
+    end
 
     #convenience method for curl http get calls and parsing them to json.
-    def self.http_get(request, log=nil)
+    def self.http_get(request)
       tries = 3
       begin
         curl = Curl::Easy.new request
@@ -19,14 +23,10 @@ module Processors
           JSON.parse curl.body_str
         rescue JSON::ParserError => err
           begin
-            if log
-              log.warn "#{err}: Could not parse response for #{request} - this is probably not a json response: #{curl.body_str}"
-            end
+            log.warn "#{err}: Could not parse response for #{request} - this is probably not a json response: #{curl.body_str}"
             return nil
           rescue Encoding::CompatibilityError => err
-            if log
-              log.error "Trying to rescue a JSON::ParserError for '#{request}' we got stuck in a Encoding::CompatibilityError."
-            end
+            log.error "Trying to rescue a JSON::ParserError for '#{request}' we got stuck in a Encoding::CompatibilityError."
             return nil
           end
         end

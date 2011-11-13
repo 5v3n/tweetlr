@@ -64,12 +64,12 @@ describe Tweetlr do
   context "given a user whitelist" do
     it "should mark whitelist users' tweets as published" do
       stub_instagram
-      post = @tweetlr.generate_tumblr_photo_post @twitter_response
+      post = @tweetlr.generate_tumblr_photo_post @twitter_response, :whitelist => WHITELIST
       post[:state].should == 'published' 
     end
     it "should mark non whitelist users' tweets as drafts" do
       stub_instagram
-      post = @tweetlr.generate_tumblr_photo_post @non_whitelist_tweet
+      post = @tweetlr.generate_tumblr_photo_post @non_whitelist_tweet, :whitelist => WHITELIST
       post[:state].should == 'draft' 
     end
   end
@@ -84,24 +84,24 @@ describe Tweetlr do
     end
     it "should mark every users' posts as published" do
       stub_instagram
-      post = @tweetlr.generate_tumblr_photo_post @twitter_response
+      post = @tweetlr.generate_tumblr_photo_post @twitter_response, :whitelist => nil
       post[:state].should == 'published'
       stub_instagram
-      post = @tweetlr.generate_tumblr_photo_post @non_whitelist_tweet
+      post = @tweetlr.generate_tumblr_photo_post @non_whitelist_tweet, :whitelist => nil
       post[:state].should == 'published'
     end
   end
   it "should not use retweets which would produce double blog posts" do
-    post = @tweetlr.generate_tumblr_photo_post @retweet
+    post = @tweetlr.generate_tumblr_photo_post @retweet, :whitelist => WHITELIST
     post.should_not be
   end
   context "should not use new style retweets which would produce double blog posts" do
     it "for quotes in context" do
-      post = @tweetlr.generate_tumblr_photo_post @new_style_retweet
+      post = @tweetlr.generate_tumblr_photo_post @new_style_retweet, :whitelist => WHITELIST
       post.should_not be
     end
     it "for quotes without further text addition" do
-      post = @tweetlr.generate_tumblr_photo_post @new_style_retweet_no_addition
+      post = @tweetlr.generate_tumblr_photo_post @new_style_retweet_no_addition, :whitelist => WHITELIST
       post.should_not be
     end
   end
@@ -109,19 +109,19 @@ describe Tweetlr do
     it "extracting their corresponding links" do
       @tweets.each do |key,value|
         send "stub_#{key}"
-        url = @tweetlr.extract_image_url value
+        url = Combinators::TwitterTumblr.extract_image_url value
         url.should be, "service #{key} not working!"
         check_pic_url_extraction key if [:instagram,:picplz,:yfrog,:imgly,:not_listed].index key
       end
     end
     it "using the first image link found in a tweet with multiple links" do
       stub_instagram
-      link = @tweetlr.extract_image_url @twitter_response
+      link = Combinators::TwitterTumblr.extract_image_url @twitter_response
       link.should == 'http://distillery.s3.amazonaws.com/media/2011/05/02/d25df62b9cec4a138967a3ad027d055b_7.jpg'
     end
     it "not returning links that do not belong to images" do
       stub_no_image_link
-      link = @tweetlr.extract_image_url @twitter_response
+      link = Combinators::TwitterTumblr.extract_image_url @twitter_response
       link.should_not be
     end
   end

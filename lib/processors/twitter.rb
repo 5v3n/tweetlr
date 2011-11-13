@@ -5,6 +5,9 @@ module Processors
   #utilities for dealing with twitter
   module Twitter
     include LogAware
+    def self.log
+      LogAware.log #TODO why doesn't the include make the log method accessible?
+    end
     
     #checks if the message is a retweet
     def self.retweet?(message)

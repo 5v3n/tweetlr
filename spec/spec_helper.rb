@@ -2,6 +2,10 @@
 require "bundler"
 Bundler.require :default, :development, :test
 
+logger = Logger.new(STDOUT)
+logger.level = Logger::FATAL
+LogAware.log = logger
+
 def check_pic_url_extraction(service)
   image_url = Processors::PhotoService::send "image_url_#{service}".to_sym, @links[service]
   image_url.should =~ Processors::PhotoService::PIC_REGEXP

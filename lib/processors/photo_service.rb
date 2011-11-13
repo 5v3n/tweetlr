@@ -10,6 +10,10 @@ module Processors
     PIC_REGEXP = /(.*?)\.(jpg|jpeg|png|gif)/i 
   
     include LogAware
+    
+    def self.log
+      LogAware.log #TODO why doesn't the include make the log method accessible?
+    end
   
     def self.find_image_url(link)
       url = nil

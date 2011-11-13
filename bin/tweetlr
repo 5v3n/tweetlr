@@ -52,7 +52,7 @@ Daemons.run_proc('tweetlr', :dir_mode => :script, :dir => './', :backtrace => tr
        tweets = response['results']
        if tweets
        tweets.each do |tweet|
-         tumblr_post = @tweetlr.generate_tumblr_photo_post tweet
+         tumblr_post = @tweetlr.generate_tumblr_photo_post tweet, :whitelist => @tweetlr.whitelist #looks awkward, but the refresh url will come from the db soon and make sense then...
          if tumblr_post.nil? ||  tumblr_post[:source].nil?
             @log.warn "could not get image source: tweet: #{tweet} --- tumblr post: #{tumblr_post.inspect}"
          else
