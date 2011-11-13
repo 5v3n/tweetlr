@@ -45,13 +45,14 @@ describe Tweetlr do
     @config_file = File.join( Dir.pwd, 'config', 'tweetlr.yml')
     @tweetlr = Tweetlr.new(USER, PW, {:whitelist => WHITELIST, :results_per_page => 5, :since_id => TIMESTAMP, :terms => @searchterm, :loglevel => 4})
   end
-  # it "should post to tumblr" do
-  #   tumblr_post = @tweetlr.generate_tumblr_photo_post @twitter_response
-  #   tumblr_post[:date] = Time.now.to_s
-  #   response = @tweetlr.post_to_tumblr tumblr_post
-  #   response.should be
-  #   response.response_code.should be 201
-  # end
+  it "should post to tumblr" do
+    stub_tumblr
+    tumblr_post = @tweetlr.generate_tumblr_photo_post @twitter_response
+    tumblr_post[:date] = Time.now.to_s
+    response = @tweetlr.post_to_tumblr tumblr_post
+    response.should be
+    response.response_code.should be 201
+  end
   it "should search twitter for a given term" do
     stub_twitter
     tweetlr = @tweetlr
