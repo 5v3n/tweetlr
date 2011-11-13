@@ -1,0 +1,126 @@
+require 'processors/http'
+require 'log_aware'
+
+module Processors
+  #utilities for dealing with photo services
+  module PhotoService
+  
+    LOCATION_START_INDICATOR = 'Location: '
+    LOCATION_STOP_INDICATOR  = "\r\n"
+    PIC_REGEXP = /(.*?)\.(jpg|jpeg|png|gif)/i 
+  
+    include LogAware
+  
+    def self.find_image_url(link)
+      url = nil
+      if link && !(photo? link)
+        url = image_url_instagram link if (link.index('instagr.am') || link.index('instagram.com'))
+        url = image_url_picplz link if link.index 'picplz'
+        url = image_url_twitpic link if link.index 'twitpic'
+        url = image_url_yfrog link if link.index 'yfrog'
+        url = image_url_imgly link if link.index 'img.ly'
+        url = image_url_tco link if link.index 't.co'
+        url = image_url_lockerz link if link.index 'lockerz.com'
+        url = image_url_foursquare link if link.index '4sq.com'
+        url = image_url_embedly link if url.nil? #just try embed.ly for anything else. could do all image url processing w/ embedly, but there's probably some kind of rate limit invovled.
+      elsif photo? link
+        url = link
+      end
+      url
+    end
+  
+    def self.photo?(link)
+      link =~ PIC_REGEXP
+    end
+  
+    #find the image's url via embed.ly
+    def self.image_url_embedly(link_url)
+      response = Processors::Http::http_get "http://api.embed.ly/1/oembed?url=#{link_url}"
+      if response && response['type'] == 'photo'
+        image_url = response['url'] 
+      end
+      image_url
+    end
+    #find the image's url for a foursquare link
+    def self.image_url_foursquare(link_url)
+      image_url_embedly link_url
+    end
+    #find the image's url for a lockerz link
+    def self.image_url_lockerz(link_url)
+      response = Processors::Http::http_get "http://api.plixi.com/api/tpapi.svc/json/metadatafromurl?details=false&url=#{link_url}"
+      response["BigImageUrl"] if response
+    end
+    #find the image's url for an twitter shortened link
+    def self.image_url_tco(link_url)
+      service_url = link_url_redirect link_url
+      find_image_url service_url
+    end
+    #find the image's url for an instagram link
+    def self.image_url_instagram(link_url)
+      link_url['instagram.com'] = 'instagr.am' if link_url.index 'instagram.com' #instagram's oembed does not work for .com links
+      response = Processors::Http::http_get "http://api.instagram.com/oembed?url=#{link_url}"
+      response['url'] if response
+    end
+
+    #find the image's url for a picplz short/longlink
+    def self.image_url_picplz(link_url)
+      id = extract_id link_url
+      #try short url
+      response = Processors::Http::http_get "http://picplz.com/api/v2/pic.json?shorturl_ids=#{id}"
+      #if short url fails, try long url
+      #response = HTTParty.get "http://picplz.com/api/v2/pic.json?longurl_ids=#{id}"
+      #extract url
+      if response && response['value'] && response['value']['pics'] && response['value']['pics'].first && response['value']['pics'].first['pic_files'] && response['value']['pics'].first['pic_files']['640r']
+        response['value']['pics'].first['pic_files']['640r']['img_url'] 
+      else
+        nil
+      end
+    end
+    #find the image's url for a twitpic link
+    def self.image_url_twitpic(link_url)
+      image_url_redirect link_url, "http://twitpic.com/show/full/"
+    end
+    #find the image'S url for a yfrog link
+    def self.image_url_yfrog(link_url)
+      response = Processors::Http::http_get("http://www.yfrog.com/api/oembed?url=#{link_url}")
+      response['url'] if response
+    end
+    #find the image's url for a img.ly link
+    def self.image_url_imgly(link_url)
+      image_url_redirect link_url, "http://img.ly/show/full/", "\r\n"
+    end
+  
+    # extract image url from services like twitpic & img.ly that do not offer oembed interfaces
+    def self.image_url_redirect(link_url, service_endpoint, stop_indicator = LOCATION_STOP_INDICATOR)
+      link_url_redirect "#{service_endpoint}#{extract_id link_url}", stop_indicator
+    end
+  
+    def self.link_url_redirect(short_url, stop_indicator = LOCATION_STOP_INDICATOR)
+      tries = 3
+      begin
+        resp = Curl::Easy.http_get(short_url) { |res| res.follow_location = true }
+      rescue Curl::Err::CurlError => err
+          log.error "Curl::Easy.http_get failed: #{err}"
+          tries -= 1
+          sleep 3
+          if tries > 0
+              retry
+          else
+             return nil
+          end
+      end
+      if(resp && resp.header_str.index(LOCATION_START_INDICATOR) && resp.header_str.index(stop_indicator))
+        start = resp.header_str.index(LOCATION_START_INDICATOR) + LOCATION_START_INDICATOR.size
+        stop  = resp.header_str.index(stop_indicator, start)
+        resp.header_str[start...stop]
+      else
+        nil
+      end
+    end
+  
+    #extract the pic id from a given <code>link</code>
+    def self.extract_id(link)
+      link.split('/').last if link.split('/')
+    end
+  end
+end

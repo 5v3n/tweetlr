@@ -3,8 +3,8 @@ require "bundler"
 Bundler.require :default, :development, :test
 
 def check_pic_url_extraction(service)
-  image_url = PhotoServiceProcessor::send "image_url_#{service}".to_sym, @links[service]
-  image_url.should =~ PhotoServiceProcessor::PIC_REGEXP
+  image_url = Processors::PhotoService::send "image_url_#{service}".to_sym, @links[service]
+  image_url.should =~ Processors::PhotoService::PIC_REGEXP
 end
 
 def stub_twitter

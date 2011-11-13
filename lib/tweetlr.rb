@@ -3,9 +3,9 @@ require 'logger'
 require 'yaml'
 require 'curb'
 require 'json'
-require 'twitter_processor'
-require 'http_processor'
-require 'photo_service_processor'
+require 'processors/twitter'
+require 'processors/http'
+require 'processors/photo_service'
 require 'log_aware'
 
 class Tweetlr
@@ -53,7 +53,7 @@ class Tweetlr
   
   def lazy_search_twitter(refresh_url=nil)
     @twitter_config[:refresh_url] = refresh_url if refresh_url
-    TwitterProcessor::lazy_search(@twitter_config)
+    Processors::Twitter::lazy_search(@twitter_config)
   end
   
   #post a tumblr photo entry. required arguments are :type, :date, :source, :caption, :state. optional argument: :tags 
@@ -91,7 +91,7 @@ class Tweetlr
   def generate_tumblr_photo_post tweet
     tumblr_post = nil
     message = tweet['text']
-    if !TwitterProcessor::retweet? message
+    if !Processors::Twitter::retweet? message
       @log.debug "tweet: #{tweet}"
       tumblr_post = {}
       tumblr_post[:type] = 'photo'
@@ -115,12 +115,12 @@ class Tweetlr
   
   #extract a linked image file's url from a tweet. first found image will be used.
   def extract_image_url(tweet)
-    links = TwitterProcessor::extract_links tweet
+    links = Processors::Twitter::extract_links tweet
     image_url = nil
     if links
       links.each do |link|
-        image_url = PhotoServiceProcessor::find_image_url(link)
-        return image_url if PhotoServiceProcessor::photo? image_url
+        image_url = Processors::PhotoService::find_image_url(link)
+        return image_url if Processors::PhotoService::photo? image_url
       end
     end
     image_url

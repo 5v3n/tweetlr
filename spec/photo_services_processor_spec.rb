@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe PhotoServiceProcessor do
+describe Processors::PhotoService do
   before :each do
     @links = {
       :instagram => "http://instagr.am/p/DzCWn/",
@@ -17,22 +17,22 @@ describe PhotoServiceProcessor do
   it "should find a picture's url from the supported services" do
     @links.each do |service,link|
       send "stub_#{service}"
-      url = PhotoServiceProcessor::find_image_url link
+      url = Processors::PhotoService::find_image_url link
       url.should be, "service #{service} not working!"
       check_pic_url_extraction service if [:instagram,:picplz,:yfrog,:imgly,:not_listed].index service
     end
   end
   it "should not crash if embedly fallback won't find a link" do
     stub_bad_request
-    url = PhotoServiceProcessor::find_image_url "http://mopskopf"     
+    url = Processors::PhotoService::find_image_url "http://mopskopf"     
   end
   it "should not crash with an encoding error when response is non-us-ascii" do
     stub_utf8_response
-    url = PhotoServiceProcessor::find_image_url "http://api.instagram.com/oembed?url=http://instagr.am/p/Gx%E2%80%946/"
+    url = Processors::PhotoService::find_image_url "http://api.instagram.com/oembed?url=http://instagr.am/p/Gx%E2%80%946/"
   end
   it "follows redirects" do
     stub_imgly
-    link = PhotoServiceProcessor::link_url_redirect 'im mocked anyways'
+    link = Processors::PhotoService::link_url_redirect 'im mocked anyways'
     link.should == 'http://s3.amazonaws.com/imgly_production/899582/full.jpg'
   end
 end
