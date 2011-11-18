@@ -47,6 +47,7 @@ class Tweetlr
   end
   
   def self.crawl(config)
+    log.debug "#{self}.crawl() using config: #{config.inspect}"
     twitter_config = {
       :since_id => config[:since_id] || config[:start_at_tweet_id],
       :search_term => config[:terms] || config[:search_term] ,

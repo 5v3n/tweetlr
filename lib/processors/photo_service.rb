@@ -23,9 +23,8 @@ module Processors
         url = image_url_twitpic link if link.index 'twitpic'
         url = image_url_yfrog link if link.index 'yfrog'
         url = image_url_imgly link if link.index 'img.ly'
-        url = image_url_tco link if link.index 't.co'
+        url = image_url_tco link, embedly_key if link.index 't.co'
         url = image_url_lockerz link if link.index 'lockerz.com'
-        url = image_url_foursquare link if link.index '4sq.com'
         url = image_url_embedly link, embedly_key if url.nil? #just try embed.ly for anything else. could do all image url processing w/ embedly, but there's probably some kind of rate limit invovled.
       elsif photo? link
         url = link
@@ -40,14 +39,11 @@ module Processors
     #find the image's url via embed.ly
     def self.image_url_embedly(link_url, key)
       response = Processors::Http::http_get "http://api.embed.ly/1/oembed?key=#{key}&url=#{link_url}"
+      log.debug "embedly call: http://api.embed.ly/1/oembed?key=#{key}&url=#{link_url}"
       if response && response['type'] == 'photo'
         image_url = response['url'] 
       end
       image_url
-    end
-    #find the image's url for a foursquare link
-    def self.image_url_foursquare(link_url)
-      image_url_embedly link_url
     end
     #find the image's url for a lockerz link
     def self.image_url_lockerz(link_url)
@@ -55,9 +51,9 @@ module Processors
       response["BigImageUrl"] if response
     end
     #find the image's url for an twitter shortened link
-    def self.image_url_tco(link_url)
+    def self.image_url_tco(link_url, embedly_key = nil)
       service_url = link_url_redirect link_url
-      find_image_url service_url
+      find_image_url service_url, embedly_key
     end
     #find the image's url for an instagram link
     def self.image_url_instagram(link_url)

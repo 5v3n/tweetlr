@@ -34,7 +34,7 @@ begin
     :api_endpoint_tumblr => CONFIG['api_endpoint_tumblr'],
     :api_endpoint_twitter => CONFIG['api_endpoint_twitter'],
     :results_per_page => CONFIG['results_per_page'],
-    :result_type => CONFIG['result_type']
+    :result_type => CONFIG['result_type'],
     :embedly_key => CONFIG['embedly_key']
     }
 rescue SystemCallError
@@ -49,7 +49,7 @@ Daemons.run_proc('tweetlr', :dir_mode => :script, :dir => './', :backtrace => tr
   EventMachine::run do 
     EventMachine::add_periodic_timer( UPDATE_PERIOD ) do
       response = Tweetlr.crawl(@tweetlr_config)
-      File.open(tid_file, "w+") { |io| io.write(response['max_id']) }
+      File.open(tid_file, "w+") { |io| io.write(response[:since_id]) }
       @tweetlr_config.merge! response
      end
    end

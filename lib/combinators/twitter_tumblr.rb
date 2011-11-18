@@ -24,6 +24,7 @@ module Combinators
     end
     #generate the data for a tumblr photo entry by parsing a tweet
     def self.generate_photo_post_from_tweet(tweet, options = {})
+      log.debug "#{self}.generate_photo_post_from_tweet with options: #{options.inspect}"
       tumblr_post = nil
       message = tweet['text']
       whitelist = options[:whitelist]
