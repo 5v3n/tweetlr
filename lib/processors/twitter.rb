@@ -30,18 +30,15 @@ module Processors
 
     # lazy update - search for a term or refresh the search if a response is available already
     def self.lazy_search(config)
-      result = nil
-      refresh_url = config[:refresh_url]
-      log = config[:logger]
-      if refresh_url
-       search_url = "#{config[:api_endpoint_twitter]}#{refresh_url}&result_type=#{config[:result_type]}&rpp=#{config[:results_per_page]}"
-       log.info "lazy search using '#{search_url}'" if log
-       result = Processors::Http::http_get search_url
+      response = nil
+      if config
+        search_url = "#{config[:api_endpoint_twitter]}?since_id=#{config[:since_id]}&ors=#{config[:search_term]}&result_type=#{config[:result_type]}&rpp=#{config[:results_per_page]}"
+        log.info "lazy search using '#{search_url}'"
+        response = Processors::Http::http_get search_url
       else
-        log.debug "regular search using '#{config[:search_term]}'" if log
-        result = search(config)
+        log.error "#{self}.lazy_search: no config given!"
       end
-      result
+      response
     end
   end
 end

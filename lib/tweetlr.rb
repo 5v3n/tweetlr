@@ -11,8 +11,6 @@ require 'combinators/twitter_tumblr'
 require 'log_aware'
 
 class Tweetlr
-  
-  attr_accessor :twitter_config, :whitelist #workarounds, goal: make tweetlr stateless. meanwhile: pass in its own state.
 
   VERSION = '0.1.7pre'
   
@@ -22,25 +20,23 @@ class Tweetlr
   TWITTER_RESULTS_TYPE = 'recent'
   UPDATE_PERIOD = 600 #10 minutes
   
-  def initialize(email, password, args={:terms=>nil, :whitelist => nil, :shouts => nil, :since_id=>nil, :results_per_page => nil, :loglevel=>nil, :result_type => nil})
-    @log = Logger.new(STDOUT)
+  include LogAware
+  def self.log
+    LogAware.log #TODO why doesn't the include make the log method accessible?
+  end
+  
+  def initialize(args)
+    log = Logger.new(STDOUT)
     if (Logger::DEBUG..Logger::UNKNOWN).to_a.index(args[:loglevel])
-      @log.level = args[:loglevel] 
+      log.level = args[:loglevel] 
     else
-      @log.level = Logger::INFO
+      log.level = Logger::INFO
     end
-    @log.debug "log level set to #{@log.level}"
-    LogAware.log=@log
-    @twitter_config = {
-      :since_id => args[:since_id],
-      :search_term => args[:terms],
-      :results_per_page => args[:results_per_page] || TWITTER_RESULTS_PER_PAGE,
-      :result_type => args[:result_type] || TWITTER_RESULTS_TYPE,  
-      :api_endpoint_twitter => args[:api_endpoint_twitter] || API_ENDPOINT_TWITTER
-    }
-    @twitter_config[:refresh_url] = "?ors=#{@twitter_config[:search_term]}&since_id=#{@twitter_config[:since_id]}&rpp=#{@twitter_config[:results_per_page]}&result_type=#{@twitter_config[:result_type]}" if (@twitter_config[:since_id] && @twitter_config[:search_term])  
-    @email = email
-    @password = password
+    log.debug "log level set to #{log.level}"
+    LogAware.log=log
+    
+    @email = args[:tumblr_email]
+    @password = args[:tumblr_password]
     @cookie = args[:cookie]
     @api_endpoint_twitter = 
     @api_endpoint_tumblr = args[:api_endpoint_tumblr] || API_ENDPOINT_TUMBLR
@@ -50,20 +46,37 @@ class Tweetlr
     @whitelist.each {|entry| entry.downcase!} if @whitelist
   end
   
-  def generate_tumblr_photo_post(tweet, options={})
-    Combinators::TwitterTumblr::generate_photo_post_from_tweet(tweet, options)
-  end
-  
-  def post_to_tumblr(options)
-    options.merge!(:email => @email, :password => @password) #TODO move this to the calling executable / method...
-    Processors::Tumblr.post(options)
-  end
-  
-  def lazy_search_twitter(refresh_url=nil)
-    @twitter_config[:refresh_url] = refresh_url if refresh_url
-    Processors::Twitter::lazy_search(@twitter_config)
-  end
-  
-
-  
+  def self.crawl(config)
+    twitter_config = {
+      :since_id => config[:since_id],
+      :search_term => config[:terms],
+      :results_per_page => config[:results_per_page] || TWITTER_RESULTS_PER_PAGE,
+      :result_type => config[:result_type] || TWITTER_RESULTS_TYPE,  
+      :api_endpoint_twitter => config[:api_endpoint_twitter] || API_ENDPOINT_TWITTER
+    }    
+    log.info "starting tweetlr crawl..."
+    response = {}
+    response = Processors::Twitter::lazy_search(twitter_config) #looks awkward, but the refresh url will come from the db soon and make sense then...
+    if response
+      tweets = response['results']
+      if tweets
+      tweets.each do |tweet|
+        tumblr_post = Combinators::TwitterTumblr::generate_photo_post_from_tweet(tweet, {:whitelist => config[:whitelist]}) 
+        if tumblr_post.nil? ||  tumblr_post[:source].nil?
+           log.warn "could not get image source: tweet: #{tweet} --- tumblr post: #{tumblr_post.inspect}"
+        else
+          log.debug "tumblr post: #{tumblr_post}"
+          res = Processors::Tumblr.post tumblr_post.merge({:password => config[:tumblr_password], :email => config[:tumblr_email]})
+          log.warn "tumblr response: #{res.header_str} #{res.body_str}" unless res.response_code == 201
+        end
+       end
+        # store the highest tweet id
+        config[:since_id] = response['max_id']
+      end
+    else
+      log.error "twitter search returned no response. hail the failwhale!"
+    end
+    log.info "finished tweetlr crawl."
+    return config
+  end  
 end

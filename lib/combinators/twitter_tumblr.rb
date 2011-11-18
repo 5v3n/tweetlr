@@ -27,6 +27,7 @@ module Combinators
       tumblr_post = nil
       message = tweet['text']
       whitelist = options[:whitelist]
+      whitelist.each {|entry| entry.downcase!} if whitelist
       if !Processors::Twitter::retweet? message
         log.debug "tweet: #{tweet}"
         tumblr_post = {}

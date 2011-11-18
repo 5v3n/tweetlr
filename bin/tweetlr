@@ -22,7 +22,9 @@ begin
    
   UPDATE_PERIOD = CONFIG['update_period']  
   
-  @tweetlr = Tweetlr.new(CONFIG['tumblr_username'], CONFIG['tumblr_password'], {
+  @tweetlr_config = {
+    :tumblr_email => CONFIG['tumblr_username'], 
+    :tumblr_password => CONFIG['tumblr_password'],
     :whitelist => CONFIG['whitelist'], 
     :shouts => CONFIG['shouts'], 
     :since_id => CONFIG['start_at_tweet_id'] , 
@@ -33,7 +35,7 @@ begin
     :api_endpoint_twitter => CONFIG['api_endpoint_twitter'],
     :results_per_page => CONFIG['results_per_page'],
     :result_type => CONFIG['result_type']
-    })
+    }
 rescue SystemCallError
   $stderr.puts "Ooops - looks like there is no ./config/tweetlr.yml found. I'm affraid tweetlr won't work properly until you introduced that configuration file."
   exit(1)
@@ -43,32 +45,11 @@ Daemons.run_proc('tweetlr', :dir_mode => :script, :dir => './', :backtrace => tr
   @log = Logger.new(STDOUT)
   @log.info "starting tweetlr daemon..." 
   @log.info "creating a new tweetlr instance using this config: #{CONFIG.inspect}"   
-  EventMachine::run { 
-    EventMachine::add_periodic_timer( UPDATE_PERIOD ) {
-     @log.info "starting tweetlr crawl..."
-     response = {}
-     response = @tweetlr.lazy_search_twitter(@tweetlr.twitter_config["refresh_url"]) #looks awkward, but the refresh url will come from the db soon and make sense then...
-     if response
-       tweets = response['results']
-       if tweets
-       tweets.each do |tweet|
-         tumblr_post = @tweetlr.generate_tumblr_photo_post tweet, :whitelist => @tweetlr.whitelist #looks awkward, but the refresh url will come from the db soon and make sense then...
-         if tumblr_post.nil? ||  tumblr_post[:source].nil?
-            @log.warn "could not get image source: tweet: #{tweet} --- tumblr post: #{tumblr_post.inspect}"
-         else
-           @log.debug "tumblr post: #{tumblr_post}"
-           res = @tweetlr.post_to_tumblr tumblr_post
-           @log.warn "tumblr response: #{res.header_str} #{res.body_str}" unless res.response_code == 201
-         end
-        end
-         # store the highest tweet id
-         @tweetlr.twitter_config[:refresh_url]=response['refresh_url']
-         File.open(tid_file, "w+") { |io| io.write(response['max_id']) }
-       end
-     else
-       @log.error "twitter search returned no response. hail the failwhale!"
+  EventMachine::run do 
+    EventMachine::add_periodic_timer( UPDATE_PERIOD ) do
+      response = Tweetlr.crawl(@tweetlr_config)
+      File.open(tid_file, "w+") { |io| io.write(response['max_id']) }
+      @tweetlr_config.merge! response
      end
-     @log.info "finished tweetlr crawl."
-     }
-   }
+   end
 end
