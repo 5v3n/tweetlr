@@ -12,7 +12,7 @@ require 'log_aware'
 
 class Tweetlr
 
-  VERSION = '0.1.7pre3'
+  VERSION = '0.1.7pre4'
   
   API_ENDPOINT_TWITTER = 'http://search.twitter.com/search.json'
   API_ENDPOINT_TUMBLR = 'http://www.tumblr.com'
@@ -61,7 +61,7 @@ class Tweetlr
       tweets = response['results']
       if tweets
       tweets.each do |tweet|
-        tumblr_post = Combinators::TwitterTumblr::generate_photo_post_from_tweet(tweet, {:whitelist => config[:whitelist]}) 
+        tumblr_post = Combinators::TwitterTumblr::generate_photo_post_from_tweet(tweet, {:whitelist => config[:whitelist], :embedly_key => config[:embedly_key]}) 
         if tumblr_post.nil? ||  tumblr_post[:source].nil?
            log.warn "could not get image source: tweet: #{tweet} --- tumblr post: #{tumblr_post.inspect}"
         else

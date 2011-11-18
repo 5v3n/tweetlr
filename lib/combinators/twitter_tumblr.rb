@@ -11,12 +11,12 @@ module Combinators
       LogAware.log #TODO why doesn't the include make the log method accessible?
     end
     #extract a linked image file's url from a tweet. first found image will be used.
-    def self.extract_image_url(tweet)
+    def self.extract_image_url(tweet, embedly_key=nil)
       links = Processors::Twitter::extract_links tweet
       image_url = nil
       if links
         links.each do |link|
-          image_url = Processors::PhotoService::find_image_url(link)
+          image_url = Processors::PhotoService::find_image_url(link, embedly_key)
           return image_url if Processors::PhotoService::photo? image_url
         end
       end
@@ -33,7 +33,7 @@ module Combinators
         tumblr_post = {}
         tumblr_post[:type] = 'photo'
         tumblr_post[:date] = tweet['created_at']
-        tumblr_post[:source] = extract_image_url tweet
+        tumblr_post[:source] = extract_image_url tweet, options[:embedly_key]
         user = tweet['from_user']
         tumblr_post[:tags] = user
         tweet_id = tweet['id']

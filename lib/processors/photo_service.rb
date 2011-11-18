@@ -15,7 +15,7 @@ module Processors
       LogAware.log #TODO why doesn't the include make the log method accessible?
     end
   
-    def self.find_image_url(link)
+    def self.find_image_url(link, embedly_key=nil)
       url = nil
       if link && !(photo? link)
         url = image_url_instagram link if (link.index('instagr.am') || link.index('instagram.com'))
@@ -26,7 +26,7 @@ module Processors
         url = image_url_tco link if link.index 't.co'
         url = image_url_lockerz link if link.index 'lockerz.com'
         url = image_url_foursquare link if link.index '4sq.com'
-        url = image_url_embedly link if url.nil? #just try embed.ly for anything else. could do all image url processing w/ embedly, but there's probably some kind of rate limit invovled.
+        url = image_url_embedly link, embedly_key if url.nil? #just try embed.ly for anything else. could do all image url processing w/ embedly, but there's probably some kind of rate limit invovled.
       elsif photo? link
         url = link
       end
@@ -38,8 +38,8 @@ module Processors
     end
   
     #find the image's url via embed.ly
-    def self.image_url_embedly(link_url)
-      response = Processors::Http::http_get "http://api.embed.ly/1/oembed?url=#{link_url}"
+    def self.image_url_embedly(link_url, key)
+      response = Processors::Http::http_get "http://api.embed.ly/1/oembed?key=#{key}&url=#{link_url}"
       if response && response['type'] == 'photo'
         image_url = response['url'] 
       end
@@ -113,7 +113,7 @@ module Processors
              return nil
           end
       end
-      if(resp && resp.header_str.index(LOCATION_START_INDICATOR) && resp.header_str.index(stop_indicator))
+      if(resp && resp.header_str && resp.header_str.index(LOCATION_START_INDICATOR) && resp.header_str.index(stop_indicator))
         start = resp.header_str.index(LOCATION_START_INDICATOR) + LOCATION_START_INDICATOR.size
         stop  = resp.header_str.index(stop_indicator, start)
         resp.header_str[start...stop]

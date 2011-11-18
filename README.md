@@ -15,7 +15,7 @@ tweetlr supports
 - imgly
 - twitter / photobucket
 - t.co shortened links to pictures
-- every service accessible via embed.ly (see [photo providers](http://embed.ly/providers))
+- every service accessible via embed.ly (see [photo providers](http://embed.ly/providers))  
 
 ## Installation
 
@@ -34,10 +34,11 @@ api_endpoint_twitter: 'http://search.twitter.com/search.json'
 api_endpoint_tumblr: 'http://www.tumblr.com'
 tumblr_username: YOUR_TUMBLR_EMAIL
 tumblr_password: YOUR_TUMBLR_PW
+embedly_key: '' #tweetlr uses http://embedly.com for link processing. a free plan containing an api key is available & recommended to use in order to ensure full support
 update_period: 300 #check for updates every 300 secs = 5 minutes
 shouts: 'says' # will be concatenated after the username, before the message: @mr_x says: awesome things on a photo!
 loglevel: 1 # 0: debug, 1: info (default), 2: warn, 3: error, 5: fatal
-whitelist: #twitter accounts in that list will have their tweets published immediately. post from others will be saved as drafts. blank list will publish all tweets immediately.
+whitelist: #twitter accounts in that list will have their tweets published immediately. post from others will be saved as drafts. blank list will publish all tweets immediately
   - whitey_mc_whitelist
   - sven_kr
 ```

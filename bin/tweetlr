@@ -35,6 +35,7 @@ begin
     :api_endpoint_twitter => CONFIG['api_endpoint_twitter'],
     :results_per_page => CONFIG['results_per_page'],
     :result_type => CONFIG['result_type']
+    :embedly_key => CONFIG['embedly_key']
     }
 rescue SystemCallError
   $stderr.puts "Ooops - looks like there is no ./config/tweetlr.yml found. I'm affraid tweetlr won't work properly until you introduced that configuration file."
