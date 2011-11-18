@@ -12,7 +12,7 @@ require 'log_aware'
 
 class Tweetlr
 
-  VERSION = '0.1.7pre'
+  VERSION = '0.1.7pre3'
   
   API_ENDPOINT_TWITTER = 'http://search.twitter.com/search.json'
   API_ENDPOINT_TUMBLR = 'http://www.tumblr.com'
@@ -48,8 +48,8 @@ class Tweetlr
   
   def self.crawl(config)
     twitter_config = {
-      :since_id => config[:since_id],
-      :search_term => config[:terms],
+      :since_id => config[:since_id] || config[:start_at_tweet_id],
+      :search_term => config[:terms] || config[:search_term] ,
       :results_per_page => config[:results_per_page] || TWITTER_RESULTS_PER_PAGE,
       :result_type => config[:result_type] || TWITTER_RESULTS_TYPE,  
       :api_endpoint_twitter => config[:api_endpoint_twitter] || API_ENDPOINT_TWITTER
