@@ -14,6 +14,7 @@ tweetlr supports
 - yfrog
 - imgly
 - twitter / photobucket
+- path.com
 - t.co shortened links to pictures
 - every service accessible via embed.ly (see [photo providers](http://embed.ly/providers))  
 

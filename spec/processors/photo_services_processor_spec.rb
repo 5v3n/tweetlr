@@ -3,6 +3,7 @@ require 'spec_helper'
 describe Processors::PhotoService do
   before :each do
     @links = {
+      :path => 'https://path.com/p/1OKhLx', 
       :instagram => "http://instagr.am/p/DzCWn/",
       :twitpic => "http://twitpic.com/449o2x",
       :yfrog => "http://yfrog.com/h4vlfp",
@@ -11,7 +12,7 @@ describe Processors::PhotoService do
       :tco => 'http://t.co/MUGNayA',
       :lockerz => 'http://lockerz.com/s/100269159',
       :embedly => 'http://flic.kr/p/973hTv',
-      :twitter_pics => 'http://t.co/FmyBGfyY' 
+      :twitter_pics => 'http://t.co/FmyBGfyY'
       }
   end
   it "should find a picture's url from the supported services" do

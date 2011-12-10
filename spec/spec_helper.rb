@@ -11,6 +11,265 @@ def check_pic_url_extraction(service)
   image_url.should =~ Processors::PhotoService::PIC_REGEXP
 end
 
+def stub_path
+  Curl::Easy.any_instance.stub(:perform).and_return Curl::Easy.new
+  Curl::Easy.any_instance.stub(:body_str).and_return %^
+
+  <div class="moments_photo moments_photo-landscape">
+      <div class="photo-container">
+          <img src="https://s3-us-west-1.amazonaws.com/images.path.com/photos2/f90fd831-43c3-48fd-84cb-5c3bae52957a/2x.jpg" width="480" height="358.5" class="moment-block photo-image" />
+          <b class="photo-border" style="width: 478px; height: 356.5px;"></b>
+      </div>
+  </div>
+
+
+          <div class="moment-block">
+
+
+
+
+              <div class="moments_feedback">
+
+      <div class="moment-description">
+
+          <div class="moment-tags">
+
+              <span class="moment-author">Sven Kräuter</span>
+
+
+
+              <span class="moment-timestamp">1 hour ago</span>
+          </div>
+
+          <div class="feedback-actions">
+              <div class="emotion-picker">
+                  <div class="emotion-picker-box">
+                      <ul class="emotion-icon-set">
+                          <li class="emotion-icon happy">
+                              <a href="#" class="emotion-icon-a" data-emotion-type="happy">Happy</a>
+                          </li>
+                          <li class="emotion-icon laugh">
+                              <a href="#" class="emotion-icon-a" data-emotion-type="laugh">Laugh</a>
+                          </li>
+                          <li class="emotion-icon surprise">
+                              <a href="#" class="emotion-icon-a" data-emotion-type="surprise">Surprise</a>
+                          </li>
+                          <li class="emotion-icon sad">
+                              <a href="#" class="emotion-icon-a" data-emotion-type="sad">Sad</a>
+                          </li>
+                          <li class="emotion-icon love">
+                              <a href="#" class="emotion-icon-a" data-emotion-type="love">Love</a>
+                          </li>
+                      </ul>
+                  </div>
+                  <a href="#" class="action action-emotion"><b class="None">Add Emotion</b></a>
+              </div>
+
+              <a href="#" class="action action-comment"><b>Add Comment</b></a>
+          </div>
+      </div>
+
+      <div class="seen-it-container">
+          <ul class="seen-it-set">
+
+              <li class="user user-small seen-it  tooltip-target">
+
+                  <img src="https://s3-us-west-1.amazonaws.com/images.path.com/profile_photos/4d973b511f60bf3eae6dc418a86e848653ad90ac/processed_80x80.jpg" class="user-photo" />
+                  <div class="tooltip-block">
+                      <div class="tooltip-container">
+                          <b class="tooltip-text">Thies Arntzen</b>
+                          <b class="tooltip-pointer"></b>
+                      </div>
+                  </div>
+
+                  <b class="user-border"></b>
+
+              </li>
+
+              <li class="user user-small seen-it  tooltip-target">
+
+                  <img src="https://s3-us-west-1.amazonaws.com/images.path.com/profile_photos/34255fba4020523f71a25b05b89d86f80d19850b/processed_80x80.jpg" class="user-photo" />
+                  <div class="tooltip-block">
+                      <div class="tooltip-container">
+                          <b class="tooltip-text">Sven Kräuter</b>
+                          <b class="tooltip-pointer"></b>
+                      </div>
+                  </div>
+
+                  <b class="user-border"></b>
+
+              </li>
+
+              <li class="user user-small seen-it seen-it-blank tooltip-target">
+
+                  <b class="user-border"></b>
+
+              </li>
+
+              <li class="user user-small seen-it seen-it-blank tooltip-target">
+
+                  <b class="user-border"></b>
+
+              </li>
+
+              <li class="user user-small seen-it seen-it-blank tooltip-target">
+
+                  <b class="user-border"></b>
+
+              </li>
+
+              <li class="user user-small seen-it seen-it-blank tooltip-target">
+
+                  <b class="user-border"></b>
+
+              </li>
+
+              <li class="user user-small seen-it seen-it-blank tooltip-target">
+
+                  <b class="user-border"></b>
+
+              </li>
+
+              <li class="user user-small seen-it seen-it-blank tooltip-target">
+
+                  <b class="user-border"></b>
+
+              </li>
+
+              <li class="user user-small seen-it seen-it-blank tooltip-target">
+
+                  <b class="user-border"></b>
+
+              </li>
+
+              <li class="user user-small seen-it seen-it-blank tooltip-target">
+
+                  <b class="user-border"></b>
+
+              </li>
+
+              <li class="clear"></li>
+          </ul>
+
+      </div>
+
+      <ul class="comment-set">
+
+          <li class="comment">
+              <div class="user comment-user">
+                  <img src="https://s3-us-west-1.amazonaws.com/images.path.com/profile_photos/34255fba4020523f71a25b05b89d86f80d19850b/processed_80x80.jpg" class="user-photo" />
+                  <b class="user-border"></b>
+              </div>
+              <h4 class="comment-author">Sven Kräuter</h4>
+              <div class="comment-body">#coffeediary usually not a big fan of industrial beans, I have to admit: the segafredo intermezzo is quite amazing</div>
+              <h5 class="comment-timestamp">
+                  <span class="comment-date"><time class="timestamp" datetime="2011-12-10T17:49:54Z">December 10, 2011 at 17:49</time></span>
+
+                  <span class="comment-location">from Hamburg, Germany</span>
+
+              </h5>
+
+
+          </li>
+
+      </ul>
+
+      <div class="comment-box">
+
+          <form action="/comments/create" method="POST" class="comment-form">
+              <div class="comment-sizer">And a comment!</div>
+              <input type="hidden" name="moment_id" value="4ee39bcf7c215078e9031249" />
+              <textarea class="comment-field" name="body" rows="1" placeholder="Add a comment..."></textarea>
+          </form>
+
+          <div class="comment-blocker">
+              <b>Login required</b>
+          </div>
+
+      </div>
+
+  </div><!-- // moments_feedback -->
+              <div class="timeline-arrow"></div>
+          </div>
+
+      </div>
+
+
+
+
+
+      </div>
+
+
+
+
+
+
+
+              <script src="/static/cache/javascripts/all.js?1323473167"></script>
+
+
+
+
+
+
+
+
+
+
+      <script type="text/javascript" charset="utf-8">
+          Ply.ui.register('shared', {
+              view: document.body
+          });
+
+      Ply.ui.register('moments_show');
+
+      </script>
+
+
+  <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-9066780-2']);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+          var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+          ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+          var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+  </script>
+
+
+  <script type="text/javascript">
+      var _sf_async_config={uid:28481,domain:"path.com"};
+      (function(){
+          function loadChartbeat() {
+              window._sf_endpt=(new Date()).getTime();
+              var e = document.createElement('script');
+              e.setAttribute('language', 'javascript');
+              e.setAttribute('type', 'text/javascript');
+              e.setAttribute('src', (("https:" == document.location.protocol) ? "https://a248.e.akamai.net/chartbeat.download.akamai.com/102508/" : "http://static.chartbeat.com/") + "js/chartbeat.js");
+              document.body.appendChild(e);
+          }
+          var oldonload = window.onload;
+          window.onload = (typeof window.onload != 'function') ? loadChartbeat : function() { oldonload(); loadChartbeat(); };
+      })();
+  </script>
+
+
+  <script type="text/javascript">var mpq=[];mpq.push(["init","8317b3b4f5a2a5fdba3c5a4782c7289f"]);(function(){var b,a,e,d,c;b=document.createElement("script");b.type="text/javascript";b.async=true;b.src=(document.location.protocol==="https:"?"https:":"http:")+"//api.mixpanel.com/site_media/js/api/mixpanel.js";a=document.getElementsByTagName("script")[0];a.parentNode.insertBefore(b,a);e=function(f){return function(){mpq.push([f].concat(Array.prototype.slice.call(arguments,0)))}};d=["init","track","track_links","track_forms","register","register_once","identify","name_tag","set_config"];for(c=0;c<d.length;c++){mpq[d[c]]=e(d[c])}})();
+
+  mpq.identify("687ad7fc-2360-11e1-8ff7-12313e006031");
+
+
+  </script>
+
+
+  <script src="https://cdn.optimizely.com/js/6548263.js"></script>
+  </body>
+  </html>^
+end
+
 def stub_tumblr
   Curl::Easy.any_instance.stub(:response_code).and_return 201
   Curl::Easy.any_instance.stub(:header_str).and_return %|HTTP/1.1 201 Created

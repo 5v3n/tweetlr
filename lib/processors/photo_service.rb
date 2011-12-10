@@ -1,4 +1,5 @@
 require 'processors/http'
+require 'nokogiri'
 require 'log_aware'
 
 module Processors
@@ -25,6 +26,7 @@ module Processors
         url = image_url_imgly link if link.index 'img.ly'
         url = image_url_tco link, embedly_key if link.index 't.co'
         url = image_url_lockerz link if link.index 'lockerz.com'
+        url = image_url_path link if link.index 'path.com'
         url = image_url_embedly link, embedly_key if url.nil? #just try embed.ly for anything else. could do all image url processing w/ embedly, but there's probably some kind of rate limit invovled.
       elsif photo? link
         url = link
@@ -35,10 +37,24 @@ module Processors
     def self.photo?(link)
       link =~ PIC_REGEXP
     end
+    
+    #extract the image of a path.com pic
+    def self.image_url_path(link_url)
+      image_url=nil
+      html_response = Processors::Http::http_get link_url
+      html_doc = Nokogiri::HTML.parse(html_response.body_str)
+      if html_doc
+        photo_container_div = html_doc.css("img.photo-image")
+        if photo_container_div && photo_container_div.first && photo_container_div.first.attributes["src"]
+          image_url = photo_container_div.first.attributes["src"].value
+        end
+      end
+      return image_url
+    end
   
     #find the image's url via embed.ly
     def self.image_url_embedly(link_url, key)
-      response = Processors::Http::http_get "http://api.embed.ly/1/oembed?key=#{key}&url=#{link_url}"
+      response = Processors::Http::http_get_json "http://api.embed.ly/1/oembed?key=#{key}&url=#{link_url}"
       log.debug "embedly call: http://api.embed.ly/1/oembed?key=#{key}&url=#{link_url}"
       if response && response['type'] == 'photo'
         image_url = response['url'] 
@@ -47,7 +63,7 @@ module Processors
     end
     #find the image's url for a lockerz link
     def self.image_url_lockerz(link_url)
-      response = Processors::Http::http_get "http://api.plixi.com/api/tpapi.svc/json/metadatafromurl?details=false&url=#{link_url}"
+      response = Processors::Http::http_get_json "http://api.plixi.com/api/tpapi.svc/json/metadatafromurl?details=false&url=#{link_url}"
       response["BigImageUrl"] if response
     end
     #find the image's url for an twitter shortened link
@@ -58,7 +74,7 @@ module Processors
     #find the image's url for an instagram link
     def self.image_url_instagram(link_url)
       link_url['instagram.com'] = 'instagr.am' if link_url.index 'instagram.com' #instagram's oembed does not work for .com links
-      response = Processors::Http::http_get "http://api.instagram.com/oembed?url=#{link_url}"
+      response = Processors::Http::http_get_json "http://api.instagram.com/oembed?url=#{link_url}"
       response['url'] if response
     end
 
@@ -66,7 +82,7 @@ module Processors
     def self.image_url_picplz(link_url)
       id = extract_id link_url
       #try short url
-      response = Processors::Http::http_get "http://picplz.com/api/v2/pic.json?shorturl_ids=#{id}"
+      response = Processors::Http::http_get_json "http://picplz.com/api/v2/pic.json?shorturl_ids=#{id}"
       #if short url fails, try long url
       #response = HTTParty.get "http://picplz.com/api/v2/pic.json?longurl_ids=#{id}"
       #extract url
@@ -82,7 +98,7 @@ module Processors
     end
     #find the image'S url for a yfrog link
     def self.image_url_yfrog(link_url)
-      response = Processors::Http::http_get("http://www.yfrog.com/api/oembed?url=#{link_url}")
+      response = Processors::Http::http_get_json("http://www.yfrog.com/api/oembed?url=#{link_url}")
       response['url'] if response
     end
     #find the image's url for a img.ly link
