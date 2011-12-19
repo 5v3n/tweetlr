@@ -28,7 +28,7 @@ module Combinators
       tumblr_post = nil
       message = tweet['text']
       whitelist = options[:whitelist]
-      whitelist.each {|entry| entry.downcase!} if whitelist
+      whitelist.each {|entry| entry.downcase!} if (whitelist && whitelist.size != 0)
       if !Processors::Twitter::retweet? message
         log.debug "tweet: #{tweet}"
         tumblr_post = {}
@@ -38,7 +38,7 @@ module Combinators
         user = tweet['from_user']
         tumblr_post[:tags] = user
         tweet_id = tweet['id']
-        if !whitelist || whitelist.member?(user.downcase)
+        if !whitelist || whitelist.size == 0 || whitelist.member?(user.downcase)
           state = 'published'
         else
           state = 'draft'

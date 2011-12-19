@@ -66,13 +66,18 @@ describe Combinators::TwitterTumblr do
       post[:state].should == 'draft' 
     end
   end
-  context "without a user whitelist" do
+  context "without a user whitelist (whitelist nil or empty)" do
     it "should mark every users' posts as published" do
       stub_instagram
       post = Combinators::TwitterTumblr::generate_photo_post_from_tweet @twitter_response, :whitelist => nil
       post[:state].should == 'published'
       stub_instagram
       post = Combinators::TwitterTumblr::generate_photo_post_from_tweet @non_whitelist_tweet, :whitelist => nil
+      post[:state].should == 'published'
+      post = Combinators::TwitterTumblr::generate_photo_post_from_tweet @twitter_response, :whitelist => ""
+      post[:state].should == 'published'
+      stub_instagram
+      post = Combinators::TwitterTumblr::generate_photo_post_from_tweet @non_whitelist_tweet, :whitelist => ""
       post[:state].should == 'published'
     end
   end
