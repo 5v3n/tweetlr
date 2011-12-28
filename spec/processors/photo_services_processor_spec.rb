@@ -15,6 +15,11 @@ describe Processors::PhotoService do
       :twitter_pics => 'http://t.co/FmyBGfyY'
       }
   end
+  it "finds images in embedly results that are not explicitly marked as 'Photo' via the response's 'thumbnail_url' attribute" do
+    stub_embedly_no_photo
+    link = Processors::PhotoService::find_image_url 'im mocked anyways'
+    link.should == 'http://s3-media4.ak.yelpcdn.com/bphoto/py1D5XEyOHcOcg6GJD3SEQ/l.jpg'
+  end
   it "should find a picture's url from the supported services" do
     @links.each do |service,link|
       send "stub_#{service}"

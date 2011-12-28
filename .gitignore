@@ -7,3 +7,4 @@ pkg
 Gemfile.lock
 tweetlr.tid
 tweetlr.yml.dev
+tweetlr.yml.orig

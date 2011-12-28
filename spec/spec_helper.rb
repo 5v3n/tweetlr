@@ -403,3 +403,8 @@ def stub_embedly
   Curl::Easy.any_instance.stub(:body_str).and_return %|{"provider_url": "http://www.flickr.com/", "description": "Lady GaGa", "title": "Lady GaGa", "url": "http://farm6.static.flickr.com/5204/5319200155_c966f67dc3.jpg", "author_name": "mjcom18", "height": 468, "width": 307, "thumbnail_url": "http://farm6.static.flickr.com/5204/5319200155_c966f67dc3_t.jpg", "thumbnail_width": 66, "version": "1.0", "provider_name": "Flickr", "cache_age": 3600, "type": "photo", "thumbnail_height": 100, "author_url": "http://www.flickr.com/photos/57795463@N05/"}|
   Curl::Easy.any_instance.stub(:perform).and_return Curl::Easy.new
 end
+
+def stub_embedly_no_photo
+  Curl::Easy.any_instance.stub(:body_str).and_return %|{"provider_url": "http://www.yelp.de/", "description": "Fotos von Kopiba \u2013 #coffeediary \u2013 Hamburg", "title": "#coffeediary Yelp", "url": "http://www.yelp.de/biz_photos/wB1uHl_VnEbn7tqigTZKTQ?pt=biz_photo&ref=twitter&select=py1D5XEyOHcOcg6GJD3SEQ", "thumbnail_width": 298, "thumbnail_url": "http://s3-media4.ak.yelpcdn.com/bphoto/py1D5XEyOHcOcg6GJD3SEQ/l.jpg", "version": "1.0", "provider_name": "Yelp", "type": "link", "thumbnail_height": 400}|
+  Curl::Easy.any_instance.stub(:perform).and_return Curl::Easy.new
+end

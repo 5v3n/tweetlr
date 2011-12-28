@@ -1,8 +1,10 @@
 # tweetlr
 
+<a href="http://travis-ci.org/#!/5v3n/tweetlr">![travis-ci](http://travis-ci.org/5v3n/tweetlr.png)</a>
+
 tweetlr crawls twitter for a given term, extracts photos out of the collected tweets' short urls and posts the images to tumblr. 
 
-<a href="http://travis-ci.org/#!/5v3n/tweetlr">![travis-ci](http://travis-ci.org/5v3n/tweetlr.png)</a>
+There is a new [tweetlr "as-a-service"](http://tweetlr.5v3n.com) where you can easily create an account without having to know or host anything.
 
 ## Supported image sharing services
 
@@ -16,7 +18,9 @@ tweetlr supports
 - twitter / photobucket
 - path.com
 - t.co shortened links to pictures
-- every service accessible via embed.ly (see [photo providers](http://embed.ly/providers))  
+- every photo service accessible via embed.ly (see [photo providers](http://embed.ly/providers))
+  - plus every service that delivers a thumbnail via embed.ly
+
 
 ## Installation
 
@@ -48,7 +52,7 @@ whitelist: #twitter accounts in that list will have their tweets published immed
 
 Make sure you put the configuration file in it's proper place as mentioned above, then: 
 
-start/stop tweetlr using `tweetlr start`/`tweetlr stop`. Run `tweetlr` without arguments for a list of options concerning the daemon's options. 
+start/stop tweetlr using `tweetlr start`/`tweetlr stop`. Run `tweetlr` without arguments for a list of options concerning the daemon's options.
 
 For a easy to modify working example, check out the [tweetlr_demo](http://github.com/5v3n/tweetlr_demo).
 
