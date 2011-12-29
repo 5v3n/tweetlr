@@ -12,7 +12,7 @@ require 'log_aware'
 
 class Tweetlr
 
-  VERSION = '0.1.9'
+  VERSION = '0.1.10'
   
   API_ENDPOINT_TWITTER = 'http://search.twitter.com/search.json'
   API_ENDPOINT_TUMBLR = 'http://www.tumblr.com'

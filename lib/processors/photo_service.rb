@@ -40,7 +40,9 @@ module Processors
     
     #extract the image of a path.com pic
     def self.image_url_path(link_url)
-      image_url=nil
+      service_url = link_url_redirect link_url #follow possible redirects
+      link_url = service_url if service_url #if there's no redirect, service_url will be nil
+      image_url = nil
       html_response = Processors::Http::http_get link_url
       html_doc = Nokogiri::HTML.parse(html_response.body_str)
       if html_doc

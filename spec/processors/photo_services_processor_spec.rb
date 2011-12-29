@@ -3,7 +3,7 @@ require 'spec_helper'
 describe Processors::PhotoService do
   before :each do
     @links = {
-      :path => 'https://path.com/p/1OKhLx', 
+      :path => 'http://path.com/p/KQd57', 
       :instagram => "http://instagr.am/p/DzCWn/",
       :twitpic => "http://twitpic.com/449o2x",
       :yfrog => "http://yfrog.com/h4vlfp",
@@ -27,6 +27,11 @@ describe Processors::PhotoService do
       url.should be, "service #{service} not working!"
       check_pic_url_extraction service if [:instagram,:picplz,:yfrog,:imgly,:not_listed].index service
     end
+  end
+  it "finds path images for redirected moments as well" do
+    stub_path_redirected
+    url = Processors::PhotoService::find_image_url @links[:path]
+    url.should == 'https://s3-us-west-1.amazonaws.com/images.path.com/photos2/f90fd831-43c3-48fd-84cb-5c3bae52957a/2x.jpg'
   end
   it "should not crash if embedly fallback won't find a link" do
     stub_bad_request
