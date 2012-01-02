@@ -40,6 +40,7 @@ class Tweetlr
     @shouts = args[:shouts]
     @update_period = args[:update_period] || UPDATE_PERIOD
     @whitelist.each {|entry| entry.downcase!} if @whitelist
+    log.info "Tweetlr #{Tweetlr::VERSION} initialized. Ready to roll."
   end
   
   def self.crawl(config)
