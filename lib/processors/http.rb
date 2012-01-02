@@ -1,4 +1,5 @@
 require 'curb'
+require 'json'
 require 'log_aware'
 
 module Processors

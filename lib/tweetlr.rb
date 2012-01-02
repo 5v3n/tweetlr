@@ -1,8 +1,4 @@
 # encode: UTF-8
-require 'logger'
-require 'yaml'
-require 'curb'
-require 'json'
 require 'processors/twitter'
 require 'processors/http'
 require 'processors/photo_service'
@@ -54,10 +50,10 @@ class Tweetlr
       :results_per_page => config[:results_per_page] || TWITTER_RESULTS_PER_PAGE,
       :result_type => config[:result_type] || TWITTER_RESULTS_TYPE,  
       :api_endpoint_twitter => config[:api_endpoint_twitter] || API_ENDPOINT_TWITTER
-    }    
+    }
     log.info "starting tweetlr crawl..."
     response = {}
-    response = Processors::Twitter::lazy_search(twitter_config) #looks awkward, but the refresh url will come from the db soon and make sense then...
+    response = Processors::Twitter::lazy_search(twitter_config)
     if response
       tweets = response['results']
       if tweets

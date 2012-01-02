@@ -1,5 +1,6 @@
 #encoding: utf-8
 require "bundler"
+require "logger"
 Bundler.require :default, :development, :test
 
 logger = Logger.new(STDOUT)
