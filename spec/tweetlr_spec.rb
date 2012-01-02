@@ -36,7 +36,7 @@ describe Tweetlr do
   it "crawls twitter and posts to tumblr" do 
     stub_tumblr
     stub_twitter
-    Tweetlr.crawl(config)
+    Tweetlr.crawl(@tweetlr_config)
   end
 
 
