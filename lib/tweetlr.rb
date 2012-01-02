@@ -34,7 +34,7 @@ class Tweetlr
     @email = args[:tumblr_email]
     @password = args[:tumblr_password]
     @cookie = args[:cookie]
-    @api_endpoint_twitter = 
+    @api_endpoint_twitter = args[:api_endpoint_twitter] || API_ENDPOINT_TWITTER
     @api_endpoint_tumblr = args[:api_endpoint_tumblr] || API_ENDPOINT_TUMBLR
     @whitelist = args[:whitelist]
     @shouts = args[:shouts]
