@@ -34,6 +34,8 @@ describe Tweetlr do
     response.response_code.should be 201
   end
   it "crawls twitter and posts to tumblr" do 
+    stub_tumblr
+    stub_twitter
     Tweetlr.crawl(config)
   end
 
