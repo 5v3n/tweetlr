@@ -27,6 +27,7 @@ module Processors
         url = image_url_tco link, embedly_key if link.index 't.co'
         url = image_url_lockerz link if link.index 'lockerz.com'
         url = image_url_path link if link.index 'path.com'
+        url = image_url_foursqaure link if link.index '4sq.com'
         url = image_url_embedly link, embedly_key if url.nil? #just try embed.ly for anything else. could do all image url processing w/ embedly, but there's probably some kind of rate limit invovled.
       elsif photo? link
         url = link
@@ -37,20 +38,20 @@ module Processors
     def self.photo?(link)
       link =~ PIC_REGEXP
     end
-    
+    #extract the image of a foursquare.com pic
+    def self.image_url_foursqaure(link_url)
+      service_url = link_url_redirect link_url #follow possible redirects
+      link_url = service_url if service_url #if there's no redirect, service_url will be nil
+      response = Processors::Http::http_get link_url
+      image_url = parse_html_for '.commentPhoto img', Nokogiri::HTML.parse(response.body_str)
+      return image_url
+    end
     #extract the image of a path.com pic
     def self.image_url_path(link_url)
       service_url = link_url_redirect link_url #follow possible redirects
       link_url = service_url if service_url #if there's no redirect, service_url will be nil
-      image_url = nil
-      html_response = Processors::Http::http_get link_url
-      html_doc = Nokogiri::HTML.parse(html_response.body_str)
-      if html_doc
-        photo_container_div = html_doc.css("img.photo-image")
-        if photo_container_div && photo_container_div.first && photo_container_div.first.attributes["src"]
-          image_url = photo_container_div.first.attributes["src"].value
-        end
-      end
+      response = Processors::Http::http_get link_url
+      image_url = parse_html_for 'img.photo-image', Nokogiri::HTML.parse(response.body_str)
       return image_url
     end
   
@@ -143,6 +144,17 @@ module Processors
     #extract the pic id from a given <code>link</code>
     def self.extract_id(link)
       link.split('/').last if link.split('/')
+    end
+    #parse html doc for element signature
+    def self.parse_html_for(element_signature, html_doc)
+      image_url= nil
+      if html_doc
+        photo_container_div = html_doc.css(element_signature)
+        if photo_container_div && photo_container_div.first && photo_container_div.first.attributes["src"]
+          image_url = photo_container_div.first.attributes["src"].value
+        end
+      end
+      image_url
     end
   end
 end

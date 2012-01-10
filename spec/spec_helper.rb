@@ -427,4 +427,571 @@ def stub_path
   </html>^
 end
 
+def stub_foursquare
+  Curl::Easy.any_instance.stub(:perform).and_return Curl::Easy.new
+  Curl::Easy.any_instance.stub(:body_str).and_return %^<?xml version="1.0" encoding="UTF-8"?>
+
+  <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+  <html xmlns:fb="http://www.facebook.com/2008/fbml" xmlns:og="http://opengraphprotocol.org/schema/" xmlns:lift="http://liftweb.net" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta content="text/html; charset=UTF-8" http-equiv="content-type" />
+    <meta content="foursquare" name="description" />
+    <meta content="foursquare" name="application-name" />
+
+    <meta content="Start the foursquare App" name="msapplication-tooltip" />
+    <meta content="/" name="msapplication-starturl" />
+    <meta content="width=1024;height=768" name="msapplication-window" />
+    <meta content="name=Recent Check-ins; action-uri=/; icon-uri=/favicon.ico" name="msapplication-task" />
+    <meta content="name=Profile;action-uri=/user;icon-uri=/favicon.ico" name="msapplication-task" />
+    <meta content="name=History;action-uri=/history;icon-uri=/favicon.ico" name="msapplication-task" />
+    <meta content="name=Badges;action-uri=/badges;icon-uri=/favicon.ico" name="msapplication-task" />
+    <meta content="name=Stats;action-uri=/stats;icon-uri=/favicon.ico" name="msapplication-task" />
+
+
+    <title>foursquare :: Sven @ kopiba</title>
+    <link href="https://static-s.foursquare.com/favicon-c62b82f6120e2c592a3e6f3476d66554.ico" type="image/x-icon" rel="icon" />
+    <link href="https://static-s.foursquare.com/favicon-c62b82f6120e2c592a3e6f3476d66554.ico" type="image/x-icon" rel="shortcut icon" />
+    <link href="https://static-s.foursquare.com/img/touch-icon-ipad-1d5a99e90171f6a0cc2f74920ec24021.png" sizes="72x72" rel="apple-touch-icon-precomposed" />
+    <link href="https://playfoursquare.s3.amazonaws.com/press/logo/foursquare-logo.svg" type="image/svg" rel="logo" />
+    <link href="https://static-s.foursquare.com/opensearch-6b463ddc6a73b41a3d4b1c705d814fcf.xml" title="foursquare" type="application/opensearchdescription+xml" rel="search" />
+
+    <link href="https://static-s.foursquare.com/styles/reset-ba1d59b0e53d380b12b3e97a428b3314.css" type="text/css" rel="stylesheet" />
+    <link href="https://static-s.foursquare.com/facebox/facebox-29383c5fc530ed391a05276abeb1959a.css" type="text/css" rel="stylesheet" />
+
+
+
+      <link href="https://static-s.foursquare.com/styles/master-redesign-e811ecb709c2414dbd8bbb382f312aa1.css" type="text/css" rel="stylesheet" />
+
+
+
+
+
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js" type="text/javascript" id="jquery"></script>
+
+
+
+
+  <script type="text/javascript">
+    var _kmq = _kmq || [];
+    function _kms(u){
+      setTimeout(function(){
+        var s = document.createElement('script'); var f = document.getElementsByTagName('script')[0]; s.type = 'text/javascript'; s.async = true;
+        s.src = u; f.parentNode.insertBefore(s, f);
+      }, 1);
+    }
+    // Use this for dev
+    //_kms('//i.kissmetrics.com/i.js');_kms('//doug1izaerwt3.cloudfront.net/0c1574f4c7da92b07e34862fcc6c505d531a957c.1.js');
+  </script>
+
+
+    <script type="text/javascript">
+      // Use this for production
+      _kms('//i.kissmetrics.com/i.js');_kms('//doug1izaerwt3.cloudfront.net/033f1ff04dc072af9d77e05e3fe10ed9b6ea4fcf.1.js');
+    </script>
+
+
+
+    <script src="https://static-s.foursquare.com/scripts/build/en/chrome/root-d0d815376f0111b37b1b2f3786ff5314.js" type="text/javascript"></script>
+    <script src="https://static-s.foursquare.com/scripts/build/en/foursquare/root-5c88202943112aa3305dcb2f9425a601.js" type="text/javascript"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <script type="text/javascript">
+      (function() {
+        window.fourSq = window.fourSq || {};
+        window.fourSq.api = window.fourSq.api || {};
+        window.fourSq.fb = window.fourSq.fb || {};
+        window.fourSq.user = window.fourSq.user || {};
+        window.fourSq.debugLevel = function() { return fourSq.debug.Level.OFF; };
+
+        /**
+         * Setup API domain and token
+         */
+        window.fourSq.api.config = {
+          API_BASE: 'https://api.foursquare.com/',
+          API_TOKEN: 'QEJ4AQPTMMNB413HGNZ5YDMJSHTOHZHMLZCAQCCLXIX41OMP',
+          API_IFRAME: 'https://api.foursquare.com/xdreceiver.html',
+          CLIENT_VERSION: '20111109'
+        };
+
+        /**
+         * Useful values for current user.
+         */
+        window.fourSq.user.config = {
+          USER_PROFILE: undefined,
+          USER_LAT: 0,
+          USER_LNG: 0,
+          // Only used for display.
+          SU6: false,
+          LOCALE: 'en_US'
+        };
+
+        window.fourSq.fb.config = {
+          APP_ID: 86734274142,
+          SCOPE: 'offline_access,publish_stream,user_checkins,friends_checkins,user_location,user_birthday'
+        };
+
+        document.domain = 'foursquare.com';
+      })();
+    </script>
+
+
+
+    <script type="text/javascript">
+      $(function() {
+        $('a[rel*=facebox]').facebox();
+        $('.linkify').linkify();
+
+        var search = $('#search input').placeholder();
+        if ($.trim(search.val()) != '') {
+          search.keydown();
+        }
+      })
+    </script>
+
+
+
+
+  <meta content="NOINDEX" name="ROBOTS" />
+
+
+  <script src="https://maps.google.com/maps/api/js?sensor=false" type="text/javascript"></script>
+
+
+  <script src="https://static-s.foursquare.com/scripts/build/en/foursquare/comments-be605309e291ccdcaa2c7d2645743741.js" type="text/javascript"></script>
+
+
+  <script src="https://static-s.foursquare.com/scripts/build/en/foursquare/checkin-detail-page-2d377f73b6d6318b813cc6db39651fff.js" type="text/javascript"></script>
+
+
+  <script type="text/javascript">
+          $(function() {
+            var options = {
+              el: $('body')
+            }
+
+            options['lat'] = 53.558831084738;
+            options['lng'] = 9.963698387145996;
+            options['fuzzy'] = false;
+            options['venue'] = {"id":"v4b169255f964a52072ba23e3","venue":{"id":"4b169255f964a52072ba23e3","name":"kopiba","contact":{"phone":"4940343824","formattedPhone":"040\/343824","twitter":"kopiba"},"location":{"address":"Beim Grünen Jäger 24","lat":53.558831084738,"lng":9.963698387145996,"postalCode":"20357","city":"Hamburg","country":"Germany"},"categories":[{"id":"4bf58dd8d48988d16d941735","name":"Café","pluralName":"Cafés","shortName":"Café","icon":{"prefix":"https:\/\/foursquare.com\/img\/categories\/food\/cafe_","sizes":[32,44,64,88,256],"name":".png"},"primary":true}],"verified":true,"stats":{"checkinsCount":2903,"usersCount":478,"tipCount":26}}};
+
+
+
+            options['checkinId'] = '4f0c401ae4b020a8d96fb0b1';
+
+
+            if(typeof FRIENDS_PHOTOS_JSON != 'undefined') {
+              options = _.extend(options, {friendsPhotosJson: FRIENDS_PHOTOS_JSON});
+            }
+
+            if(typeof STREAM_PHOTOS_JSON != 'undefined') {
+              options = _.extend(options, {streamPhotosJson: STREAM_PHOTOS_JSON});
+            }
+
+            new fourSq.views.CheckinDetailPage(options);
+          });
+        </script>
+
+
+  </head>
+  <body>
+
+
+
+      <div id="wrapper">
+
+
+  <div id="header">
+
+
+
+      <div class="wrap loggedOut translate">
+        <a id="logo" href="/">foursquare</a>
+        <form id="search" method="get" action="/search">
+          <input placeholder="Search people and places..." name="q" type="text" />
+          <button>Search</button>
+        </form>
+        <div id="loginLink"><a href="/login">Log in</a></div>
+        <div id="menu"><a href="/signup">Sign up</a></div>
+      </div>
+
+  </div>
+  <div id="lift__noticesContainer__"></div>
+
+
+
+
+
+    <div class="translate wrap" id="signupPrompt">
+      <h3>foursquare helps you keep up with friends, discover what's nearby, save money &amp; unlock rewards</h3>
+      <a class="greenButton biggerButton" href="/signup/?source=nav">Get Started Now</a>
+      <iframe scrolling="no" allowTransparency="true" src="https://www.facebook.com/plugins/facepile.php?app_id=86734274142&amp;amp;width=600&amp;amp;max_rows=1" style="border:none; overflow:hidden; width:600px; height: 70px;" frameborder="0"></iframe>
+    </div>
+
+    <style type="text/css">
+      #loginBeforeActionPopup {
+        padding: 10px;
+        width: 500px;
+      }
+        #loginBeforeActionPopup h2 {font-size: 21px;}
+      #loginBeforeActionPopup #signupPopup {}
+        #loginBeforeActionPopup #signupPopup p {
+          float: left;
+          line-height: 18px;
+          margin: 15px 0;
+          padding-top: 2px;
+          width: 330px;
+        }
+        #loginBeforeActionPopup #signupPopup .newGreenButton {
+          font-size: 18px;
+          height: 40px;
+          float: right;
+          line-height: 40px;
+          margin: 15px 0;
+          text-transform: none;
+          width: 140px;
+        }
+      #loginBeforeActionPopup #loginPopup {
+        border-top: 1px solid #d9d9d9;
+        padding-top: 10px;
+      }
+        #loginBeforeActionPopup #loginPopup .linkStyle {
+          border: none;
+          background: none;
+          color: #2398c9;
+          cursor: pointer;
+          font: inherit;
+          font-weight: bold;
+          padding: 0;
+          margin: 0;
+        }
+          #loginBeforeActionPopup #loginPopup .linkStyle:hover {text-decoration: underline;}
+    </style>
+
+    <div style="display:none;" class="translate" id="loginBeforeActionPopup">
+
+      <h2 class="newh2">Join foursquare to <span id="loginActionLabel">do that</span></h2>
+        <form method="POST" action="/signup/pre-signup">
+          <input value="" type="hidden" name="actionKey" id="loginActionKey" />
+          <input value="" type="hidden" name="source" id="loginSource" />
+          <input value="" type="hidden" name="continue" id="loginContinue" />
+          <div id="signupPopup">
+            <p>Foursquare helps you meet up with friends and find<br />new places to experience in your neighborhood.</p>
+            <input value="Get Started" name="signupSubmit" class="newGreenButton greenButton translate" type="submit" />
+            <div style="clear: both;"></div>
+          </div>
+          <div id="loginPopup">
+            <strong>Already a foursquare user?</strong> <input value="Log in" name="loginSubmit" class="linkStyle" type="submit" /> to continue.
+          </div>
+        </form>
+
+    </div>
+
+
+
+
+
+        <div class="wrap" id="container">
+
+
+
+
+
+
+
+
+
+    <div class="twoColumns" id="checkinPage">
+      <div class="wideColumn">
+
+
+        <div id="userCheckin">
+          <div id="userPic">
+            <a href="/sven_kr"><img src="https://img-s.foursquare.com/userpix_thumbs/ZXPGHBJTWWSTMXN1.jpg" alt="Sven K." width="110" class="notranslate"  height="110" /></a>
+          </div>
+          <div id="userDetails">
+            <h2><a href="/sven_kr">Sven K.</a> checked in to <a href="/v/kopiba/4b169255f964a52072ba23e3">kopiba</a> </h2>
+            <p class="shout linkify">#coffeediary</p>
+
+            <p class="date">
+              8 hours ago  via <em><a href="https://foursquare.com/download/#/iphone">foursquare for iPhone</a></em>
+            </p>
+
+
+
+
+
+
+
+
+
+
+
+
+          </div>
+        </div>
+
+
+        <div>
+          <script type="text/javascript">
+  // <![CDATA[
+  var STREAM_PHOTOS_JSON = "{\"count\":1,\"items\":[{\"id\":\"4f0c4020e4b0261c93fd4ede\",\"createdAt\":1326202912,\"url\":\"https:\u005c/\u005c/img-s.foursquare.com\u005c/pix\u005c/NKFGXXX41TIQJA0P25ZYSUYKUUROQLLWGUXXSA5ABUQFDDYE.jpg\",\"sizes\":{\"count\":4,\"items\":[{\"url\":\"https:\u005c/\u005c/img-s.foursquare.com\u005c/pix\u005c/NKFGXXX41TIQJA0P25ZYSUYKUUROQLLWGUXXSA5ABUQFDDYE.jpg\",\"width\":537,\"height\":720},{\"url\":\"https:\u005c/\u005c/img-s.foursquare.com\u005c/derived_pix\u005c/NKFGXXX41TIQJA0P25ZYSUYKUUROQLLWGUXXSA5ABUQFDDYE_300x300.jpg\",\"width\":300,\"height\":300},{\"url\":\"https:\u005c/\u005c/img-s.foursquare.com\u005c/derived_pix\u005c/NKFGXXX41TIQJA0P25ZYSUYKUUROQLLWGUXXSA5ABUQFDDYE_100x100.jpg\",\"width\":100,\"height\":100},{\"url\":\"https:\u005c/\u005c/img-s.foursquare.com\u005c/derived_pix\u005c/NKFGXXX41TIQJA0P25ZYSUYKUUROQLLWGUXXSA5ABUQFDDYE_36x36.jpg\",\"width\":36,\"height\":36}\u005d},\"user\":{\"id\":\"304170\",\"firstName\":\"Sven\",\"lastName\":\"K.\",\"photo\":\"https:\u005c/\u005c/img-s.foursquare.com\u005c/userpix_thumbs\u005c/ZXPGHBJTWWSTMXN1.jpg\",\"gender\":\"male\",\"homeCity\":\"Hamburg, Germany\"},\"visibility\":\"friends\"}\u005d}";
+  // ]]>
+  </script>
+          <div id="comments">
+
+                <div id="4f0c4020e4b0261c93fd4ede" class="comment withPhoto">
+                  <div class="commentLeft">
+                    <a href="/sven_kr"><img src="https://img-s.foursquare.com/userpix_thumbs/ZXPGHBJTWWSTMXN1.jpg" alt="Sven K." width="60" class="notranslate"  height="60" /></a>
+                  </div>
+                  <div class="commentPhoto">
+                    <span title="Delete your image?" class="flagDelete">
+
+                    </span>
+                    <img src="https://img-s.foursquare.com/pix/NKFGXXX41TIQJA0P25ZYSUYKUUROQLLWGUXXSA5ABUQFDDYE.jpg" />
+                  </div>
+                </div>
+
+          </div>
+
+
+
+
+
+
+
+
+            <div class="translate" id="cantComment">
+              Only <span class="notranslate">Sven's</span> friends can see comments and add their own.
+            </div>
+
+
+        </div>
+
+      </div>
+
+      <div class="narrowColumn">
+
+
+
+
+
+        <div id="venueDetails" class="box">
+          <div id="venueIcon">
+            <img src="https://static-s.foursquare.com/img/categories/food/cafe-f0c1523ad255a6e9e65e27c2ca02576c.png" class="thumb" />
+            <img src="https://static-s.foursquare.com/img/specials/check-in-f870bc36c0cc2a842fac06c35a6dccdf.png" class="specialImage" title="Check-in Special" />
+          </div>
+          <div class="vcard" id="venueName">
+            <h5 class="fn org"><a href="/v/kopiba/4b169255f964a52072ba23e3">kopiba</a></h5>
+            <p>Hamburg</p>
+            <div class="hiddenAddress">
+              <span class="adr"><span class="street-address">Beim Grünen Jäger 24</span><br /><span class="locality">Hamburg</span>, <span class="region"></span> <span class="postal-code">20357</span><br /><span class="tel">040/343824</span><br /></span>
+            </div>
+          </div>
+          <div id="listControlHolder"></div>
+          <div id="vmap"></div>
+
+        </div>
+
+
+        <div class="box">
+          <div class="statsBlock translate">
+            <div class="stat">
+              <strong>Total<br />People</strong><br /><span class="notranslate">478</span>
+            </div>
+            <div class="stat">
+              <strong>Total<br />Checkins</strong><br /><span class="notranslate">2903</span>
+            </div>
+            <div class="stat">
+              <strong>Here<br />Now</strong><br /><span class="notranslate">1</span>
+            </div>
+          </div>
+        </div>
+
+
+
+
+
+
+
+
+
+
+      </div>
+      <div style="clear: both;"></div>
+    </div>
+
+    <script type="text/javascript">
+      $('.delete').tooltip();
+      $('.flagDelete').tooltip();
+    </script>
+
+
+
+          <div id="containerFooter">
+            <div class="wideColumn">
+              <ul class="translate">
+    <li><a href="https://foursquare.com/about">About</a></li>
+    <li><a href="https://foursquare.com/apps">Apps</a></li>
+    <li><a href="http://blog.foursquare.com">Blog</a></li>
+    <li><a href="http://developers.foursquare.com">Developers</a></li>
+    <li><a href="http://foursquare.com/help">Help</a></li>
+    <li><a href="https://foursquare.com/jobs/">Jobs</a></li>
+    <li><a href="https://foursquare.com/legal/privacy">Privacy</a></li>
+    <li><a href="https://foursquare.com/legal/terms">Terms</a></li>
+    <li><a href="http://store.foursquare.com">Store</a></li>
+    <li>
+
+
+
+
+    <script type="text/javascript">
+      //<![CDATA[
+      // IMPORTANT: This is what does the redirect to the correct domain
+      fourSq.i18n.redirect();
+      // ]]>
+    </script>
+
+
+    <script type="text/javascript">
+      //<![CDATA[
+      $(function() {
+        $('#currentLanguage a').text(fourSq.i18n.currentLang());
+      });
+      // ]]>
+    </script>
+
+    <span id="currentLanguage">
+      <a rel="facebox" href="#languagesContainer"></a>
+    </span>
+
+    <div style="display:none" class="translate" id="languagesContainer">
+      Do none of the words on this site make sense to you? Select your
+      favorite language below for greater clarity:
+      <ul class="languages notranslate">
+        <li><a onclick="fourSq.i18n.setLang('en'); return false;" href="#">English</a></li><li><a onclick="fourSq.i18n.setLang('it'); return false;" href="#">Italiano</a></li><li><a onclick="fourSq.i18n.setLang('de'); return false;" href="#">Deutsch</a></li><li><a onclick="fourSq.i18n.setLang('es'); return false;" href="#">Español</a></li><li><a onclick="fourSq.i18n.setLang('fr'); return false;" href="#">Français</a></li><li><a onclick="fourSq.i18n.setLang('ja'); return false;" href="#">日本語</a></li><li><a onclick="fourSq.i18n.setLang('th'); return false;" href="#">ภาษาไทย</a></li><li><a onclick="fourSq.i18n.setLang('ko'); return false;" href="#">한국어</a></li><li><a onclick="fourSq.i18n.setLang('ru'); return false;" href="#">Русский</a></li><li><a onclick="fourSq.i18n.setLang('pt'); return false;" href="#">Português</a></li><li><a onclick="fourSq.i18n.setLang('id'); return false;" href="#">Bahasa Indonesia</a></li>
+      </ul>
+    </div>
+  </li>
+  </ul>
+            </div>
+            <div class="narrowColumn translate">
+              foursquare © 2011 <img src="https://static-s.foursquare.com/img/chrome/iconHeart-03e49accc507d9d99e7e4dfaa73868cb.png" height="9" width="11" alt="" /> Lovingly made in NYC &amp; SF
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="footer">
+        <div style="display: none;" class="wrap">
+          <p class="right">Discover more brands in the <a href="/pages">page gallery</a>.</p>
+          <p>Follow these brands to unlock badges and find interesting tips around your city!</p>
+
+
+            <ul><li><a href="/vh1"><img src="https://static-s.foursquare.com/img/footer/vh1-bb870b187d4e4378457e4a8e7df33e28.png" height="50" /></a></li><li><a href="/luckymagazine"><img src="https://static-s.foursquare.com/img/footer/luckymagazine-81550ed80bb77ddf9fa7e09c94ef4ac3.png" height="50" /></a></li><li><a href="/askmen"><img src="https://static-s.foursquare.com/img/footer/askmen-32a19bae424cafba11d7131fbc763f6d.png" height="50" /></a></li><li><a href="/eater"><img src="https://static-s.foursquare.com/img/footer/eater-5a8d27da22828104e13b0a4a50a74db8.png" height="50" /></a></li><li><a href="/joinred"><img src="https://static-s.foursquare.com/img/footer/joinred-6b8edbfec8aeb5e256f7824ca757cb81.png" height="50" /></a></li><li><a href="/bbcamerica"><img src="https://static-s.foursquare.com/img/footer/bbcamerica-d777b112c51696700dbd348e1b1e6817.png" height="50" /></a></li></ul>
+
+        </div>
+      </div>
+
+      <div id="overlayFrame">
+    <div id="overlayPage">
+      <div id="photoDetails">
+        <div class="wrap">
+          <img src="https://static-s.foursquare.com/img/gallery-next-4fe893b7a611387276ef45cd74632759.png" height="32" width="32" alt="" class="navControl" id="next" />
+          <img src="https://static-s.foursquare.com/img/gallery-prev-6da401eecb2e8a276e2a89bea5ac3819.png" height="32" width="32" alt="" class="navControl" id="previous" />
+          <img width="32" height="32" alt="" src="" id="userPic" />
+          <h5 id="userName"><a href="#"></a></h5>
+          <p id="date"></p>
+        </div>
+      </div>
+      <div id="mainPhoto"></div>
+
+      <div style="display:none" class="flagFrame unknown">
+        <div class="flagForm translate">
+          <h3>Flag this Photo</h3>
+          <ul>
+            <li><input id="spam_scam" value="spam_scam" type="radio" name="problem" /> <label for="spam_scam">Spam/Scam</label></li>
+            <li><input id="nudity" value="nudity" type="radio" name="problem" /> <label for="nudity">Nudity</label></li>
+            <li><input id="hate_violence" value="hate_violence" type="radio" name="problem" /> <label for="hate_violence">Hate/Violence</label></li>
+            <li><input id="illegal" value="illegal" type="radio" name="problem" /> <label for="illegal">Illegal</label></li>
+            <li><input id="unrelated" value="unrelated" type="radio" name="problem" /> <label for="unrelated">Unrelated</label></li>
+          </ul>
+          <p class="noProblemMessage">Please select a problem.</p>
+          <p><input class="submitFlag greenButton" value="Submit Flag" name="submitFlag" type="button" name="problem" /></p>
+        </div>
+        <div class="flagStatus translate">
+          <div class="status success">
+            <h3>Flag this Photo</h3>
+            <p>Your flag was submitted successfully.</p>
+          </div>
+          <div class="status failure">
+            <h3>Flag this Photo</h3>
+            <p>Your flag did not submit. Please try again later.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+    <script src="https://ssl.google-analytics.com/ga.js" type="text/javascript"></script>
+
+
+
+  <script type="text/javascript">
+    try {
+      var pageTracker = _gat._getTracker('UA-2322480-5');
+      pageTracker._trackPageview();
+      pageTracker._trackPageLoadTime();
+      } catch(err) {
+      }
+  </script>
+  <script type="text/javascript">var _sf_startpt=(new Date()).getTime()</script>
+  <script type="text/javascript">
+  var _sf_async_config={uid:11280,domain:'foursquare.com'};
+  if (window.chartbeat_path) {
+    _sf_async_config.path = chartbeat_path;
+  }
+  (function(){
+    function loadChartbeat() {
+      window._sf_endpt=(new Date()).getTime();
+      var e = document.createElement('script');
+      e.setAttribute('language', 'javascript');
+      e.setAttribute('type', 'text/javascript');
+      e.setAttribute('src',
+         (('https:' == document.location.protocol) ? 'https://s3.amazonaws.com/' : 'http://') +
+         'static.chartbeat.com/js/chartbeat.js');
+      document.body.appendChild(e);
+    }
+    var oldonload = window.onload;
+    window.onload = (typeof window.onload != 'function') ?
+       loadChartbeat : function() { oldonload(); loadChartbeat(); };
+  })();
+
+  </script>
+
+
+
+
+
+
+    <script src="/ajax_request/liftAjax.js" type="text/javascript"></script>
+
+
+  </body>
+  </html>  
+  ^
+end
+
 

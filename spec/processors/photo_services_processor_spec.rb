@@ -3,6 +3,7 @@ require 'spec_helper'
 describe Processors::PhotoService do
   before :each do
     @links = {
+      :foursquare => 'http://4sq.com/x4p87N',
       :path => 'http://path.com/p/KQd57', 
       :instagram => "http://instagr.am/p/DzCWn/",
       :twitpic => "http://twitpic.com/449o2x",
@@ -20,12 +21,17 @@ describe Processors::PhotoService do
     link = Processors::PhotoService::find_image_url 'im mocked anyways'
     link.should == 'http://s3-media4.ak.yelpcdn.com/bphoto/py1D5XEyOHcOcg6GJD3SEQ/l.jpg'
   end
+  it "does find an image for foursquare that is not he profile pic" do
+    stub_foursquare
+    link = Processors::PhotoService::find_image_url @links[:foursquare]
+    link.index('userpix_thumbs').should_not be
+  end
   it "should find a picture's url from the supported services" do
     @links.each do |service,link|
       send "stub_#{service}"
       url = Processors::PhotoService::find_image_url link
       url.should be, "service #{service} not working!"
-      check_pic_url_extraction service if [:instagram,:picplz,:yfrog,:imgly,:not_listed].index service
+      check_pic_url_extraction service if [:instagram,:picplz,:yfrog,:imgly,:foursqaure,:not_listed].index service
     end
   end
   it "finds path images for redirected moments as well" do
