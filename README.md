@@ -11,12 +11,13 @@ There is a new [tweetlr "as-a-service"](http://tweetlr.5v3n.com) where you can e
 tweetlr supports
 
 - instagram
+- twitter / photobucket
+- foursquare
+- path.com
 - picplz
 - twitpic
 - yfrog
 - imgly
-- twitter / photobucket
-- path.com
 - t.co shortened links to pictures
 - every photo service accessible via embed.ly (see [photo providers](http://embed.ly/providers))
   - plus every service that delivers a thumbnail via embed.ly
