@@ -59,12 +59,8 @@ module Processors
     def self.image_url_embedly(link_url, key)
       response = Processors::Http::http_get_json "http://api.embed.ly/1/oembed?key=#{key}&url=#{link_url}"
       log.debug "embedly call: http://api.embed.ly/1/oembed?key=#{key}&url=#{link_url}"
-      if response 
-        if response['type'] == 'photo'
-          image_url = response['url'] 
-        else
-          image_url = response['thumbnail_url'] 
-        end
+      if response && response['type'] == 'photo'
+        image_url = response['url'] 
       end
       image_url
     end

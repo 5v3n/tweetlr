@@ -9,7 +9,7 @@ require 'uri'
 
 class Tweetlr
 
-  VERSION = '0.1.12'
+  VERSION = '0.1.13'
   
   API_ENDPOINT_TWITTER = 'http://search.twitter.com/search.json'
   API_ENDPOINT_TUMBLR = 'http://www.tumblr.com'

@@ -16,10 +16,10 @@ describe Processors::PhotoService do
       :twitter_pics => 'http://t.co/FmyBGfyY'
       }
   end
-  it "finds images in embedly results that are not explicitly marked as 'Photo' via the response's 'thumbnail_url' attribute" do
+  it "doesnt find images in embedly results that are not explicitly marked as 'Photo' via the response's 'thumbnail_url' attribute" do
     stub_embedly_no_photo
-    link = Processors::PhotoService::find_image_url 'im mocked anyways'
-    link.should == 'http://s3-media4.ak.yelpcdn.com/bphoto/py1D5XEyOHcOcg6GJD3SEQ/l.jpg'
+    link = Processors::PhotoService::find_image_url 'http://makersand.co/'
+    link.should be_nil
   end
   it "does find an image for foursquare that is not he profile pic" do
     stub_foursquare
