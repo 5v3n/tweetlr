@@ -19,6 +19,7 @@ module Processors
     def self.find_image_url(link, embedly_key=nil)
       url = nil
       if link && !(photo? link)
+        url = image_url_eyeem link if link.index 'eyeem.com'
         url = image_url_instagram link if (link.index('instagr.am') || link.index('instagram.com'))
         url = image_url_picplz link if link.index 'picplz'
         url = image_url_twitpic link if link.index 'twitpic'
@@ -37,6 +38,14 @@ module Processors
   
     def self.photo?(link)
       link =~ PIC_REGEXP
+    end
+    #extract the image of an eyeem.com pic
+    def self.image_url_eyeem(link_url)
+      service_url = link_url_redirect link_url #follow possible redirects
+      link_url = service_url if service_url #if there's no redirect, service_url will be nil
+      response = Processors::Http::http_get link_url
+      image_url = parse_html_for '.viewport-pic img', Nokogiri::HTML.parse(response.body_str)
+      return image_url
     end
     #extract the image of a foursquare.com pic
     def self.image_url_foursqaure(link_url)

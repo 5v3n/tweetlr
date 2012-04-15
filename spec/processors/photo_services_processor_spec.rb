@@ -3,6 +3,7 @@ require 'spec_helper'
 describe Processors::PhotoService do
   before :each do
     @links = {
+      :eyeem => 'http://www.eyeem.com/p/326629',
       :foursquare => 'http://4sq.com/x4p87N',
       :path => 'http://path.com/p/KQd57', 
       :instagram => "http://instagr.am/p/DzCWn/",
@@ -15,6 +16,12 @@ describe Processors::PhotoService do
       :embedly => 'http://flic.kr/p/973hTv',
       :twitter_pics => 'http://t.co/FmyBGfyY'
       }
+  end
+  it "extracts images from eye em" do
+    stub_eyeem
+    link = Processors::PhotoService::find_image_url @links[:eyeem]
+    link.should be
+    link.should == "http://www.eyeem.com/thumb/h/1024/e35db836c5d3f02498ef60fc3d53837fbe621561-1334126483"
   end
   it "doesnt find images in embedly results that are not explicitly marked as 'Photo' via the response's 'thumbnail_url' attribute" do
     stub_embedly_no_photo
