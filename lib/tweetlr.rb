@@ -9,7 +9,7 @@ require 'uri'
 
 class Tweetlr
 
-  VERSION = '0.1.14'
+  VERSION = '0.1.15'
   
   API_ENDPOINT_TWITTER = 'http://search.twitter.com/search.json'
   API_ENDPOINT_TUMBLR = 'http://www.tumblr.com'
@@ -61,7 +61,7 @@ class Tweetlr
       tweets = response['results']
       if tweets
       tweets.each do |tweet|
-        tumblr_post = Combinators::TwitterTumblr::generate_photo_post_from_tweet(tweet, {:whitelist => config[:whitelist], :embedly_key => config[:embedly_key]}) 
+        tumblr_post = Combinators::TwitterTumblr::generate_photo_post_from_tweet(tweet, {:whitelist => config[:whitelist], :embedly_key => config[:embedly_key], :group => config[:group]}) 
         if tumblr_post.nil? ||  tumblr_post[:source].nil?
            log.warn "could not get image source: tweet: #{tweet} --- tumblr post: #{tumblr_post.inspect}"
         else

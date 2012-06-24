@@ -40,6 +40,7 @@ api_endpoint_twitter: 'http://search.twitter.com/search.json'
 api_endpoint_tumblr: 'http://www.tumblr.com'
 tumblr_username: YOUR_TUMBLR_EMAIL
 tumblr_password: YOUR_TUMBLR_PW
+group: TUMBLR_GROUP_TO_POST_TO #e.g. mysubblog.tumblr.com
 embedly_key: '' #tweetlr uses http://embedly.com for link processing. a free plan containing an api key is available & recommended to use in order to ensure full support
 update_period: 300 #check for updates every 300 secs = 5 minutes
 shouts: 'says' # will be concatenated after the username, before the message: @mr_x says: awesome things on a photo!

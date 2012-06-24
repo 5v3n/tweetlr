@@ -32,6 +32,7 @@ module Combinators
       if !Processors::Twitter::retweet? message
         log.debug "tweet: #{tweet}"
         tumblr_post = {}
+        tumblr_post[:group] = options[:group]
         tumblr_post[:type] = 'photo'
         tumblr_post[:date] = tweet['created_at']
         tumblr_post[:source] = extract_image_url tweet, options[:embedly_key]

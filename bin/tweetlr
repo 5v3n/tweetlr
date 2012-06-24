@@ -25,6 +25,7 @@ begin
   @tweetlr_config = {
     :tumblr_email => CONFIG['tumblr_username'], 
     :tumblr_password => CONFIG['tumblr_password'],
+    :group => CONFIG['group'],
     :whitelist => CONFIG['whitelist'], 
     :shouts => CONFIG['shouts'], 
     :since_id => CONFIG['start_at_tweet_id'] , 

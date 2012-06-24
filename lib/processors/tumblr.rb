@@ -13,11 +13,12 @@ module Processors
     #
     #required arguments are :email, :password, :type, :date, :source, :caption, :state, :source
     #
-    #optional arguments: :api_endpoint_tumblr, :tags
+    #optional arguments: :api_endpoint_tumblr, :tags, :group
     #
     def self.post(options={})
       tries = 3
-      tags = options[:tags]
+      tags = options[:tags] || ''
+      group = options[:group] || ''
       begin
         response = Curl::Easy.http_post("#{options[:api_endpoint_tumblr] || API_ENDPOINT_TUMBLR}/api/write", 
         Curl::PostField.content('generator', GENERATOR),
@@ -28,7 +29,8 @@ module Processors
         Curl::PostField.content('source', options[:source]),
         Curl::PostField.content('caption', options[:caption]),
         Curl::PostField.content('state', options[:state]),
-        Curl::PostField.content('tags', tags)
+        Curl::PostField.content('tags', tags),
+        Curl::PostField.content('group', group)
         )
       rescue Curl::Err::CurlError => err
         log.error "Failure in Curl call: #{err}"
