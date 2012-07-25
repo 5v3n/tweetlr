@@ -11,7 +11,9 @@ There is a new [tweetlr "as-a-service"](http://tweetlr.5v3n.com) where you can e
 tweetlr supports
 
 - eyeem.com
-- twitter / photobucket
+- twitter
+  - photobucket
+  - twimg
 - foursquare
 - path.com
 - picplz
