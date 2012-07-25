@@ -26,6 +26,7 @@ module Processors
         url = image_url_yfrog link if link.index 'yfrog'
         url = image_url_imgly link if link.index 'img.ly'
         url = image_url_tco link, embedly_key if link.index 't.co'
+        url = image_url_twimg link if link.index 'twitter.com'
         url = image_url_lockerz link if link.index 'lockerz.com'
         url = image_url_path link if link.index 'path.com'
         url = image_url_foursqaure link if link.index '4sq.com'
@@ -38,6 +39,13 @@ module Processors
   
     def self.photo?(link)
       link =~ PIC_REGEXP
+    end
+    def self.image_url_twimg(link_url)
+      service_url = link_url_redirect link_url #follow possible redirects
+      link_url = service_url if service_url #if there's no redirect, service_url will be nil
+      response = Processors::Http::http_get(link_url)
+      image_url = parse_html_for '.twimg img', Nokogiri::HTML.parse(response.body_str)
+      return image_url
     end
     #extract the image of an eyeem.com pic
     def self.image_url_eyeem(link_url)

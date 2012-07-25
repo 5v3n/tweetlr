@@ -35,6 +35,36 @@ def stub_twitter
   Curl::Easy.any_instance.stub(:perform).and_return Curl::Easy.new
 end
 
+def stub_twimg
+  Curl::Easy.any_instance.stub(:body_str).and_return %|<div class="entities-media-container " style="min-height:580px">
+                <div class="tweet-media">
+          <div class="media-instance-container">
+            <div class="twimg">
+              <a target="_blank" href="http://twitter.com/KSilbereisen/status/228042798161596416/photo/1/large">
+                <img src="https://p.twimg.com/Ayort3pCEAAHRrz.jpg">
+              </a>
+            </div>
+            <span class="flag-container">
+              <button type="button" class="flaggable btn-link">
+                Flag this media
+              </button>
+              <span class="flagged hidden">
+                Flagged
+                <span>
+                  <a target="_blank" href="//support.twitter.com/articles/20069937">
+                    (learn more)
+                  </a>
+                </span>
+              </span>
+            </span>
+            <div class="media-attribution">
+              <span>powered by</span> <img src="/phoenix/img/turkey-icon.png"> <a target="_blank" data-media-type="Twimg" class="media-attribution-link" href="http://photobucket.com/twitter">Photobucket</a>
+            </div>
+          </div>
+        </div>    </div>|
+  Curl::Easy.any_instance.stub(:perform).and_return Curl::Easy.new
+end
+
 def stub_twitter_pics
   Curl::Easy.any_instance.stub(:body_str).and_return %|{"url": "http://pic.twitter.com/stubbedpic.jpg:large"}|
   Curl::Easy.any_instance.stub(:perform).and_return Curl::Easy.new

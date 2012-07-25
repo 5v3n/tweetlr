@@ -3,6 +3,7 @@ require 'spec_helper'
 describe Processors::PhotoService do
   before :each do
     @links = {
+      :twimg => 'http://twitter.com/KSilbereisen/status/228035435237097472',
       :eyeem => 'http://www.eyeem.com/p/326629',
       :foursquare => 'http://4sq.com/x4p87N',
       :path => 'http://path.com/p/KQd57', 
@@ -38,7 +39,7 @@ describe Processors::PhotoService do
       send "stub_#{service}"
       url = Processors::PhotoService::find_image_url link
       url.should be, "service #{service} not working!"
-      check_pic_url_extraction service if [:instagram,:picplz,:yfrog,:imgly,:foursqaure,:not_listed].index service
+      check_pic_url_extraction service if [:twimg, :instagram,:picplz,:yfrog,:imgly,:foursqaure,:not_listed].index service
     end
   end
   it "finds path images for redirected moments as well" do
