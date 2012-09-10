@@ -9,7 +9,7 @@ require 'uri'
 
 class Tweetlr
 
-  VERSION = '0.1.16'
+  VERSION = '0.1.17pre'
   
   API_ENDPOINT_TWITTER = 'http://search.twitter.com/search.json'
   API_ENDPOINT_TUMBLR = 'http://www.tumblr.com'
@@ -53,7 +53,7 @@ class Tweetlr
       :result_type => config[:result_type] || TWITTER_RESULTS_TYPE,  
       :api_endpoint_twitter => config[:api_endpoint_twitter] || API_ENDPOINT_TWITTER
     }
-    config[:search_term] = URI::escape(config[:search_term]) if config[:search_term]
+    twitter_config[:search_term] = URI::escape(twitter_config[:search_term]) if twitter_config[:search_term]
     log.info "starting tweetlr crawl..."
     response = {}
     response = Processors::Twitter::lazy_search(twitter_config)
