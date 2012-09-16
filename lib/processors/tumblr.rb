@@ -1,4 +1,5 @@
 require 'log_aware'
+require 'oauth'
 
 module Processors
   #utilities for handling tumblr
@@ -11,38 +12,40 @@ module Processors
     end
     #post a tumblr photo entry. 
     #
-    #required arguments are :email, :password, :type, :date, :source, :caption, :state, :source
+    #required arguments are :tumblr_blog_hostname, :tumblr_blog_hostname, :tumblr_oauth_api_secret, :tumblr_oauth_access_token_secret, :source, :caption, :state
     #
-    #optional arguments: :api_endpoint_tumblr, :tags, :group
+    #optional arguments: :tags, :type (default: 'photo') 
     #
     def self.post(options={})
-      tries = 3
-      tags = options[:tags] || ''
-      group = options[:group] || ''
-      begin
-        response = Curl::Easy.http_post("#{options[:api_endpoint_tumblr] || API_ENDPOINT_TUMBLR}/api/write", 
-        Curl::PostField.content('generator', GENERATOR),
-        Curl::PostField.content('email', options[:email]), 
-        Curl::PostField.content('password', options[:password]),
-        Curl::PostField.content('type', options[:type]),
-        Curl::PostField.content('date', options[:date]),
-        Curl::PostField.content('source', options[:source]),
-        Curl::PostField.content('caption', options[:caption]),
-        Curl::PostField.content('state', options[:state]),
-        Curl::PostField.content('tags', tags),
-        Curl::PostField.content('group', group)
-        )
-      rescue Curl::Err::CurlError => err
-        log.error "Failure in Curl call: #{err}"
-        tries -= 1
-        sleep 3
-        if tries > 0
-            retry
-        else
-            response = nil
-        end
-      end
-      response
+      base_hostname       = options[:tumblr_blog_hostname] || options[:group]
+      tumblr_oauth_api_key= options[:tumblr_oauth_api_key] 
+      tumblr_oauth_api_secret= options[:tumblr_oauth_api_secret] 
+      access_token_key    = options[:tumblr_oauth_access_token_key]
+      access_token_secret = options[:tumblr_oauth_access_token_secret]
+      type                = options[:type] || 'photo'
+      tags                = options[:tags] || ''
+
+      consumer = OAuth::Consumer.new(tumblr_oauth_api_key, tumblr_oauth_api_secret,
+                                     { :site => 'http://www.tumblr.com',
+                                       :request_token_path => '/oauth/request_token',
+                                       :authorize_path => '/oauth/authorize',
+                                       :access_token_path => '/oauth/access_token',
+                                       :http_method => :post } )
+
+      access_token = OAuth::AccessToken.new(consumer, access_token_key, access_token_secret)
+
+      post_response = access_token.post(
+        "http://api.tumblr.com/v2/blog/#{base_hostname}/post", { 
+          :type => type, 
+          :source => options[:source], 
+          :caption => options[:caption],
+          :date => options[:date],
+          :tags => tags,
+          :state => options[:state],
+          :generator => GENERATOR
+           }
+          )
+      post_response
     end
   end
 end

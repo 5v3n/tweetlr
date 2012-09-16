@@ -9,7 +9,7 @@ require 'uri'
 
 class Tweetlr
 
-  VERSION = '0.1.17pre'
+  VERSION = '0.1.17'
   
   API_ENDPOINT_TWITTER = 'http://search.twitter.com/search.json'
   API_ENDPOINT_TUMBLR = 'http://www.tumblr.com'
@@ -53,6 +53,13 @@ class Tweetlr
       :result_type => config[:result_type] || TWITTER_RESULTS_TYPE,  
       :api_endpoint_twitter => config[:api_endpoint_twitter] || API_ENDPOINT_TWITTER
     }
+    tumblr_config = { :tumblr_oauth_access_token_key => config[:tumblr_oauth_access_token_key],
+                      :tumblr_oauth_access_token_secret => config[:tumblr_oauth_access_token_secret],
+                      :tumblr_oauth_api_key => config[:tumblr_oauth_api_key],
+                      :tumblr_oauth_api_secret => config[:tumblr_oauth_api_secret],
+                      :tumblr_blog_hostname => config[:tumblr_blog_hostname] || config[:group]
+                    }
+      
     twitter_config[:search_term] = URI::escape(twitter_config[:search_term]) if twitter_config[:search_term]
     log.info "starting tweetlr crawl..."
     response = {}
@@ -66,8 +73,8 @@ class Tweetlr
            log.warn "could not get image source: tweet: #{tweet} --- tumblr post: #{tumblr_post.inspect}"
         else
           log.debug "tumblr post: #{tumblr_post}"
-          res = Processors::Tumblr.post tumblr_post.merge({:password => config[:tumblr_password], :email => config[:tumblr_email]})
-          log.warn "tumblr response: #{res.header_str} #{res.body_str}" unless res.response_code == 201
+          res = Processors::Tumblr.post tumblr_post.merge(tumblr_config)
+          log.warn "tumblr response: #{res.header} #{res.body}" unless res.code == "201"
         end
        end
         # store the highest tweet id

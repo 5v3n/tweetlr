@@ -96,16 +96,17 @@ describe Combinators::TwitterTumblr do
     end
   end
   context "copes with different tumblelogs namely" do
-    it "uses the main blog as default" do
-      stub_instagram
-      tumblr_post = Combinators::TwitterTumblr.generate_photo_post_from_tweet @twitter_response, :whitelist => @whitelist
-      tumblr_post[:group].should_not be
-    end
-    it "uses a given sub-log (aka group)" do
+    it "uses a given blog via group option to post to" do
       stub_instagram
       desired_group = 'mygroup.tumblr.com'
       tumblr_post = Combinators::TwitterTumblr.generate_photo_post_from_tweet @twitter_response, {:whitelist => @whitelist, :group => desired_group}
-      tumblr_post[:group].should eq desired_group
+      tumblr_post[:tumblr_blog_hostname].should eq desired_group
+    end
+    it "uses a given blog via tumblr_blog_hostname to post to" do
+      stub_instagram
+      desired_group = 'mygroup.tumblr.com'
+      tumblr_post = Combinators::TwitterTumblr.generate_photo_post_from_tweet @twitter_response, {:whitelist => @whitelist, :tumblr_blog_hostname => desired_group}
+      tumblr_post[:tumblr_blog_hostname].should eq desired_group
     end
   end
 end

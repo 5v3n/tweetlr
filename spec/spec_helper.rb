@@ -12,6 +12,10 @@ def check_pic_url_extraction(service)
   image_url.should =~ Processors::PhotoService::PIC_REGEXP
 end
 
+def stub_oauth
+  OAuth::AccessToken.any_instance.stub(:post).and_return(Net::HTTPCreated.new("Created.", "201", nil))
+end
+
 def stub_tumblr
   Curl::Easy.any_instance.stub(:response_code).and_return 201
   Curl::Easy.any_instance.stub(:header_str).and_return %|HTTP/1.1 201 Created

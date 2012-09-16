@@ -21,11 +21,14 @@ begin
   CONFIG['start_at_tweet_id'] = start_at_tweet_id || CONFIG['start_at_tweet_id'] || CONFIG['twitter_timestamp'] #check the latter for backwards compability
    
   UPDATE_PERIOD = CONFIG['update_period']  
-  
+
   @tweetlr_config = {
-    :tumblr_email => CONFIG['tumblr_username'], 
-    :tumblr_password => CONFIG['tumblr_password'],
-    :group => CONFIG['group'],
+    :tumblr_blog_hostname => CONFIG['tumblr_blog_hostname'] || CONFIG['group'],
+    :tumblr_oauth_api_key => CONFIG['tumblr_oauth_api_key'],
+    :tumblr_oauth_api_secret => CONFIG['tumblr_oauth_api_secret'],
+    :tumblr_blog_hostname => CONFIG['tumblr_blog_hostname'],
+    :tumblr_oauth_access_token_key => CONFIG['tumblr_oauth_access_token_key'],
+    :tumblr_oauth_access_token_secret => CONFIG['tumblr_oauth_access_token_secret'],
     :whitelist => CONFIG['whitelist'], 
     :shouts => CONFIG['shouts'], 
     :since_id => CONFIG['start_at_tweet_id'] , 
@@ -46,7 +49,7 @@ end
 Daemons.run_proc('tweetlr', :dir_mode => :script, :dir => './', :backtrace => true, :log_output => true) do
   @log = Logger.new(STDOUT)
   @log.info "starting tweetlr daemon..." 
-  @log.info "creating a new tweetlr instance using this config: #{CONFIG.inspect}"   
+  @log.info "creating a new tweetlr instance using this config: #{@tweetlr_config.inspect}"   
   EventMachine::run do 
     EventMachine::add_periodic_timer( UPDATE_PERIOD ) do
       response = Tweetlr.crawl(@tweetlr_config)
