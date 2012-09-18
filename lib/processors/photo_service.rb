@@ -41,35 +41,19 @@ module Processors
       link =~ PIC_REGEXP
     end
     def self.image_url_twimg(link_url)
-      service_url = link_url_redirect link_url #follow possible redirects
-      link_url = service_url if service_url #if there's no redirect, service_url will be nil
-      response = Processors::Http::http_get(link_url)
-      image_url = parse_html_for '.twimg img', Nokogiri::HTML.parse(response.body_str)
-      return image_url
+      retrieve_image_url_by_css link_url, '.twimg img'
     end
     #extract the image of an eyeem.com pic
     def self.image_url_eyeem(link_url)
-      service_url = link_url_redirect link_url #follow possible redirects
-      link_url = service_url if service_url #if there's no redirect, service_url will be nil
-      response = Processors::Http::http_get link_url
-      image_url = parse_html_for '.viewport-pic img', Nokogiri::HTML.parse(response.body_str)
-      return image_url
+      retrieve_image_url_by_css link_url, '.viewport-pic img'
     end
     #extract the image of a foursquare.com pic
     def self.image_url_foursqaure(link_url)
-      service_url = link_url_redirect link_url #follow possible redirects
-      link_url = service_url if service_url #if there's no redirect, service_url will be nil
-      response = Processors::Http::http_get link_url
-      image_url = parse_html_for '.commentPhoto img', Nokogiri::HTML.parse(response.body_str)
-      return image_url
+      retrieve_image_url_by_css link_url, '.commentPhoto img'
     end
     #extract the image of a path.com pic
     def self.image_url_path(link_url)
-      service_url = link_url_redirect link_url #follow possible redirects
-      link_url = service_url if service_url #if there's no redirect, service_url will be nil
-      response = Processors::Http::http_get link_url
-      image_url = parse_html_for 'img.photo-image', Nokogiri::HTML.parse(response.body_str)
-      return image_url
+      retrieve_image_url_by_css link_url, 'img.photo-image'
     end
   
     #find the image's url via embed.ly
@@ -168,6 +152,13 @@ module Processors
         end
       end
       image_url
+    end
+    def self.retrieve_image_url_by_css link_url, css_path
+      service_url = link_url_redirect link_url #follow possible redirects
+        link_url = service_url if service_url #if there's no redirect, service_url will be nil
+        response = Processors::Http::http_get link_url
+        image_url = parse_html_for css_path, Nokogiri::HTML.parse(response.body_str)
+        return image_url
     end
   end
 end
