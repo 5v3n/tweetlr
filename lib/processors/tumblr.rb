@@ -24,27 +24,31 @@ module Processors
       access_token_secret = options[:tumblr_oauth_access_token_secret]
       type                = options[:type] || 'photo'
       tags                = options[:tags] || ''
+      post_response = nil
 
-      consumer = OAuth::Consumer.new(tumblr_oauth_api_key, tumblr_oauth_api_secret,
-                                     { :site => 'http://www.tumblr.com',
-                                       :request_token_path => '/oauth/request_token',
-                                       :authorize_path => '/oauth/authorize',
-                                       :access_token_path => '/oauth/access_token',
-                                       :http_method => :post } )
+      if base_hostname && access_token_key && access_token_secret
 
-      access_token = OAuth::AccessToken.new(consumer, access_token_key, access_token_secret)
+        consumer = OAuth::Consumer.new(tumblr_oauth_api_key, tumblr_oauth_api_secret,
+                                       { :site => 'http://www.tumblr.com',
+                                         :request_token_path => '/oauth/request_token',
+                                         :authorize_path => '/oauth/authorize',
+                                         :access_token_path => '/oauth/access_token',
+                                         :http_method => :post } )
 
-      post_response = access_token.post(
-        "http://api.tumblr.com/v2/blog/#{base_hostname}/post", { 
-          :type => type, 
-          :source => options[:source], 
-          :caption => options[:caption],
-          :date => options[:date],
-          :tags => tags,
-          :state => options[:state],
-          :generator => GENERATOR
-           }
-          )
+        access_token = OAuth::AccessToken.new(consumer, access_token_key, access_token_secret)
+
+        post_response = access_token.post(
+          "http://api.tumblr.com/v2/blog/#{base_hostname}/post", { 
+            :type => type, 
+            :source => options[:source], 
+            :caption => options[:caption],
+            :date => options[:date],
+            :tags => tags,
+            :state => options[:state],
+            :generator => GENERATOR
+             }
+            )
+      end
       post_response
     end
   end

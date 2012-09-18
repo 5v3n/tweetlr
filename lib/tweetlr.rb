@@ -70,11 +70,16 @@ class Tweetlr
       tweets.each do |tweet|
         tumblr_post = Combinators::TwitterTumblr::generate_photo_post_from_tweet(tweet, {:whitelist => config[:whitelist], :embedly_key => config[:embedly_key], :group => config[:group]}) 
         if tumblr_post.nil? ||  tumblr_post[:source].nil?
-           log.warn "could not get image source: tweet: #{tweet} --- tumblr post: #{tumblr_post.inspect}"
+          log.warn "could not get image source: tweet: #{tweet} --- tumblr post: #{tumblr_post.inspect}"
         else
           log.debug "tumblr post: #{tumblr_post}"
           res = Processors::Tumblr.post tumblr_post.merge(tumblr_config)
-          log.warn "tumblr response: #{res.header} #{res.body}" unless res.code == "201"
+          log.debug "tumblr response: #{res}"
+          if res.code == "201"
+            log.info "tumblr post created (tumblr response: #{res.header} #{res.body}"
+          else
+            log.warn "tumblr response: #{res.header} #{res.body}"
+          end
         end
        end
         # store the highest tweet id
