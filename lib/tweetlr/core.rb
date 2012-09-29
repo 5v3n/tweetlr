@@ -38,20 +38,8 @@ class Tweetlr::Core
   
   def self.crawl(config)
     log.debug "#{self}.crawl() using config: #{config.inspect}"
-    twitter_config = {
-      :since_id => config[:since_id] || config[:start_at_tweet_id],
-      :search_term => config[:terms] || config[:search_term] ,
-      :results_per_page => config[:results_per_page] || Tweetlr::TWITTER_RESULTS_PER_PAGE,
-      :result_type => config[:result_type] || Tweetlr::TWITTER_RESULTS_TYPE,  
-      :api_endpoint_twitter => config[:api_endpoint_twitter] || Tweetlr::API_ENDPOINT_TWITTER
-    }
-    tumblr_config = { :tumblr_oauth_access_token_key => config[:tumblr_oauth_access_token_key],
-                      :tumblr_oauth_access_token_secret => config[:tumblr_oauth_access_token_secret],
-                      :tumblr_oauth_api_key => config[:tumblr_oauth_api_key],
-                      :tumblr_oauth_api_secret => config[:tumblr_oauth_api_secret],
-                      :tumblr_blog_hostname => config[:tumblr_blog_hostname] || config[:group]
-                    }
-      
+    twitter_config = prepare_twitter_config config
+    tumblr_config = prepare_tumblr_config config
     twitter_config[:search_term] = URI::escape(twitter_config[:search_term]) if twitter_config[:search_term]
     log.info "starting tweetlr crawl..."
     response = {}
@@ -82,5 +70,24 @@ class Tweetlr::Core
     end
     log.info "finished tweetlr crawl."
     return config
-  end  
+  end
+private
+  def self.prepare_twitter_config(config)
+    {
+      :since_id => config[:since_id] || config[:start_at_tweet_id],
+      :search_term => config[:terms] || config[:search_term] ,
+      :results_per_page => config[:results_per_page] || Tweetlr::TWITTER_RESULTS_PER_PAGE,
+      :result_type => config[:result_type] || Tweetlr::TWITTER_RESULTS_TYPE,  
+      :api_endpoint_twitter => config[:api_endpoint_twitter] || Tweetlr::API_ENDPOINT_TWITTER
+    }
+  end
+  def self.prepare_tumblr_config(config)
+    { 
+      :tumblr_oauth_access_token_key => config[:tumblr_oauth_access_token_key],
+      :tumblr_oauth_access_token_secret => config[:tumblr_oauth_access_token_secret],
+      :tumblr_oauth_api_key => config[:tumblr_oauth_api_key],
+      :tumblr_oauth_api_secret => config[:tumblr_oauth_api_secret],
+      :tumblr_blog_hostname => config[:tumblr_blog_hostname] || config[:group]
+    }
+  end
 end

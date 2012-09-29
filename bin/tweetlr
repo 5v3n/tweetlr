@@ -22,25 +22,7 @@ begin
    
   UPDATE_PERIOD = CONFIG['update_period']  
 
-  @tweetlr_config = {
-    :tumblr_blog_hostname => CONFIG['tumblr_blog_hostname'] || CONFIG['group'],
-    :tumblr_oauth_api_key => CONFIG['tumblr_oauth_api_key'],
-    :tumblr_oauth_api_secret => CONFIG['tumblr_oauth_api_secret'],
-    :tumblr_blog_hostname => CONFIG['tumblr_blog_hostname'],
-    :tumblr_oauth_access_token_key => CONFIG['tumblr_oauth_access_token_key'],
-    :tumblr_oauth_access_token_secret => CONFIG['tumblr_oauth_access_token_secret'],
-    :whitelist => CONFIG['whitelist'], 
-    :shouts => CONFIG['shouts'], 
-    :since_id => CONFIG['start_at_tweet_id'] , 
-    :terms => CONFIG['search_term'], 
-    :loglevel => CONFIG['loglevel'],
-    :update_period => UPDATE_PERIOD,
-    :api_endpoint_tumblr => CONFIG['api_endpoint_tumblr'],
-    :api_endpoint_twitter => CONFIG['api_endpoint_twitter'],
-    :results_per_page => CONFIG['results_per_page'],
-    :result_type => CONFIG['result_type'],
-    :embedly_key => CONFIG['embedly_key']
-    }
+  @tweetlr_config = prepare_tweetlr_config CONFIG
 rescue SystemCallError
   $stderr.puts "Ooops - looks like there is no ./config/tweetlr.yml found. I'm affraid tweetlr won't work properly until you introduced that configuration file."
   exit(1)
@@ -57,4 +39,26 @@ Daemons.run_proc('tweetlr', :dir_mode => :script, :dir => './', :backtrace => tr
       @tweetlr_config.merge! response
      end
    end
+end
+
+def prepare_tweetlr_config(config)
+  {
+    :tumblr_blog_hostname => config['tumblr_blog_hostname'] || config['group'],
+    :tumblr_oauth_api_key => config['tumblr_oauth_api_key'],
+    :tumblr_oauth_api_secret => config['tumblr_oauth_api_secret'],
+    :tumblr_blog_hostname => config['tumblr_blog_hostname'],
+    :tumblr_oauth_access_token_key => config['tumblr_oauth_access_token_key'],
+    :tumblr_oauth_access_token_secret => config['tumblr_oauth_access_token_secret'],
+    :whitelist => config['whitelist'], 
+    :shouts => config['shouts'], 
+    :since_id => config['start_at_tweet_id'] , 
+    :terms => config['search_term'], 
+    :loglevel => config['loglevel'],
+    :update_period => UPDATE_PERIOD,
+    :api_endpoint_tumblr => config['api_endpoint_tumblr'],
+    :api_endpoint_twitter => config['api_endpoint_twitter'],
+    :results_per_page => config['results_per_page'],
+    :result_type => config['result_type'],
+    :embedly_key => config['embedly_key']
+    }
 end
