@@ -1,15 +1,17 @@
 #encoding: utf-8
 require "bundler"
 require "logger"
+require "#{File.dirname(__FILE__)}/../lib/tweetlr"
+
 Bundler.require :default, :development, :test
 
 logger = Logger.new(STDOUT)
 logger.level = Logger::FATAL
-LogAware.log = logger
+Tweetlr::LogAware.log = logger
 
 def check_pic_url_extraction(service)
-  image_url = Processors::PhotoService::send "image_url_#{service}".to_sym, @links[service]
-  image_url.should =~ Processors::PhotoService::PIC_REGEXP
+  image_url = Tweetlr::Processors::PhotoService::send "image_url_#{service}".to_sym, @links[service]
+  image_url.should =~ Tweetlr::Processors::PhotoService::PIC_REGEXP
 end
 
 def stub_oauth

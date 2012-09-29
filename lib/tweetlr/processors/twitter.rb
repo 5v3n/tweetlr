@@ -1,12 +1,13 @@
-require 'processors/http'
-require 'log_aware'
+local_path=File.dirname(__FILE__)
+require "#{local_path}/http"
+require "#{local_path}/../log_aware"
 
-module Processors
+module Tweetlr::Processors
   #utilities for dealing with twitter
   module Twitter
-    include LogAware
+    include Tweetlr::LogAware
     def self.log
-      LogAware.log #TODO why doesn't the include make the log method accessible?
+      Tweetlr::LogAware.log #TODO why doesn't the include make the log method accessible?
     end
     
     #checks if the message is a retweet
@@ -25,7 +26,7 @@ module Processors
     #fire a new search
     def self.search(config)
       search_call = "#{config[:api_endpoint_twitter]}?ors=#{config[:search_term]}&result_type=#{config[:result_type]}&rpp=#{config[:results_per_page]}"
-      Processors::Http::http_get_json search_call
+      Tweetlr::Processors::Http::http_get_json search_call
     end
 
     # lazy update - search for a term or refresh the search if a response is available already
@@ -34,7 +35,7 @@ module Processors
       if config
         search_url = "#{config[:api_endpoint_twitter]}?since_id=#{config[:since_id]}&ors=#{config[:search_term]}&result_type=#{config[:result_type]}&rpp=#{config[:results_per_page]}"
         log.info "lazy search using '#{search_url}'"
-        response = Processors::Http::http_get_json search_url
+        response = Tweetlr::Processors::Http::http_get_json search_url
       else
         log.error "#{self}.lazy_search: no config given!"
       end

@@ -52,7 +52,7 @@ Daemons.run_proc('tweetlr', :dir_mode => :script, :dir => './', :backtrace => tr
   @log.info "creating a new tweetlr instance using this config: #{@tweetlr_config.inspect}"   
   EventMachine::run do 
     EventMachine::add_periodic_timer( UPDATE_PERIOD ) do
-      response = Tweetlr.crawl(@tweetlr_config)
+      response = Tweetlr::Core.crawl(@tweetlr_config)
       File.open(tid_file, "w+") { |io| io.write(response[:since_id]) }
       @tweetlr_config.merge! response
      end

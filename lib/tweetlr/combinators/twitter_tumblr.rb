@@ -1,23 +1,23 @@
-require 'processors/twitter'
-require 'processors/tumblr'
-require 'processors/photo_service'
+local_path=File.dirname(__FILE__)
+require "#{local_path}/../processors/twitter"
+require "#{local_path}/../processors/tumblr"
+require "#{local_path}/../processors/photo_service"
+require "#{local_path}/../log_aware"
 
-require 'log_aware'
-
-module Combinators
+module Tweetlr::Combinators
   module TwitterTumblr
-    include LogAware
+    include Tweetlr::LogAware
     def self.log
-      LogAware.log #TODO why doesn't the include make the log method accessible?
+      Tweetlr::LogAware.log #TODO why doesn't the include make the log method accessible?
     end
     #extract a linked image file's url from a tweet. first found image will be used.
     def self.extract_image_url(tweet, embedly_key=nil)
-      links = Processors::Twitter::extract_links tweet
+      links = Tweetlr::Processors::Twitter::extract_links tweet
       image_url = nil
       if links
         links.each do |link|
-          image_url = Processors::PhotoService::find_image_url(link, embedly_key)
-          return image_url if Processors::PhotoService::photo? image_url
+          image_url = Tweetlr::Processors::PhotoService::find_image_url(link, embedly_key)
+          return image_url if Tweetlr::Processors::PhotoService::photo? image_url
         end
       end
       image_url
@@ -29,7 +29,7 @@ module Combinators
       message = tweet['text']
       whitelist = options[:whitelist]
       whitelist.each {|entry| entry.downcase!} if (whitelist && whitelist.size != 0)
-      if !Processors::Twitter::retweet? message
+      if !Tweetlr::Processors::Twitter::retweet? message
         log.debug "tweet: #{tweet}"
         tumblr_post = {}
         tumblr_post[:tumblr_blog_hostname] = options[:tumblr_blog_hostname] || options[:group]

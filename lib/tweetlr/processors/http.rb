@@ -1,16 +1,16 @@
 require 'curb'
 require 'json'
-require 'log_aware'
+require "#{File.dirname(__FILE__)}/../log_aware"
 
-module Processors
+module Tweetlr::Processors
   #utilities for handling http
   module Http
-    include LogAware
+    include Tweetlr::LogAware
   
     USER_AGENT = %{Mozilla/5.0 (compatible; tweetlr; +http://tweetlr.5v3n.com)}
     
     def self.log
-      LogAware.log #TODO why doesn't the include make the log method accessible?
+      Tweetlr::LogAware.log #TODO why doesn't the include make the log method accessible?
     end
     #convenience method for curl http get calls
     def self.http_get(request)

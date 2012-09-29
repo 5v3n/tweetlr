@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Processors::PhotoService do
+describe Tweetlr::Processors::PhotoService do
   before :each do
     @links = {
       :twimg => 'http://twitter.com/KSilbereisen/status/228035435237097472',
@@ -20,44 +20,44 @@ describe Processors::PhotoService do
   end
   it "extracts images from eye em" do
     stub_eyeem
-    link = Processors::PhotoService::find_image_url @links[:eyeem]
+    link = Tweetlr::Processors::PhotoService::find_image_url @links[:eyeem]
     link.should be
     link.should == "http://www.eyeem.com/thumb/h/1024/e35db836c5d3f02498ef60fc3d53837fbe621561-1334126483"
   end
   it "doesnt find images in embedly results that are not explicitly marked as 'Photo' via the response's 'thumbnail_url' attribute" do
     stub_embedly_no_photo
-    link = Processors::PhotoService::find_image_url 'http://makersand.co/'
+    link = Tweetlr::Processors::PhotoService::find_image_url 'http://makersand.co/'
     link.should be_nil
   end
   it "does find an image for foursquare that is not he profile pic" do
     stub_foursquare
-    link = Processors::PhotoService::find_image_url @links[:foursquare]
+    link = Tweetlr::Processors::PhotoService::find_image_url @links[:foursquare]
     link.index('userpix_thumbs').should_not be
   end
   it "should find a picture's url from the supported services" do
     @links.each do |service,link|
       send "stub_#{service}"
-      url = Processors::PhotoService::find_image_url link
+      url = Tweetlr::Processors::PhotoService::find_image_url link
       url.should be, "service #{service} not working!"
       check_pic_url_extraction service if [:twimg, :instagram,:picplz,:yfrog,:imgly,:foursqaure,:not_listed].index service
     end
   end
   it "finds path images for redirected moments as well" do
     stub_path_redirected
-    url = Processors::PhotoService::find_image_url @links[:path]
+    url = Tweetlr::Processors::PhotoService::find_image_url @links[:path]
     url.should == 'https://s3-us-west-1.amazonaws.com/images.path.com/photos2/f90fd831-43c3-48fd-84cb-5c3bae52957a/2x.jpg'
   end
   it "should not crash if embedly fallback won't find a link" do
     stub_bad_request
-    url = Processors::PhotoService::find_image_url "http://mopskopf"     
+    url = Tweetlr::Processors::PhotoService::find_image_url "http://mopskopf"     
   end
   it "should not crash with an encoding error when response is non-us-ascii" do
     stub_utf8_response
-    url = Processors::PhotoService::find_image_url "http://api.instagram.com/oembed?url=http://instagr.am/p/Gx%E2%80%946/"
+    url = Tweetlr::Processors::PhotoService::find_image_url "http://api.instagram.com/oembed?url=http://instagr.am/p/Gx%E2%80%946/"
   end
   it "follows redirects" do
     stub_imgly
-    link = Processors::PhotoService::link_url_redirect 'im mocked anyways'
+    link = Tweetlr::Processors::PhotoService::link_url_redirect 'im mocked anyways'
     link.should == 'http://s3.amazonaws.com/imgly_production/899582/full.jpg'
   end
 end

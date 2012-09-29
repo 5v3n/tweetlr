@@ -1,14 +1,14 @@
-require 'log_aware'
+require "#{File.dirname(__FILE__)}/../log_aware"
 require 'oauth'
 
-module Processors
+module Tweetlr::Processors
   #utilities for handling tumblr
   module Tumblr
     GENERATOR = %{tweetlr - http://tweetlr.5v3n.com}
     API_ENDPOINT_TUMBLR = 'http://www.tumblr.com'
-    include LogAware
+    include Tweetlr::LogAware
     def self.log
-      LogAware.log #TODO why doesn't the include make the log method accessible?
+      Tweetlr::LogAware.log #TODO why doesn't the include make the log method accessible?
     end
     #post a tumblr photo entry. 
     #

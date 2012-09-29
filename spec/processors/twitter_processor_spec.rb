@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Processors::Twitter do
+describe Tweetlr::Processors::Twitter do
   before :each do
     @first_link = "http://url.com"
     @second_link = "http://instagr.am/p/DzCWn/"
@@ -16,15 +16,15 @@ describe Processors::Twitter do
   end
   it "should search twitter for a given term" do
     stub_twitter
-    response = Processors::Twitter::lazy_search @twitter_config
+    response = Tweetlr::Processors::Twitter::lazy_search @twitter_config
     tweets = response['results']
     tweets.should be
     tweets.should_not be_empty
   end
   it "extracts links" do
-    links = Processors::Twitter::extract_links ''
+    links = Tweetlr::Processors::Twitter::extract_links ''
     links.should be_nil
-    links = Processors::Twitter::extract_links @twitter_response
+    links = Tweetlr::Processors::Twitter::extract_links @twitter_response
     links[0].should == @first_link
     links[1].should == @second_link
     links[2].should == @third_link

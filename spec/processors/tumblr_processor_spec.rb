@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Processors::Tumblr do
+describe Tweetlr::Processors::Tumblr do
   before :all do
     config_file = File.join( Dir.pwd, 'config', 'tweetlr.yml')
     config = YAML.load_file(config_file)
@@ -21,10 +21,10 @@ describe Processors::Tumblr do
   it "posts to tumblr" do
     stub_tumblr
     stub_oauth
-    tumblr_post = Combinators::TwitterTumblr::generate_photo_post_from_tweet @twitter_response, @tweetlr_config
+    tumblr_post = Tweetlr::Combinators::TwitterTumblr::generate_photo_post_from_tweet @twitter_response, @tweetlr_config
     tumblr_post[:date] = Time.now.to_s
     tumblr_post[:source] = 'http://distilleryimage6.instagram.com/db72627effde11e1b3f322000a1e8899_7.jpg'
-    response = Processors::Tumblr::post @tweetlr_config.merge(tumblr_post)
+    response = Tweetlr::Processors::Tumblr::post @tweetlr_config.merge(tumblr_post)
     response.should be
     response.code.should == "201"
   end

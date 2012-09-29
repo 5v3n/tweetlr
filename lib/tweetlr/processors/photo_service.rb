@@ -1,8 +1,9 @@
-require 'processors/http'
+local_path=File.dirname(__FILE__)
+require "#{local_path}/http"
+require "#{local_path}/../log_aware"
 require 'nokogiri'
-require 'log_aware'
 
-module Processors
+module Tweetlr::Processors
   #utilities for dealing with photo services
   module PhotoService
   
@@ -10,10 +11,10 @@ module Processors
     LOCATION_STOP_INDICATOR  = "\r\n"
     PIC_REGEXP = /(.*?)\.(jpg|jpeg|png|gif)/i 
   
-    include LogAware
+    include Tweetlr::LogAware
     
     def self.log
-      LogAware.log #TODO why doesn't the include make the log method accessible?
+      Tweetlr::LogAware.log #TODO why doesn't the include make the log method accessible?
     end
   
     def self.find_image_url(link, embedly_key=nil)
@@ -58,7 +59,7 @@ module Processors
   
     #find the image's url via embed.ly
     def self.image_url_embedly(link_url, key)
-      response = Processors::Http::http_get_json "http://api.embed.ly/1/oembed?key=#{key}&url=#{link_url}"
+      response = Tweetlr::Processors::Http::http_get_json "http://api.embed.ly/1/oembed?key=#{key}&url=#{link_url}"
       log.debug "embedly call: http://api.embed.ly/1/oembed?key=#{key}&url=#{link_url}"
       if response && response['type'] == 'photo'
         image_url = response['url'] 
@@ -67,7 +68,7 @@ module Processors
     end
     #find the image's url for a lockerz link
     def self.image_url_lockerz(link_url)
-      response = Processors::Http::http_get_json "http://api.plixi.com/api/tpapi.svc/json/metadatafromurl?details=false&url=#{link_url}"
+      response = Tweetlr::Processors::Http::http_get_json "http://api.plixi.com/api/tpapi.svc/json/metadatafromurl?details=false&url=#{link_url}"
       response["BigImageUrl"] if response
     end
     #find the image's url for an twitter shortened link
@@ -78,7 +79,7 @@ module Processors
     #find the image's url for an instagram link
     def self.image_url_instagram(link_url)
       link_url['instagram.com'] = 'instagr.am' if link_url.index 'instagram.com' #instagram's oembed does not work for .com links
-      response = Processors::Http::http_get_json "http://api.instagram.com/oembed?url=#{link_url}"
+      response = Tweetlr::Processors::Http::http_get_json "http://api.instagram.com/oembed?url=#{link_url}"
       response['url'] if response
     end
 
@@ -86,7 +87,7 @@ module Processors
     def self.image_url_picplz(link_url)
       id = extract_id link_url
       #try short url
-      response = Processors::Http::http_get_json "http://picplz.com/api/v2/pic.json?shorturl_ids=#{id}"
+      response = Tweetlr::Processors::Http::http_get_json "http://picplz.com/api/v2/pic.json?shorturl_ids=#{id}"
       #if short url fails, try long url
       #response = HTTParty.get "http://picplz.com/api/v2/pic.json?longurl_ids=#{id}"
       #extract url
@@ -102,7 +103,7 @@ module Processors
     end
     #find the image'S url for a yfrog link
     def self.image_url_yfrog(link_url)
-      response = Processors::Http::http_get_json("http://www.yfrog.com/api/oembed?url=#{link_url}")
+      response = Tweetlr::Processors::Http::http_get_json("http://www.yfrog.com/api/oembed?url=#{link_url}")
       response['url'] if response
     end
     #find the image's url for a img.ly link
@@ -156,7 +157,7 @@ module Processors
     def self.retrieve_image_url_by_css link_url, css_path
       service_url = link_url_redirect link_url #follow possible redirects
         link_url = service_url if service_url #if there's no redirect, service_url will be nil
-        response = Processors::Http::http_get link_url
+        response = Tweetlr::Processors::Http::http_get link_url
         image_url = parse_html_for css_path, Nokogiri::HTML.parse(response.body_str)
         return image_url
     end

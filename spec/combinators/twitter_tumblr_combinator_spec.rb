@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Combinators::TwitterTumblr do
+describe Tweetlr::Combinators::TwitterTumblr do
   before :each do
     @first_link = "http://url.com"
     @second_link = "http://instagr.am/p/DzCWn/"
@@ -38,60 +38,60 @@ describe Combinators::TwitterTumblr do
     it "extracting their corresponding links" do
       @tweets.each do |key,value|
         send "stub_#{key}"
-        url = Combinators::TwitterTumblr.extract_image_url value
+        url = Tweetlr::Combinators::TwitterTumblr.extract_image_url value
         url.should be, "service #{key} not working!"
         check_pic_url_extraction key if [:instagram,:picplz,:yfrog,:imgly,:not_listed].index key
       end
     end
     it "using the first image link found in a tweet with multiple links" do
       stub_instagram
-      link = Combinators::TwitterTumblr.extract_image_url @twitter_response
+      link = Tweetlr::Combinators::TwitterTumblr.extract_image_url @twitter_response
       link.should == 'http://distillery.s3.amazonaws.com/media/2011/05/02/d25df62b9cec4a138967a3ad027d055b_7.jpg'
     end
     it "not returning links that do not belong to images" do
       stub_no_image_link
-      link = Combinators::TwitterTumblr.extract_image_url @twitter_response
+      link = Tweetlr::Combinators::TwitterTumblr.extract_image_url @twitter_response
       link.should_not be
     end
   end
   context "given a user whitelist" do
     it "should mark whitelist users' tweets as published" do
       stub_instagram
-      post = Combinators::TwitterTumblr::generate_photo_post_from_tweet @twitter_response, :whitelist => @whitelist
+      post = Tweetlr::Combinators::TwitterTumblr::generate_photo_post_from_tweet @twitter_response, :whitelist => @whitelist
       post[:state].should == 'published' 
     end
     it "should mark non whitelist users' tweets as drafts" do
       stub_instagram
-      post = Combinators::TwitterTumblr::generate_photo_post_from_tweet @non_whitelist_tweet, :whitelist => @whitelist
+      post = Tweetlr::Combinators::TwitterTumblr::generate_photo_post_from_tweet @non_whitelist_tweet, :whitelist => @whitelist
       post[:state].should == 'draft' 
     end
   end
   context "without a user whitelist (whitelist nil or empty)" do
     it "should mark every users' posts as published" do
       stub_instagram
-      post = Combinators::TwitterTumblr::generate_photo_post_from_tweet @twitter_response, :whitelist => nil
+      post = Tweetlr::Combinators::TwitterTumblr::generate_photo_post_from_tweet @twitter_response, :whitelist => nil
       post[:state].should == 'published'
       stub_instagram
-      post = Combinators::TwitterTumblr::generate_photo_post_from_tweet @non_whitelist_tweet, :whitelist => nil
+      post = Tweetlr::Combinators::TwitterTumblr::generate_photo_post_from_tweet @non_whitelist_tweet, :whitelist => nil
       post[:state].should == 'published'
-      post = Combinators::TwitterTumblr::generate_photo_post_from_tweet @twitter_response, :whitelist => ""
+      post = Tweetlr::Combinators::TwitterTumblr::generate_photo_post_from_tweet @twitter_response, :whitelist => ""
       post[:state].should == 'published'
       stub_instagram
-      post = Combinators::TwitterTumblr::generate_photo_post_from_tweet @non_whitelist_tweet, :whitelist => ""
+      post = Tweetlr::Combinators::TwitterTumblr::generate_photo_post_from_tweet @non_whitelist_tweet, :whitelist => ""
       post[:state].should == 'published'
     end
   end
   it "should not use retweets which would produce double blog posts" do
-    post = Combinators::TwitterTumblr::generate_photo_post_from_tweet @retweet, :whitelist => @whitelist
+    post = Tweetlr::Combinators::TwitterTumblr::generate_photo_post_from_tweet @retweet, :whitelist => @whitelist
     post.should_not be
   end
   context "should not use new style retweets which would produce double blog posts" do
     it "for quotes in context" do
-      post = Combinators::TwitterTumblr::generate_photo_post_from_tweet @new_style_retweet, :whitelist => @whitelist
+      post = Tweetlr::Combinators::TwitterTumblr::generate_photo_post_from_tweet @new_style_retweet, :whitelist => @whitelist
       post.should_not be
     end
     it "for quotes without further text addition" do
-      post = Combinators::TwitterTumblr::generate_photo_post_from_tweet @new_style_retweet_no_addition, :whitelist => @whitelist
+      post = Tweetlr::Combinators::TwitterTumblr::generate_photo_post_from_tweet @new_style_retweet_no_addition, :whitelist => @whitelist
       post.should_not be
     end
   end
@@ -99,13 +99,13 @@ describe Combinators::TwitterTumblr do
     it "uses a given blog via group option to post to" do
       stub_instagram
       desired_group = 'mygroup.tumblr.com'
-      tumblr_post = Combinators::TwitterTumblr.generate_photo_post_from_tweet @twitter_response, {:whitelist => @whitelist, :group => desired_group}
+      tumblr_post = Tweetlr::Combinators::TwitterTumblr.generate_photo_post_from_tweet @twitter_response, {:whitelist => @whitelist, :group => desired_group}
       tumblr_post[:tumblr_blog_hostname].should eq desired_group
     end
     it "uses a given blog via tumblr_blog_hostname to post to" do
       stub_instagram
       desired_group = 'mygroup.tumblr.com'
-      tumblr_post = Combinators::TwitterTumblr.generate_photo_post_from_tweet @twitter_response, {:whitelist => @whitelist, :tumblr_blog_hostname => desired_group}
+      tumblr_post = Tweetlr::Combinators::TwitterTumblr.generate_photo_post_from_tweet @twitter_response, {:whitelist => @whitelist, :tumblr_blog_hostname => desired_group}
       tumblr_post[:tumblr_blog_hostname].should eq desired_group
     end
   end
