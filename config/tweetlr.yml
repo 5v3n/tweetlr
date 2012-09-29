@@ -1,16 +1,16 @@
 results_per_page: 100
 result_type: recent
-search_term: 'coffeediary' #find tweets containing any of these terms
+search_term: 'cat+dog+unicorn' #find tweets containing any of these terms
 start_at_tweet_id: 61847783463854082 # the tweet id to start searching at
 api_endpoint_twitter: 'http://search.twitter.com/search.json'
 api_endpoint_tumblr: 'http://www.tumblr.com'
-tumblr_oauth_api_key: 'Buq8j3koYLqrZEMmTM4GL32S0guZU2Qvoz8xSvFRumaWuaxAnG'
-tumblr_oauth_api_secret: 'EnjBUAjUHo4Qi4d3BPUL5xsdc8qClDqRTLssz8Jzd2sKC7KZaq'
-tumblr_oauth_access_token_key: 'MQES8SEqr3JogLyUYzcV68RFfQ0b3ClxbnUihChh8p9UMH3tkM'
-tumblr_oauth_access_token_secret: 'FBnrEFW1p9RG7Zh1kztPjPDCbeE229fMPX5VwuzgZqUdD2hXSS'
-tumblr_blog_hostname: 'tweetlr-testlr.tumblr.com' #e.g. mysubblog.tumblr.com
-embedly_key: '9e6c2bb8372e11e1a92e4040d3dc5c07' #tweetlr uses http://embedly.com for link processing. a free plan containing an api key is available & recommended to use in order to ensure full support
-update_period: 10 #check for updates every 300 secs = 5 minutes
+tumblr_oauth_api_key: YOUR APPS TUMBLR API TOKEN
+tumblr_oauth_api_secret: YOUR APPS TUMBLR API SECRET
+tumblr_oauth_access_token_key: YOUR BLOGS OAUTH ACCESS TOKEN KEY
+tumblr_oauth_access_token_secret: YOUR BLOGS OAUTH ACCESS TOKEN SECRE
+tumblr_blog_hostname: YOUR BLOGS HOSTNAME #e.g. myblog.tumblr.com
+embedly_key: '' #tweetlr uses http://embedly.com for link processing. a free plan containing an api key is available & recommended to use in order to ensure full support
+update_period: 300 #check for updates every 300 secs = 5 minutes
 shouts: 'says' # will be concatenated after the username, before the message: @mr_x says: awesome things on a photo!
 loglevel: 1 # 0: debug, 1: info (default), 2: warn, 3: error, 5: fatal
 whitelist: #twitter accounts in that list will have their tweets published immediately. post from others will be saved as drafts. blank list will publish all tweets immediately
