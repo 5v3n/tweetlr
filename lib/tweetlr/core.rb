@@ -45,8 +45,19 @@ class Tweetlr::Core
     response = {}
     response = Tweetlr::Processors::Twitter::lazy_search(twitter_config)
     if response
-      tweets = response['results']
-      if tweets
+      process_response response, config, tumblr_config
+      # store the highest tweet id
+      config[:since_id] = response['max_id']
+    else
+      log.error "twitter search returned no response. hail the failwhale!"
+    end
+    log.info "finished tweetlr crawl."
+    return config
+  end
+private
+  def self.process_response(response, config, tumblr_config)
+    tweets = response['results']
+    if tweets
       tweets.each do |tweet|
         tumblr_post = Tweetlr::Combinators::TwitterTumblr::generate_photo_post_from_tweet(tweet, {:whitelist => config[:whitelist], :embedly_key => config[:embedly_key], :group => config[:group]}) 
         if tumblr_post.nil? ||  tumblr_post[:source].nil?
@@ -55,23 +66,17 @@ class Tweetlr::Core
           log.debug "tumblr post: #{tumblr_post}"
           res = Tweetlr::Processors::Tumblr.post tumblr_post.merge(tumblr_config)
           log.debug "tumblr response: #{res}"
-          if res.code == "201"
+          if res && res.code == "201"
             log.info "tumblr post created (tumblr response: #{res.header} #{res.body}"
-          else
+          elsif res
             log.warn "tumblr response: #{res.header} #{res.body}"
+          else
+            log.warn "there was no tumblr post response - most probably due to a missing oauth authorization"
           end
         end
-       end
-        # store the highest tweet id
-        config[:since_id] = response['max_id']
       end
-    else
-      log.error "twitter search returned no response. hail the failwhale!"
     end
-    log.info "finished tweetlr crawl."
-    return config
   end
-private
   def self.prepare_twitter_config(config)
     {
       :since_id => config[:since_id] || config[:start_at_tweet_id],
