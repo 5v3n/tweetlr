@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Tweetlr do
+describe Tweetlr::Core do
 
   config_file = File.join( Dir.pwd, 'config', 'tweetlr.yml')
   config = YAML.load_file(config_file)
@@ -31,7 +31,7 @@ describe Tweetlr do
   end
   it "crawls twitter and posts to tumblr" do 
     since_id_before = @tweetlr_config[:since_id]
-    result = Tweetlr.crawl(@tweetlr_config)
+    result = Tweetlr::Core.crawl(@tweetlr_config)
     since_id_before.should_not == result[:since_id]
   end
   it "copes with legacy config that use tumblr v1 api (basic auth)" do
@@ -54,7 +54,7 @@ describe Tweetlr do
       :tumblr_oauth_access_token_key=>nil, 
       :tumblr_oauth_access_token_secret=>nil}
     since_id_before = legacy_config[:since_id]
-    result = Tweetlr.crawl(legacy_config)
+    result = Tweetlr::Core.crawl(legacy_config)
     since_id_before.should_not == result[:since_id]
   end
 end
