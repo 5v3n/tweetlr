@@ -6,59 +6,65 @@ require 'logger'
 require 'yaml'
 require 'tweetlr'
 
-begin
-  config_file = File.join( Dir.pwd,  'config', 'tweetlr.yml')
-  tid_file = File.join( Dir.pwd ,"tweetlr.tid")
-  start_at_tweet_id = lambda { 
-     begin
-      File.open(tid_file, "r") { |io| io.gets.to_i } 
-    	rescue Errno::ENOENT => e
-        $stderr.puts "#{e} - we use the value from the configuration file" 
-    	  nil 
-    	end
-  }.call
-  CONFIG = YAML.load_file(config_file)
-  CONFIG['start_at_tweet_id'] = start_at_tweet_id || CONFIG['start_at_tweet_id'] || CONFIG['twitter_timestamp'] #check the latter for backwards compability
-   
-  UPDATE_PERIOD = CONFIG['update_period']  
+module Tweetlr
+  module Runner
+    def self.run
+      begin
+        config_file = File.join( Dir.pwd,  'config', 'tweetlr.yml')
+        tid_file = File.join( Dir.pwd ,"tweetlr.tid")
+        start_at_tweet_id = lambda { 
+           begin
+            File.open(tid_file, "r") { |io| io.gets.to_i } 
+          	rescue Errno::ENOENT => e
+              $stderr.puts "#{e} - we use the value from the configuration file" 
+          	  nil 
+          	end
+        }.call
+        config = YAML.load_file(config_file)
+        config['start_at_tweet_id'] = start_at_tweet_id || config['start_at_tweet_id'] || config['twitter_timestamp'] #check the latter for backwards compability
+       
+        @tweetlr_config = prepare_tweetlr_config config
+      rescue SystemCallError
+        $stderr.puts "Ooops - looks like there is no ./config/tweetlr.yml found. I'm affraid tweetlr won't work properly until you introduced that configuration file."
+        exit(1)
+      end
 
-  @tweetlr_config = prepare_tweetlr_config CONFIG
-rescue SystemCallError
-  $stderr.puts "Ooops - looks like there is no ./config/tweetlr.yml found. I'm affraid tweetlr won't work properly until you introduced that configuration file."
-  exit(1)
+      Daemons.run_proc('tweetlr', :dir_mode => :script, :dir => './', :backtrace => true, :log_output => true) do
+        @log = Logger.new(STDOUT)
+        @log.info "starting tweetlr daemon..." 
+        @log.info "creating a new tweetlr instance using this config: #{@tweetlr_config.inspect}"   
+        EventMachine::run do 
+          EventMachine::add_periodic_timer( @tweetlr_config[:update_period] ) do
+            response = Tweetlr::Core.crawl(@tweetlr_config)
+            File.open(tid_file, "w+") { |io| io.write(response[:since_id]) }
+            @tweetlr_config.merge! response
+           end
+         end
+      end
+    end
+
+    def self.prepare_tweetlr_config(config)
+      {
+        :tumblr_blog_hostname => config['tumblr_blog_hostname'] || config['group'],
+        :tumblr_oauth_api_key => config['tumblr_oauth_api_key'],
+        :tumblr_oauth_api_secret => config['tumblr_oauth_api_secret'],
+        :tumblr_blog_hostname => config['tumblr_blog_hostname'],
+        :tumblr_oauth_access_token_key => config['tumblr_oauth_access_token_key'],
+        :tumblr_oauth_access_token_secret => config['tumblr_oauth_access_token_secret'],
+        :whitelist => config['whitelist'], 
+        :shouts => config['shouts'], 
+        :since_id => config['start_at_tweet_id'] , 
+        :terms => config['search_term'], 
+        :loglevel => config['loglevel'],
+        :update_period => config['update_period'],
+        :api_endpoint_tumblr => config['api_endpoint_tumblr'],
+        :api_endpoint_twitter => config['api_endpoint_twitter'],
+        :results_per_page => config['results_per_page'],
+        :result_type => config['result_type'],
+        :embedly_key => config['embedly_key']
+        }
+    end
+  end
 end
 
-Daemons.run_proc('tweetlr', :dir_mode => :script, :dir => './', :backtrace => true, :log_output => true) do
-  @log = Logger.new(STDOUT)
-  @log.info "starting tweetlr daemon..." 
-  @log.info "creating a new tweetlr instance using this config: #{@tweetlr_config.inspect}"   
-  EventMachine::run do 
-    EventMachine::add_periodic_timer( UPDATE_PERIOD ) do
-      response = Tweetlr::Core.crawl(@tweetlr_config)
-      File.open(tid_file, "w+") { |io| io.write(response[:since_id]) }
-      @tweetlr_config.merge! response
-     end
-   end
-end
-
-def prepare_tweetlr_config(config)
-  {
-    :tumblr_blog_hostname => config['tumblr_blog_hostname'] || config['group'],
-    :tumblr_oauth_api_key => config['tumblr_oauth_api_key'],
-    :tumblr_oauth_api_secret => config['tumblr_oauth_api_secret'],
-    :tumblr_blog_hostname => config['tumblr_blog_hostname'],
-    :tumblr_oauth_access_token_key => config['tumblr_oauth_access_token_key'],
-    :tumblr_oauth_access_token_secret => config['tumblr_oauth_access_token_secret'],
-    :whitelist => config['whitelist'], 
-    :shouts => config['shouts'], 
-    :since_id => config['start_at_tweet_id'] , 
-    :terms => config['search_term'], 
-    :loglevel => config['loglevel'],
-    :update_period => UPDATE_PERIOD,
-    :api_endpoint_tumblr => config['api_endpoint_tumblr'],
-    :api_endpoint_twitter => config['api_endpoint_twitter'],
-    :results_per_page => config['results_per_page'],
-    :result_type => config['result_type'],
-    :embedly_key => config['embedly_key']
-    }
-end
+Tweetlr::Runner.run
