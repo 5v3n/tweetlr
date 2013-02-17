@@ -1,6 +1,6 @@
 # tweetlr
 
-<a href="http://travis-ci.org/#!/5v3n/tweetlr">![travis-ci](http://travis-ci.org/5v3n/tweetlr.png)</a>
+<a href="http://travis-ci.org/#!/5v3n/tweetlr">![travis-ci](https://api.travis-ci.org/5v3n/tweetlr.png?branch=master)</a>
 
 tweetlr crawls twitter for a given term, extracts photos out of the collected tweets' short urls and posts the images to tumblr. 
 
