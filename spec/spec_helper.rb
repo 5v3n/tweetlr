@@ -1,6 +1,7 @@
 #encoding: utf-8
 require "bundler"
 require "logger"
+require "yaml"
 require "#{File.dirname(__FILE__)}/../lib/tweetlr"
 
 Bundler.require :default, :development, :test
