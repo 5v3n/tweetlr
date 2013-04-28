@@ -1,6 +1,9 @@
 # tweetlr
 
-<a href="http://travis-ci.org/#!/5v3n/tweetlr">![travis-ci](https://api.travis-ci.org/5v3n/tweetlr.png?branch=master)</a>&nbsp;<a href="https://codeclimate.com/github/5v3n/tweetlr"><img src="https://codeclimate.com/github/5v3n/tweetlr.png" /></a>
+<a href="http://travis-ci.org/#!/5v3n/tweetlr">![travis-ci](https://api.travis-ci.org/5v3n/tweetlr.png?branch=master)</a>&nbsp;
+<a href="https://codeclimate.com/github/5v3n/tweetlr"><img src="https://codeclimate.com/github/5v3n/tweetlr.png" /></a>&nbsp;
+<a href='https://coveralls.io/r/5v3n/tweetlr'><img src='https://coveralls.io/repos/5v3n/tweetlr/badge.png?branch=master' alt='Coverage Status' /></a>
+
 
 
 
