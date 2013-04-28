@@ -26,10 +26,9 @@ module Tweetlr::Combinators
     def self.generate_photo_post_from_tweet(tweet, options = {})
       log.debug "#{self}.generate_photo_post_from_tweet with options: #{options.inspect}"
       tumblr_post = nil
-      message = tweet['text']
       whitelist = options[:whitelist]
       whitelist.each {|entry| entry.downcase!} if (whitelist && whitelist.size != 0)
-      if !Tweetlr::Processors::Twitter::retweet? message
+      if !Tweetlr::Processors::Twitter::retweet? tweet['text']
         log.debug "tweet: #{tweet}"
         tumblr_post = {}
         tumblr_post[:tumblr_blog_hostname] = options[:tumblr_blog_hostname] || options[:group]

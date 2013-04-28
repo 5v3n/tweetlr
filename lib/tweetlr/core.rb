@@ -17,7 +17,7 @@ class Tweetlr::Core
   def initialize(args)
     initialize_logging(args[:loglevel])
     initialize_attributes(args)
-    log.info "Tweetlr #{Tweetlr::VERSION} initialized. Ready to roll."
+    Tweetlr::LogAware.log.info "Tweetlr #{Tweetlr::VERSION} initialized. Ready to roll."
   end
   
   def self.crawl(config)
@@ -51,7 +51,7 @@ private
     @whitelist.each {|entry| entry.downcase!} if @whitelist
   end
   def initialize_logging(loglevel)
-    log = Logger.new(STDOUT)
+    log = Tweetlr::LogAware.log || Logger.new(STDOUT)
     if (Logger::DEBUG..Logger::UNKNOWN).to_a.index(loglevel)
       log.level = loglevel 
     else
@@ -70,16 +70,15 @@ private
       if tumblr_post.nil? ||  tumblr_post[:source].nil?
         log.warn "could not get image source: tweet: #{tweet} --- tumblr post: #{tumblr_post.inspect}"
       else
-        post_to_tumblr
+        post_to_tumblr tumblr_post, tumblr_config
       end
     end    
   end
   def self.post_to_tumblr(tumblr_post, tumblr_config)
     log.debug "tumblr post: #{tumblr_post}"
     res = Tweetlr::Processors::Tumblr.post tumblr_post.merge(tumblr_config)
-    log.debug "tumblr response: #{res}"
     if res && res.code == "201"
-      log.info "tumblr post created (tumblr response: #{res.header} #{res.body}"
+      log.info "tumblr post created (tumblr response header: #{res.header}"
     elsif res
       log.warn "tumblr response: #{res.header} #{res.body}"
     else

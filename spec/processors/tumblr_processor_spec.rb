@@ -19,8 +19,8 @@ describe Tweetlr::Processors::Tumblr do
     }
   end
   it "posts to tumblr" do
-    #stub_tumblr
-    #stub_oauth
+    stub_tumblr
+    stub_oauth
     tumblr_post = Tweetlr::Combinators::TwitterTumblr::generate_photo_post_from_tweet @twitter_response, @tweetlr_config
     tumblr_post[:date] = Time.now.to_s
     tumblr_post[:source] = 'http://distilleryimage6.instagram.com/db72627effde11e1b3f322000a1e8899_7.jpg'

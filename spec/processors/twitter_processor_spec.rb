@@ -14,19 +14,36 @@ describe Tweetlr::Processors::Twitter do
       :api_endpoint_twitter => Tweetlr::API_ENDPOINT_TWITTER
     }
   end
-  it "should search twitter for a given term" do
-    stub_twitter
-    response = Tweetlr::Processors::Twitter::lazy_search @twitter_config
-    tweets = response['results']
-    tweets.should be
-    tweets.should_not be_empty
+  describe "#search(config)" do
+    it "searches twitter for a given term" do
+      stub_twitter
+      response = Tweetlr::Processors::Twitter::search @twitter_config
+      tweets = response['results']
+      tweets.should be
+      tweets.should_not be_empty
+    end
   end
-  it "extracts links" do
-    links = Tweetlr::Processors::Twitter::extract_links ''
-    links.should be_nil
-    links = Tweetlr::Processors::Twitter::extract_links @twitter_response
-    links[0].should == @first_link
-    links[1].should == @second_link
-    links[2].should == @third_link
+  describe "#lazy_search(config)" do
+    it "searches twitter for a given term" do
+      stub_twitter
+      response = Tweetlr::Processors::Twitter::lazy_search @twitter_config
+      tweets = response['results']
+      tweets.should be
+      tweets.should_not be_empty
+    end
+    it "copes with nil as input" do
+      stub_twitter
+      Tweetlr::Processors::Twitter::lazy_search(nil).should be_nil
+    end
+  end
+  describe "#extract_links()" do
+    it "extracts links" do
+      links = Tweetlr::Processors::Twitter::extract_links ''
+      links.should be_nil
+      links = Tweetlr::Processors::Twitter::extract_links @twitter_response
+      links[0].should == @first_link
+      links[1].should == @second_link
+      links[2].should == @third_link
+    end
   end
 end
