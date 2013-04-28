@@ -3,7 +3,7 @@
 pkg
 *.pid
 *.output
-.rvmrc
+.ruby-version
 Gemfile.lock
 tweetlr.tid
 tweetlr.yml.dev
