@@ -62,6 +62,8 @@ describe Tweetlr::Processors::PhotoService do
   end
   it "copes with redirect errors" do
     Curl::Easy.any_instance.stub(:http_get).and_raise(Curl::Err::CurlError)
+    Tweetlr::Processors::PhotoService.stub!(:sleep) #releasing the sleep handbrake...
+    Tweetlr::Processors::PhotoService.should_receive(:sleep).with(3)
     expect { Tweetlr::Processors::PhotoService::link_url_redirect 'im mocked anyways'}.to_not raise_error(Curl::Err::CurlError)
   end
 end
