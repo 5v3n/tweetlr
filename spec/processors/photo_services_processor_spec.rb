@@ -60,4 +60,8 @@ describe Tweetlr::Processors::PhotoService do
     link = Tweetlr::Processors::PhotoService::link_url_redirect 'im mocked anyways'
     link.should == 'http://s3.amazonaws.com/imgly_production/899582/full.jpg'
   end
+  it "copes with redirect errors" do
+    Curl::Easy.any_instance.stub(:http_get).and_raise(Curl::Err::CurlError)
+    expect { Tweetlr::Processors::PhotoService::link_url_redirect 'im mocked anyways'}.to_not raise_error(Curl::Err::CurlError)
+  end
 end
