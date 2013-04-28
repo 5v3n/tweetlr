@@ -10,7 +10,7 @@ There is a new [tweetlr "as-a-service"](http://tweetlr.5v3n.com) where you can e
 
 tweetlr supports
 
-- eyeem.com
+- instagram
 - twitter
   - photobucket
   - twimg
@@ -19,7 +19,7 @@ tweetlr supports
 - twitpic
 - yfrog
 - imgly
-- instagram
+- eyeem.com
 - t.co shortened links to pictures
 - every photo service accessible via embed.ly (see [photo providers](http://embed.ly/providers))
 

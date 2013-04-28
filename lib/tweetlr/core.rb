@@ -62,24 +62,28 @@ private
   end 
   def self.process_response(response, config, tumblr_config)
     tweets = response['results']
-    if tweets
-      tweets.each do |tweet|
-        tumblr_post = Tweetlr::Combinators::TwitterTumblr::generate_photo_post_from_tweet(tweet, {:whitelist => config[:whitelist], :embedly_key => config[:embedly_key], :group => config[:group]}) 
-        if tumblr_post.nil? ||  tumblr_post[:source].nil?
-          log.warn "could not get image source: tweet: #{tweet} --- tumblr post: #{tumblr_post.inspect}"
-        else
-          log.debug "tumblr post: #{tumblr_post}"
-          res = Tweetlr::Processors::Tumblr.post tumblr_post.merge(tumblr_config)
-          log.debug "tumblr response: #{res}"
-          if res && res.code == "201"
-            log.info "tumblr post created (tumblr response: #{res.header} #{res.body}"
-          elsif res
-            log.warn "tumblr response: #{res.header} #{res.body}"
-          else
-            log.warn "there was no tumblr post response - most probably due to a missing oauth authorization"
-          end
-        end
+    process_and_post tweets, config, tumblr_config if tweets
+  end
+  def self.process_and_post(tweets, config, tumblr_config)
+    tweets.each do |tweet|
+      tumblr_post = Tweetlr::Combinators::TwitterTumblr::generate_photo_post_from_tweet(tweet, {:whitelist => config[:whitelist], :embedly_key => config[:embedly_key], :group => config[:group]}) 
+      if tumblr_post.nil? ||  tumblr_post[:source].nil?
+        log.warn "could not get image source: tweet: #{tweet} --- tumblr post: #{tumblr_post.inspect}"
+      else
+        post_to_tumblr
       end
+    end    
+  end
+  def self.post_to_tumblr(tumblr_post, tumblr_config)
+    log.debug "tumblr post: #{tumblr_post}"
+    res = Tweetlr::Processors::Tumblr.post tumblr_post.merge(tumblr_config)
+    log.debug "tumblr response: #{res}"
+    if res && res.code == "201"
+      log.info "tumblr post created (tumblr response: #{res.header} #{res.body}"
+    elsif res
+      log.warn "tumblr response: #{res.header} #{res.body}"
+    else
+      log.warn "there was no tumblr post response - most probably due to a missing oauth authorization"
     end
   end
   def self.prepare_twitter_config(config)
