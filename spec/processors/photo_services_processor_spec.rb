@@ -16,9 +16,10 @@ describe Tweetlr::Processors::PhotoService do
       :imgly => "http://img.ly/3M1o"
       }
   end
-  it "should find a picture's url from the supported services" do
+  it "finds a picture's url from the supported services" do
     @links.each do |service,link|
       send "stub_#{service}"
+      #puts "checking #{service}"
       url = Tweetlr::Processors::PhotoService::find_image_url link
       url.should be, "service #{service} not working!"
       check_pic_url_extraction service if [:twimg, :instagram,:yfrog,:imgly,:foursqaure,:not_listed].index service

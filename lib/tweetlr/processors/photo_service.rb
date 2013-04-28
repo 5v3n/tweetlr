@@ -101,22 +101,12 @@ module Tweetlr::Processors
       begin
         resp = Curl::Easy.http_get(short_url) { |res| res.follow_location = true }
       rescue Curl::Err::CurlError => err
-          log.error "Curl::Easy.http_get failed: #{err}"
-          tries -= 1
-          sleep 3
-          if tries > 0
-              retry
-          else
-             return nil
-          end
+        log.error "Curl::Easy.http_get failed: #{err}"
+        tries -= 1
+        sleep 3
+        (tries > 0) ? retry : return
       end
-      if(resp && resp.header_str && resp.header_str.index(LOCATION_START_INDICATOR) && resp.header_str.index(stop_indicator))
-        start = resp.header_str.index(LOCATION_START_INDICATOR) + LOCATION_START_INDICATOR.size
-        stop  = resp.header_str.index(stop_indicator, start)
-        resp.header_str[start...stop]
-      else
-        nil
-      end
+      process_reponse_header resp, stop_indicator
     end
   
     #extract the pic id from a given <code>link</code>
@@ -141,6 +131,15 @@ module Tweetlr::Processors
       return image_url
     end
 private
+    def self.process_reponse_header(resp, stop_indicator)
+      if(resp && resp.header_str && resp.header_str.index(LOCATION_START_INDICATOR) && resp.header_str.index(stop_indicator))
+        start = resp.header_str.index(LOCATION_START_INDICATOR) + LOCATION_START_INDICATOR.size
+        stop  = resp.header_str.index(stop_indicator, start)
+        resp.header_str[start...stop]
+      else
+        nil
+      end
+    end
     def self.follow_redirect(link_url)
       service_url = link_url_redirect link_url #follow possible redirects
       link_url = service_url if service_url #if there's no redirect, service_url will be nil
