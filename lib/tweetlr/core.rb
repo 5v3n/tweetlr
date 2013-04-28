@@ -15,24 +15,8 @@ class Tweetlr::Core
   end
   
   def initialize(args)
-    log = Logger.new(STDOUT)
-    if (Logger::DEBUG..Logger::UNKNOWN).to_a.index(args[:loglevel])
-      log.level = args[:loglevel] 
-    else
-      log.level = Logger::INFO
-    end
-    log.debug "log level set to #{log.level}"
-    Tweetlr::LogAware.log=log
-    
-    @email = args[:tumblr_email]
-    @password = args[:tumblr_password]
-    @cookie = args[:cookie]
-    @api_endpoint_twitter = args[:api_endpoint_twitter] || Tweetlr::API_ENDPOINT_TWITTER
-    @api_endpoint_tumblr = args[:api_endpoint_tumblr] || Tweetlr::API_ENDPOINT_TUMBLR
-    @whitelist = args[:whitelist]
-    @shouts = args[:shouts]
-    @update_period = args[:update_period] || Tweetlr::UPDATE_PERIOD
-    @whitelist.each {|entry| entry.downcase!} if @whitelist
+    initialize_logging(args[:loglevel])
+    initialize_attributes(args)
     log.info "Tweetlr #{Tweetlr::VERSION} initialized. Ready to roll."
   end
   
@@ -55,6 +39,27 @@ class Tweetlr::Core
     return config
   end
 private
+  def initialize_attributes(args)
+    @email = args[:tumblr_email]
+    @password = args[:tumblr_password]
+    @cookie = args[:cookie]
+    @api_endpoint_twitter = args[:api_endpoint_twitter] || Tweetlr::API_ENDPOINT_TWITTER
+    @api_endpoint_tumblr = args[:api_endpoint_tumblr] || Tweetlr::API_ENDPOINT_TUMBLR
+    @whitelist = args[:whitelist]
+    @shouts = args[:shouts]
+    @update_period = args[:update_period] || Tweetlr::UPDATE_PERIOD
+    @whitelist.each {|entry| entry.downcase!} if @whitelist
+  end
+  def initialize_logging(loglevel)
+    log = Logger.new(STDOUT)
+    if (Logger::DEBUG..Logger::UNKNOWN).to_a.index(loglevel)
+      log.level = loglevel 
+    else
+      log.level = Logger::INFO
+    end
+    log.debug "log level set to #{log.level}"
+    Tweetlr::LogAware.log=log
+  end 
   def self.process_response(response, config, tumblr_config)
     tweets = response['results']
     if tweets
