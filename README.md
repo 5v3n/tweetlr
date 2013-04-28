@@ -16,7 +16,6 @@ tweetlr supports
   - twimg
 - foursquare
 - path.com
-- picplz
 - twitpic
 - yfrog
 - imgly

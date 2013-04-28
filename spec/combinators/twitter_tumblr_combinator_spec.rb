@@ -15,10 +15,8 @@ describe Tweetlr::Combinators::TwitterTumblr do
       :instagram => {'text' => "jadda jadda http://instagr.am/p/DzCWn/"},
       :twitpic => {'text' => "jadda jadda http://twitpic.com/449o2x"},
       :yfrog => {'text' => "jadda jadda http://yfrog.com/h4vlfp"},
-      :picplz => {'text' => "jadda jadda http://picplz.com/2hWv"},
       :imgly => {'text' => "jadda jadda http://img.ly/3M1o"},
       :tco => {'text' => "jadda jadda http://t.co/MUGNayA"},
-      :lockerz => {'text' => "jadda jadda http://lockerz.com/s/100269159"},
       :embedly => {'text' => "jadda jadda http://flic.kr/p/973hTv"},
       :twitter_pics => {'text' => "jadda jadda http://t.co/FmyBGfyY"} 
       }
@@ -26,10 +24,8 @@ describe Tweetlr::Combinators::TwitterTumblr do
       :instagram => "http://instagr.am/p/DzCWn/",
       :twitpic => "http://twitpic.com/449o2x",
       :yfrog => "http://yfrog.com/h4vlfp",
-      :picplz => "http://picplz.com/2hWv",
       :imgly => "http://img.ly/3M1o",
       :tco => 'http://t.co/MUGNayA',
-      :lockerz => 'http://lockerz.com/s/100269159',
       :embedly => 'http://flic.kr/p/973hTv',
       :twitter_pics => 'http://t.co/FmyBGfyY' 
       }

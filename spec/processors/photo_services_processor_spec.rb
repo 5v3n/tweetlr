@@ -3,19 +3,17 @@ require 'spec_helper'
 describe Tweetlr::Processors::PhotoService do
   before :each do
     @links = {
-      :twimg => 'http://twitter.com/KSilbereisen/status/228035435237097472',
       :eyeem => 'http://www.eyeem.com/p/326629',
-      :foursquare => 'http://4sq.com/x4p87N',
       :path => 'http://path.com/p/KQd57', 
       :instagram => "http://instagr.am/p/DzCWn/",
       :twitpic => "http://twitpic.com/449o2x",
       :yfrog => "http://yfrog.com/h4vlfp",
-      :picplz => "http://picplz.com/2hWv",
-      :imgly => "http://img.ly/3M1o",
       :tco => 'http://t.co/MUGNayA',
-      :lockerz => 'http://lockerz.com/s/100269159',
       :embedly => 'http://flic.kr/p/973hTv',
-      :twitter_pics => 'http://t.co/FmyBGfyY'
+      :twitter_pics => 'http://t.co/FmyBGfyY',
+      :twimg => 'http://twitter.com/KSilbereisen/status/228035435237097472',
+      #:foursquare => 'http://4sq.com/x4p87N',
+      :imgly => "http://img.ly/3M1o"
       }
   end
   it "extracts images from eye em" do
@@ -24,14 +22,15 @@ describe Tweetlr::Processors::PhotoService do
     link.should be
     link.should == "http://www.eyeem.com/thumb/h/1024/e35db836c5d3f02498ef60fc3d53837fbe621561-1334126483"
   end
-  it "doesnt find images in embedly results that are not explicitly marked as 'Photo' via the response's 'thumbnail_url' attribute" do
+  it "doesnt find images in embedly results that are not explicitly marked as 'Photo' or 'Image' via the response's 'thumbnail_url' attribute" do
     stub_embedly_no_photo
     link = Tweetlr::Processors::PhotoService::find_image_url 'http://makersand.co/'
     link.should be_nil
   end
-  it "does find an image for foursquare that is not he profile pic" do
+  xit "does find an image for foursquare that is not he profile pic" do
     stub_foursquare
     link = Tweetlr::Processors::PhotoService::find_image_url @links[:foursquare]
+    link.should be
     link.index('userpix_thumbs').should_not be
   end
   it "should find a picture's url from the supported services" do

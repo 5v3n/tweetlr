@@ -22,15 +22,13 @@ module Tweetlr::Processors
       if link && !(photo? link)
         url = image_url_eyeem link if link.index 'eyeem.com'
         url = image_url_instagram link if (link.index('instagr.am') || link.index('instagram.com'))
-        url = image_url_picplz link if link.index 'picplz'
         url = image_url_twitpic link if link.index 'twitpic'
         url = image_url_yfrog link if link.index 'yfrog'
-        url = image_url_imgly link if link.index 'img.ly'
+        url = image_url_imgly link, embedly_key if link.index 'img.ly'
         url = image_url_tco link, embedly_key if link.index 't.co'
         url = image_url_twimg link if link.index 'twitter.com'
-        url = image_url_lockerz link if link.index 'lockerz.com'
         url = image_url_path link if link.index 'path.com'
-        url = image_url_foursqaure link if link.index '4sq.com'
+        url = image_url_foursqaure link if (link.index('4sq.com') || link.index('foursquare.com'))
         url = image_url_embedly link, embedly_key if url.nil? #just try embed.ly for anything else. could do all image url processing w/ embedly, but there's probably some kind of rate limit invovled.
       elsif photo? link
         url = link
@@ -42,7 +40,7 @@ module Tweetlr::Processors
       link =~ PIC_REGEXP
     end
     def self.image_url_twimg(link_url)
-      retrieve_image_url_by_css link_url, '.twimg img'
+      retrieve_image_url_by_css link_url, '.media img'
     end
     #extract the image of an eyeem.com pic
     def self.image_url_eyeem(link_url)
@@ -50,7 +48,8 @@ module Tweetlr::Processors
     end
     #extract the image of a foursquare.com pic
     def self.image_url_foursqaure(link_url)
-      retrieve_image_url_by_css link_url, '.commentPhoto img'
+      link_url = follow_redirect(link_url)
+      retrieve_image_url_by_css link_url, '.comment.withPhoto img.featured'
     end
     #extract the image of a path.com pic
     def self.image_url_path(link_url)
@@ -59,17 +58,13 @@ module Tweetlr::Processors
   
     #find the image's url via embed.ly
     def self.image_url_embedly(link_url, key)
+      link_url = follow_redirect(link_url)
       response = Tweetlr::Processors::Http::http_get_json "http://api.embed.ly/1/oembed?key=#{key}&url=#{link_url}"
       log.debug "embedly call: http://api.embed.ly/1/oembed?key=#{key}&url=#{link_url}"
-      if response && response['type'] == 'photo'
+      if response && (response['type'] == 'photo' || response['type'] == 'image')
         image_url = response['url'] 
       end
       image_url
-    end
-    #find the image's url for a lockerz link
-    def self.image_url_lockerz(link_url)
-      response = Tweetlr::Processors::Http::http_get_json "http://api.plixi.com/api/tpapi.svc/json/metadatafromurl?details=false&url=#{link_url}"
-      response["BigImageUrl"] if response
     end
     #find the image's url for an twitter shortened link
     def self.image_url_tco(link_url, embedly_key = nil)
@@ -82,33 +77,17 @@ module Tweetlr::Processors
       response = Tweetlr::Processors::Http::http_get_json "http://api.instagram.com/oembed?url=#{link_url}"
       response['url'] if response
     end
-
-    #find the image's url for a picplz short/longlink
-    def self.image_url_picplz(link_url)
-      id = extract_id link_url
-      #try short url
-      response = Tweetlr::Processors::Http::http_get_json "http://picplz.com/api/v2/pic.json?shorturl_ids=#{id}"
-      #if short url fails, try long url
-      #response = HTTParty.get "http://picplz.com/api/v2/pic.json?longurl_ids=#{id}"
-      #extract url
-      if response && response['value'] && response['value']['pics'] && response['value']['pics'].first && response['value']['pics'].first['pic_files'] && response['value']['pics'].first['pic_files']['640r']
-        response['value']['pics'].first['pic_files']['640r']['img_url'] 
-      else
-        nil
-      end
-    end
     #find the image's url for a twitpic link
     def self.image_url_twitpic(link_url)
       image_url_redirect link_url, "http://twitpic.com/show/full/"
     end
     #find the image'S url for a yfrog link
     def self.image_url_yfrog(link_url)
-      response = Tweetlr::Processors::Http::http_get_json("http://www.yfrog.com/api/oembed?url=#{link_url}")
-      response['url'] if response
+      retrieve_image_url_by_css link_url, '#input-direct', 'value'
     end
     #find the image's url for a img.ly link
-    def self.image_url_imgly(link_url)
-      image_url_redirect link_url, "http://img.ly/show/full/", "\r\n"
+    def self.image_url_imgly(link_url, embedly_key)
+      retrieve_image_url_by_css link_url, '#the-image'
     end
   
     # extract image url from services like twitpic & img.ly that do not offer oembed interfaces
@@ -144,22 +123,27 @@ module Tweetlr::Processors
       link.split('/').last if link.split('/')
     end
     #parse html doc for element signature
-    def self.parse_html_for(element_signature, html_doc)
+    def self.parse_html_for(element_signature, html_doc, identifier="src")
       image_url= nil
       if html_doc
         photo_container_div = html_doc.css(element_signature)
-        if photo_container_div && photo_container_div.first && photo_container_div.first.attributes["src"]
-          image_url = photo_container_div.first.attributes["src"].value
+        if photo_container_div && photo_container_div.first && photo_container_div.first.attributes[identifier]
+          image_url = photo_container_div.first.attributes[identifier].value
         end
       end
       image_url
     end
-    def self.retrieve_image_url_by_css link_url, css_path
+    def self.retrieve_image_url_by_css(link_url, css_path, selector='src')
+      link_url = follow_redirect link_url
+      response = Tweetlr::Processors::Http::http_get link_url
+      image_url = parse_html_for css_path, Nokogiri::HTML.parse(response.body_str), selector
+      return image_url
+    end
+private
+    def self.follow_redirect(link_url)
       service_url = link_url_redirect link_url #follow possible redirects
-        link_url = service_url if service_url #if there's no redirect, service_url will be nil
-        response = Tweetlr::Processors::Http::http_get link_url
-        image_url = parse_html_for css_path, Nokogiri::HTML.parse(response.body_str)
-        return image_url
+      link_url = service_url if service_url #if there's no redirect, service_url will be nil
+      link_url
     end
   end
 end

@@ -11,7 +11,7 @@ logger.level = Logger::FATAL
 Tweetlr::LogAware.log = logger
 
 def check_pic_url_extraction(service)
-  image_url = Tweetlr::Processors::PhotoService::send "image_url_#{service}".to_sym, @links[service]
+  image_url = Tweetlr::Processors::PhotoService.find_image_url @links[service]
   (image_url =~ Tweetlr::Processors::PhotoService::PIC_REGEXP).should be, "service #{service} not working, no picture extracted!"
 end
 
@@ -163,6 +163,14 @@ Cache-Control: no-cache
 Server: nginx/1.0.0 + Phusion Passenger 3.0.7 (mod_rails/mod_rack)
 
 |
+  Curl::Easy.any_instance.stub(:body_str).and_return %|<div id="image-box">
+<!-- / #the-image-container{ :'data-url' => @image.image.url(:large) } -->
+<img alt="trending: laugenzopf camenbert.  #wirsounterwegs " crossorigin="" id="the-image" src="http://s3.amazonaws.com/imgly_production/899582/large.jpg">
+<div id="tagging-cursor"></div>
+<form accept-charset="UTF-8" action="/peopletaggings" class="new_peopletagging" id="tag-people-form" method="post">
+<div style="margin:0;padding:0;display:inline">
+<input name="utf8" type="hidden" value="✓"><input name="authenticity_token" type="hidden" value="780G4Ra4X2R0AyNc01w2XKQHmd0122ZoIt478wIYeOI=">
+</div>|
 end
 
 def stub_twitpic
