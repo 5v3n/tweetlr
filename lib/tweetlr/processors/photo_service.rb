@@ -49,7 +49,8 @@ module Tweetlr::Processors
     #extract the image of a foursquare.com pic
     def self.image_url_foursqaure(link_url)
       link_url = follow_redirect(link_url)
-      retrieve_image_url_by_css link_url, '.comment.withPhoto img.featured'
+      image_url = retrieve_image_url_by_css link_url, 'meta[property="og:image"]', 'content'
+      image_url
     end
     #extract the image of a path.com pic
     def self.image_url_path(link_url)
@@ -59,8 +60,8 @@ module Tweetlr::Processors
     #find the image's url via embed.ly
     def self.image_url_embedly(link_url, key)
       link_url = follow_redirect(link_url)
-      response = Tweetlr::Processors::Http::http_get_json "http://api.embed.ly/1/oembed?key=#{key}&url=#{link_url}"
       log.debug "embedly call: http://api.embed.ly/1/oembed?key=#{key}&url=#{link_url}"
+      response = Tweetlr::Processors::Http::http_get_json "http://api.embed.ly/1/oembed?key=#{key}&url=#{link_url}"
       if response && (response['type'] == 'photo' || response['type'] == 'image')
         image_url = response['url'] 
       end

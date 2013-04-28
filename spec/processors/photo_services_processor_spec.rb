@@ -3,6 +3,7 @@ require 'spec_helper'
 describe Tweetlr::Processors::PhotoService do
   before :each do
     @links = {
+      :foursquare => 'http://4sq.com/x4p87N',
       :eyeem => 'http://www.eyeem.com/p/326629',
       :path => 'http://path.com/p/KQd57', 
       :instagram => "http://instagr.am/p/DzCWn/",
@@ -12,9 +13,16 @@ describe Tweetlr::Processors::PhotoService do
       :embedly => 'http://flic.kr/p/973hTv',
       :twitter_pics => 'http://t.co/FmyBGfyY',
       :twimg => 'http://twitter.com/KSilbereisen/status/228035435237097472',
-      #:foursquare => 'http://4sq.com/x4p87N',
       :imgly => "http://img.ly/3M1o"
       }
+  end
+  it "should find a picture's url from the supported services" do
+    @links.each do |service,link|
+      send "stub_#{service}"
+      url = Tweetlr::Processors::PhotoService::find_image_url link
+      url.should be, "service #{service} not working!"
+      check_pic_url_extraction service if [:twimg, :instagram,:yfrog,:imgly,:foursqaure,:not_listed].index service
+    end
   end
   it "extracts images from eye em" do
     stub_eyeem
@@ -27,19 +35,11 @@ describe Tweetlr::Processors::PhotoService do
     link = Tweetlr::Processors::PhotoService::find_image_url 'http://makersand.co/'
     link.should be_nil
   end
-  xit "does find an image for foursquare that is not he profile pic" do
+  it "does find an image for foursquare that is not he profile pic" do
     stub_foursquare
     link = Tweetlr::Processors::PhotoService::find_image_url @links[:foursquare]
     link.should be
     link.index('userpix_thumbs').should_not be
-  end
-  it "should find a picture's url from the supported services" do
-    @links.each do |service,link|
-      send "stub_#{service}"
-      url = Tweetlr::Processors::PhotoService::find_image_url link
-      url.should be, "service #{service} not working!"
-      check_pic_url_extraction service if [:twimg, :instagram,:picplz,:yfrog,:imgly,:foursqaure,:not_listed].index service
-    end
   end
   it "finds path images for redirected moments as well" do
     stub_path_redirected
