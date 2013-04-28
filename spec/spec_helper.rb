@@ -12,7 +12,7 @@ Tweetlr::LogAware.log = logger
 
 def check_pic_url_extraction(service)
   image_url = Tweetlr::Processors::PhotoService::send "image_url_#{service}".to_sym, @links[service]
-  image_url.should =~ Tweetlr::Processors::PhotoService::PIC_REGEXP
+  (image_url =~ Tweetlr::Processors::PhotoService::PIC_REGEXP).should be, "service #{service} not working, no picture extracted!"
 end
 
 def stub_oauth
@@ -43,32 +43,64 @@ def stub_twitter
 end
 
 def stub_twimg
-  Curl::Easy.any_instance.stub(:body_str).and_return %|<div class="entities-media-container " style="min-height:580px">
-                <div class="tweet-media">
-          <div class="media-instance-container">
-            <div class="twimg">
-              <a target="_blank" href="http://twitter.com/KSilbereisen/status/228042798161596416/photo/1/large">
-                <img src="https://p.twimg.com/Ayort3pCEAAHRrz.jpg">
-              </a>
-            </div>
-            <span class="flag-container">
-              <button type="button" class="flaggable btn-link">
-                Flag this media
-              </button>
-              <span class="flagged hidden">
-                Flagged
-                <span>
-                  <a target="_blank" href="//support.twitter.com/articles/20069937">
-                    (learn more)
-                  </a>
-                </span>
-              </span>
-            </span>
-            <div class="media-attribution">
-              <span>powered by</span> <img src="/phoenix/img/turkey-icon.png"> <a target="_blank" data-media-type="Twimg" class="media-attribution-link" href="http://photobucket.com/twitter">Photobucket</a>
-            </div>
-          </div>
-        </div>    </div>|
+  Curl::Easy.any_instance.stub(:body_str).and_return %|<div class="js-tweet-details-fixer tweet-details-fixer">
+
+
+
+        <div class="cards-media-container "><div data-card-url="//twitter.com/KSilbereisen/status/228035435237097472/photo/1/large" data-card-type="photo" class="cards-base cards-multimedia" data-element-context="platform_photo_card">
+  <div class="media">
+    
+    <a class="twitter-timeline-link media-thumbnail" href="//twitter.com/KSilbereisen/status/228035435237097472/photo/1/large" data-url="https://pbs.twimg.com/media/AyolBSnCQAA0vdp.jpg:large" data-resolved-url-large="https://pbs.twimg.com/media/AyolBSnCQAA0vdp.jpg:large">
+      <img src="https://pbs.twimg.com/media/AyolBSnCQAA0vdp.jpg" alt="Embedded image permalink" width="281" height="375">
+    </a>
+  </div>
+  <div class="cards-content">
+    <div class="byline">
+      
+    </div>
+    
+  </div>
+  
+</div>
+
+
+
+</div>
+
+  <div class="js-tweet-media-container "></div>
+
+  <div class="js-machine-translated-tweet-container"></div>
+  <div class="js-tweet-stats-container tweet-stats-container ">
+  </div>
+  <div class="client-and-actions">
+    <span class="metadata">
+      <span title="9:54 AM - 25 Jul 12">9:54 AM - 25 Jul 12</span>
+
+      
+
+
+
+      
+
+          <span class="flag-container flag-cards">
+  <button type="button" class="flaggable btn-link">
+    Flag media
+  </button>
+  <span class="flagged hidden">
+    Flagged
+    <span>
+      <a target="_blank" href="//support.twitter.com/articles/20069937">
+        (learn more)
+      </a>
+    </span>
+  </span>
+</span>
+          
+          
+
+    </span>
+  </div>
+</div>|
   Curl::Easy.any_instance.stub(:perform).and_return Curl::Easy.new
 end
 
@@ -466,568 +498,7 @@ end
 
 def stub_foursquare
   Curl::Easy.any_instance.stub(:perform).and_return Curl::Easy.new
-  Curl::Easy.any_instance.stub(:body_str).and_return %^<?xml version="1.0" encoding="UTF-8"?>
-
-  <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-  <html xmlns:fb="http://www.facebook.com/2008/fbml" xmlns:og="http://opengraphprotocol.org/schema/" xmlns:lift="http://liftweb.net" xmlns="http://www.w3.org/1999/xhtml">
-  <head>
-    <meta content="text/html; charset=UTF-8" http-equiv="content-type" />
-    <meta content="foursquare" name="description" />
-    <meta content="foursquare" name="application-name" />
-
-    <meta content="Start the foursquare App" name="msapplication-tooltip" />
-    <meta content="/" name="msapplication-starturl" />
-    <meta content="width=1024;height=768" name="msapplication-window" />
-    <meta content="name=Recent Check-ins; action-uri=/; icon-uri=/favicon.ico" name="msapplication-task" />
-    <meta content="name=Profile;action-uri=/user;icon-uri=/favicon.ico" name="msapplication-task" />
-    <meta content="name=History;action-uri=/history;icon-uri=/favicon.ico" name="msapplication-task" />
-    <meta content="name=Badges;action-uri=/badges;icon-uri=/favicon.ico" name="msapplication-task" />
-    <meta content="name=Stats;action-uri=/stats;icon-uri=/favicon.ico" name="msapplication-task" />
-
-
-    <title>foursquare :: Sven @ kopiba</title>
-    <link href="https://static-s.foursquare.com/favicon-c62b82f6120e2c592a3e6f3476d66554.ico" type="image/x-icon" rel="icon" />
-    <link href="https://static-s.foursquare.com/favicon-c62b82f6120e2c592a3e6f3476d66554.ico" type="image/x-icon" rel="shortcut icon" />
-    <link href="https://static-s.foursquare.com/img/touch-icon-ipad-1d5a99e90171f6a0cc2f74920ec24021.png" sizes="72x72" rel="apple-touch-icon-precomposed" />
-    <link href="https://playfoursquare.s3.amazonaws.com/press/logo/foursquare-logo.svg" type="image/svg" rel="logo" />
-    <link href="https://static-s.foursquare.com/opensearch-6b463ddc6a73b41a3d4b1c705d814fcf.xml" title="foursquare" type="application/opensearchdescription+xml" rel="search" />
-
-    <link href="https://static-s.foursquare.com/styles/reset-ba1d59b0e53d380b12b3e97a428b3314.css" type="text/css" rel="stylesheet" />
-    <link href="https://static-s.foursquare.com/facebox/facebox-29383c5fc530ed391a05276abeb1959a.css" type="text/css" rel="stylesheet" />
-
-
-
-      <link href="https://static-s.foursquare.com/styles/master-redesign-e811ecb709c2414dbd8bbb382f312aa1.css" type="text/css" rel="stylesheet" />
-
-
-
-
-
-      <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js" type="text/javascript" id="jquery"></script>
-
-
-
-
-  <script type="text/javascript">
-    var _kmq = _kmq || [];
-    function _kms(u){
-      setTimeout(function(){
-        var s = document.createElement('script'); var f = document.getElementsByTagName('script')[0]; s.type = 'text/javascript'; s.async = true;
-        s.src = u; f.parentNode.insertBefore(s, f);
-      }, 1);
-    }
-    // Use this for dev
-    //_kms('//i.kissmetrics.com/i.js');_kms('//doug1izaerwt3.cloudfront.net/0c1574f4c7da92b07e34862fcc6c505d531a957c.1.js');
-  </script>
-
-
-    <script type="text/javascript">
-      // Use this for production
-      _kms('//i.kissmetrics.com/i.js');_kms('//doug1izaerwt3.cloudfront.net/033f1ff04dc072af9d77e05e3fe10ed9b6ea4fcf.1.js');
-    </script>
-
-
-
-    <script src="https://static-s.foursquare.com/scripts/build/en/chrome/root-d0d815376f0111b37b1b2f3786ff5314.js" type="text/javascript"></script>
-    <script src="https://static-s.foursquare.com/scripts/build/en/foursquare/root-5c88202943112aa3305dcb2f9425a601.js" type="text/javascript"></script>
-
-
-
-
-
-
-
-
-
-
-
-
-
-    <script type="text/javascript">
-      (function() {
-        window.fourSq = window.fourSq || {};
-        window.fourSq.api = window.fourSq.api || {};
-        window.fourSq.fb = window.fourSq.fb || {};
-        window.fourSq.user = window.fourSq.user || {};
-        window.fourSq.debugLevel = function() { return fourSq.debug.Level.OFF; };
-
-        /**
-         * Setup API domain and token
-         */
-        window.fourSq.api.config = {
-          API_BASE: 'https://api.foursquare.com/',
-          API_TOKEN: 'QEJ4AQPTMMNB413HGNZ5YDMJSHTOHZHMLZCAQCCLXIX41OMP',
-          API_IFRAME: 'https://api.foursquare.com/xdreceiver.html',
-          CLIENT_VERSION: '20111109'
-        };
-
-        /**
-         * Useful values for current user.
-         */
-        window.fourSq.user.config = {
-          USER_PROFILE: undefined,
-          USER_LAT: 0,
-          USER_LNG: 0,
-          // Only used for display.
-          SU6: false,
-          LOCALE: 'en_US'
-        };
-
-        window.fourSq.fb.config = {
-          APP_ID: 86734274142,
-          SCOPE: 'offline_access,publish_stream,user_checkins,friends_checkins,user_location,user_birthday'
-        };
-
-        document.domain = 'foursquare.com';
-      })();
-    </script>
-
-
-
-    <script type="text/javascript">
-      $(function() {
-        $('a[rel*=facebox]').facebox();
-        $('.linkify').linkify();
-
-        var search = $('#search input').placeholder();
-        if ($.trim(search.val()) != '') {
-          search.keydown();
-        }
-      })
-    </script>
-
-
-
-
-  <meta content="NOINDEX" name="ROBOTS" />
-
-
-  <script src="https://maps.google.com/maps/api/js?sensor=false" type="text/javascript"></script>
-
-
-  <script src="https://static-s.foursquare.com/scripts/build/en/foursquare/comments-be605309e291ccdcaa2c7d2645743741.js" type="text/javascript"></script>
-
-
-  <script src="https://static-s.foursquare.com/scripts/build/en/foursquare/checkin-detail-page-2d377f73b6d6318b813cc6db39651fff.js" type="text/javascript"></script>
-
-
-  <script type="text/javascript">
-          $(function() {
-            var options = {
-              el: $('body')
-            }
-
-            options['lat'] = 53.558831084738;
-            options['lng'] = 9.963698387145996;
-            options['fuzzy'] = false;
-            options['venue'] = {"id":"v4b169255f964a52072ba23e3","venue":{"id":"4b169255f964a52072ba23e3","name":"kopiba","contact":{"phone":"4940343824","formattedPhone":"040\/343824","twitter":"kopiba"},"location":{"address":"Beim Grünen Jäger 24","lat":53.558831084738,"lng":9.963698387145996,"postalCode":"20357","city":"Hamburg","country":"Germany"},"categories":[{"id":"4bf58dd8d48988d16d941735","name":"Café","pluralName":"Cafés","shortName":"Café","icon":{"prefix":"https:\/\/foursquare.com\/img\/categories\/food\/cafe_","sizes":[32,44,64,88,256],"name":".png"},"primary":true}],"verified":true,"stats":{"checkinsCount":2903,"usersCount":478,"tipCount":26}}};
-
-
-
-            options['checkinId'] = '4f0c401ae4b020a8d96fb0b1';
-
-
-            if(typeof FRIENDS_PHOTOS_JSON != 'undefined') {
-              options = _.extend(options, {friendsPhotosJson: FRIENDS_PHOTOS_JSON});
-            }
-
-            if(typeof STREAM_PHOTOS_JSON != 'undefined') {
-              options = _.extend(options, {streamPhotosJson: STREAM_PHOTOS_JSON});
-            }
-
-            new fourSq.views.CheckinDetailPage(options);
-          });
-        </script>
-
-
-  </head>
-  <body>
-
-
-
-      <div id="wrapper">
-
-
-  <div id="header">
-
-
-
-      <div class="wrap loggedOut translate">
-        <a id="logo" href="/">foursquare</a>
-        <form id="search" method="get" action="/search">
-          <input placeholder="Search people and places..." name="q" type="text" />
-          <button>Search</button>
-        </form>
-        <div id="loginLink"><a href="/login">Log in</a></div>
-        <div id="menu"><a href="/signup">Sign up</a></div>
-      </div>
-
-  </div>
-  <div id="lift__noticesContainer__"></div>
-
-
-
-
-
-    <div class="translate wrap" id="signupPrompt">
-      <h3>foursquare helps you keep up with friends, discover what's nearby, save money &amp; unlock rewards</h3>
-      <a class="greenButton biggerButton" href="/signup/?source=nav">Get Started Now</a>
-      <iframe scrolling="no" allowTransparency="true" src="https://www.facebook.com/plugins/facepile.php?app_id=86734274142&amp;amp;width=600&amp;amp;max_rows=1" style="border:none; overflow:hidden; width:600px; height: 70px;" frameborder="0"></iframe>
-    </div>
-
-    <style type="text/css">
-      #loginBeforeActionPopup {
-        padding: 10px;
-        width: 500px;
-      }
-        #loginBeforeActionPopup h2 {font-size: 21px;}
-      #loginBeforeActionPopup #signupPopup {}
-        #loginBeforeActionPopup #signupPopup p {
-          float: left;
-          line-height: 18px;
-          margin: 15px 0;
-          padding-top: 2px;
-          width: 330px;
-        }
-        #loginBeforeActionPopup #signupPopup .newGreenButton {
-          font-size: 18px;
-          height: 40px;
-          float: right;
-          line-height: 40px;
-          margin: 15px 0;
-          text-transform: none;
-          width: 140px;
-        }
-      #loginBeforeActionPopup #loginPopup {
-        border-top: 1px solid #d9d9d9;
-        padding-top: 10px;
-      }
-        #loginBeforeActionPopup #loginPopup .linkStyle {
-          border: none;
-          background: none;
-          color: #2398c9;
-          cursor: pointer;
-          font: inherit;
-          font-weight: bold;
-          padding: 0;
-          margin: 0;
-        }
-          #loginBeforeActionPopup #loginPopup .linkStyle:hover {text-decoration: underline;}
-    </style>
-
-    <div style="display:none;" class="translate" id="loginBeforeActionPopup">
-
-      <h2 class="newh2">Join foursquare to <span id="loginActionLabel">do that</span></h2>
-        <form method="POST" action="/signup/pre-signup">
-          <input value="" type="hidden" name="actionKey" id="loginActionKey" />
-          <input value="" type="hidden" name="source" id="loginSource" />
-          <input value="" type="hidden" name="continue" id="loginContinue" />
-          <div id="signupPopup">
-            <p>Foursquare helps you meet up with friends and find<br />new places to experience in your neighborhood.</p>
-            <input value="Get Started" name="signupSubmit" class="newGreenButton greenButton translate" type="submit" />
-            <div style="clear: both;"></div>
-          </div>
-          <div id="loginPopup">
-            <strong>Already a foursquare user?</strong> <input value="Log in" name="loginSubmit" class="linkStyle" type="submit" /> to continue.
-          </div>
-        </form>
-
-    </div>
-
-
-
-
-
-        <div class="wrap" id="container">
-
-
-
-
-
-
-
-
-
-    <div class="twoColumns" id="checkinPage">
-      <div class="wideColumn">
-
-
-        <div id="userCheckin">
-          <div id="userPic">
-            <a href="/sven_kr"><img src="https://img-s.foursquare.com/userpix_thumbs/ZXPGHBJTWWSTMXN1.jpg" alt="Sven K." width="110" class="notranslate"  height="110" /></a>
-          </div>
-          <div id="userDetails">
-            <h2><a href="/sven_kr">Sven K.</a> checked in to <a href="/v/kopiba/4b169255f964a52072ba23e3">kopiba</a> </h2>
-            <p class="shout linkify">#coffeediary</p>
-
-            <p class="date">
-              8 hours ago  via <em><a href="https://foursquare.com/download/#/iphone">foursquare for iPhone</a></em>
-            </p>
-
-
-
-
-
-
-
-
-
-
-
-
-          </div>
-        </div>
-
-
-        <div>
-          <script type="text/javascript">
-  // <![CDATA[
-  var STREAM_PHOTOS_JSON = "{\"count\":1,\"items\":[{\"id\":\"4f0c4020e4b0261c93fd4ede\",\"createdAt\":1326202912,\"url\":\"https:\u005c/\u005c/img-s.foursquare.com\u005c/pix\u005c/NKFGXXX41TIQJA0P25ZYSUYKUUROQLLWGUXXSA5ABUQFDDYE.jpg\",\"sizes\":{\"count\":4,\"items\":[{\"url\":\"https:\u005c/\u005c/img-s.foursquare.com\u005c/pix\u005c/NKFGXXX41TIQJA0P25ZYSUYKUUROQLLWGUXXSA5ABUQFDDYE.jpg\",\"width\":537,\"height\":720},{\"url\":\"https:\u005c/\u005c/img-s.foursquare.com\u005c/derived_pix\u005c/NKFGXXX41TIQJA0P25ZYSUYKUUROQLLWGUXXSA5ABUQFDDYE_300x300.jpg\",\"width\":300,\"height\":300},{\"url\":\"https:\u005c/\u005c/img-s.foursquare.com\u005c/derived_pix\u005c/NKFGXXX41TIQJA0P25ZYSUYKUUROQLLWGUXXSA5ABUQFDDYE_100x100.jpg\",\"width\":100,\"height\":100},{\"url\":\"https:\u005c/\u005c/img-s.foursquare.com\u005c/derived_pix\u005c/NKFGXXX41TIQJA0P25ZYSUYKUUROQLLWGUXXSA5ABUQFDDYE_36x36.jpg\",\"width\":36,\"height\":36}\u005d},\"user\":{\"id\":\"304170\",\"firstName\":\"Sven\",\"lastName\":\"K.\",\"photo\":\"https:\u005c/\u005c/img-s.foursquare.com\u005c/userpix_thumbs\u005c/ZXPGHBJTWWSTMXN1.jpg\",\"gender\":\"male\",\"homeCity\":\"Hamburg, Germany\"},\"visibility\":\"friends\"}\u005d}";
-  // ]]>
-  </script>
-          <div id="comments">
-
-                <div id="4f0c4020e4b0261c93fd4ede" class="comment withPhoto">
-                  <div class="commentLeft">
-                    <a href="/sven_kr"><img src="https://img-s.foursquare.com/userpix_thumbs/ZXPGHBJTWWSTMXN1.jpg" alt="Sven K." width="60" class="notranslate"  height="60" /></a>
-                  </div>
-                  <div class="commentPhoto">
-                    <span title="Delete your image?" class="flagDelete">
-
-                    </span>
-                    <img src="https://img-s.foursquare.com/pix/NKFGXXX41TIQJA0P25ZYSUYKUUROQLLWGUXXSA5ABUQFDDYE.jpg" />
-                  </div>
-                </div>
-
-          </div>
-
-
-
-
-
-
-
-
-            <div class="translate" id="cantComment">
-              Only <span class="notranslate">Sven's</span> friends can see comments and add their own.
-            </div>
-
-
-        </div>
-
-      </div>
-
-      <div class="narrowColumn">
-
-
-
-
-
-        <div id="venueDetails" class="box">
-          <div id="venueIcon">
-            <img src="https://static-s.foursquare.com/img/categories/food/cafe-f0c1523ad255a6e9e65e27c2ca02576c.png" class="thumb" />
-            <img src="https://static-s.foursquare.com/img/specials/check-in-f870bc36c0cc2a842fac06c35a6dccdf.png" class="specialImage" title="Check-in Special" />
-          </div>
-          <div class="vcard" id="venueName">
-            <h5 class="fn org"><a href="/v/kopiba/4b169255f964a52072ba23e3">kopiba</a></h5>
-            <p>Hamburg</p>
-            <div class="hiddenAddress">
-              <span class="adr"><span class="street-address">Beim Grünen Jäger 24</span><br /><span class="locality">Hamburg</span>, <span class="region"></span> <span class="postal-code">20357</span><br /><span class="tel">040/343824</span><br /></span>
-            </div>
-          </div>
-          <div id="listControlHolder"></div>
-          <div id="vmap"></div>
-
-        </div>
-
-
-        <div class="box">
-          <div class="statsBlock translate">
-            <div class="stat">
-              <strong>Total<br />People</strong><br /><span class="notranslate">478</span>
-            </div>
-            <div class="stat">
-              <strong>Total<br />Checkins</strong><br /><span class="notranslate">2903</span>
-            </div>
-            <div class="stat">
-              <strong>Here<br />Now</strong><br /><span class="notranslate">1</span>
-            </div>
-          </div>
-        </div>
-
-
-
-
-
-
-
-
-
-
-      </div>
-      <div style="clear: both;"></div>
-    </div>
-
-    <script type="text/javascript">
-      $('.delete').tooltip();
-      $('.flagDelete').tooltip();
-    </script>
-
-
-
-          <div id="containerFooter">
-            <div class="wideColumn">
-              <ul class="translate">
-    <li><a href="https://foursquare.com/about">About</a></li>
-    <li><a href="https://foursquare.com/apps">Apps</a></li>
-    <li><a href="http://blog.foursquare.com">Blog</a></li>
-    <li><a href="http://developers.foursquare.com">Developers</a></li>
-    <li><a href="http://foursquare.com/help">Help</a></li>
-    <li><a href="https://foursquare.com/jobs/">Jobs</a></li>
-    <li><a href="https://foursquare.com/legal/privacy">Privacy</a></li>
-    <li><a href="https://foursquare.com/legal/terms">Terms</a></li>
-    <li><a href="http://store.foursquare.com">Store</a></li>
-    <li>
-
-
-
-
-    <script type="text/javascript">
-      //<![CDATA[
-      // IMPORTANT: This is what does the redirect to the correct domain
-      fourSq.i18n.redirect();
-      // ]]>
-    </script>
-
-
-    <script type="text/javascript">
-      //<![CDATA[
-      $(function() {
-        $('#currentLanguage a').text(fourSq.i18n.currentLang());
-      });
-      // ]]>
-    </script>
-
-    <span id="currentLanguage">
-      <a rel="facebox" href="#languagesContainer"></a>
-    </span>
-
-    <div style="display:none" class="translate" id="languagesContainer">
-      Do none of the words on this site make sense to you? Select your
-      favorite language below for greater clarity:
-      <ul class="languages notranslate">
-        <li><a onclick="fourSq.i18n.setLang('en'); return false;" href="#">English</a></li><li><a onclick="fourSq.i18n.setLang('it'); return false;" href="#">Italiano</a></li><li><a onclick="fourSq.i18n.setLang('de'); return false;" href="#">Deutsch</a></li><li><a onclick="fourSq.i18n.setLang('es'); return false;" href="#">Español</a></li><li><a onclick="fourSq.i18n.setLang('fr'); return false;" href="#">Français</a></li><li><a onclick="fourSq.i18n.setLang('ja'); return false;" href="#">日本語</a></li><li><a onclick="fourSq.i18n.setLang('th'); return false;" href="#">ภาษาไทย</a></li><li><a onclick="fourSq.i18n.setLang('ko'); return false;" href="#">한국어</a></li><li><a onclick="fourSq.i18n.setLang('ru'); return false;" href="#">Русский</a></li><li><a onclick="fourSq.i18n.setLang('pt'); return false;" href="#">Português</a></li><li><a onclick="fourSq.i18n.setLang('id'); return false;" href="#">Bahasa Indonesia</a></li>
-      </ul>
-    </div>
-  </li>
-  </ul>
-            </div>
-            <div class="narrowColumn translate">
-              foursquare © 2011 <img src="https://static-s.foursquare.com/img/chrome/iconHeart-03e49accc507d9d99e7e4dfaa73868cb.png" height="9" width="11" alt="" /> Lovingly made in NYC &amp; SF
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div id="footer">
-        <div style="display: none;" class="wrap">
-          <p class="right">Discover more brands in the <a href="/pages">page gallery</a>.</p>
-          <p>Follow these brands to unlock badges and find interesting tips around your city!</p>
-
-
-            <ul><li><a href="/vh1"><img src="https://static-s.foursquare.com/img/footer/vh1-bb870b187d4e4378457e4a8e7df33e28.png" height="50" /></a></li><li><a href="/luckymagazine"><img src="https://static-s.foursquare.com/img/footer/luckymagazine-81550ed80bb77ddf9fa7e09c94ef4ac3.png" height="50" /></a></li><li><a href="/askmen"><img src="https://static-s.foursquare.com/img/footer/askmen-32a19bae424cafba11d7131fbc763f6d.png" height="50" /></a></li><li><a href="/eater"><img src="https://static-s.foursquare.com/img/footer/eater-5a8d27da22828104e13b0a4a50a74db8.png" height="50" /></a></li><li><a href="/joinred"><img src="https://static-s.foursquare.com/img/footer/joinred-6b8edbfec8aeb5e256f7824ca757cb81.png" height="50" /></a></li><li><a href="/bbcamerica"><img src="https://static-s.foursquare.com/img/footer/bbcamerica-d777b112c51696700dbd348e1b1e6817.png" height="50" /></a></li></ul>
-
-        </div>
-      </div>
-
-      <div id="overlayFrame">
-    <div id="overlayPage">
-      <div id="photoDetails">
-        <div class="wrap">
-          <img src="https://static-s.foursquare.com/img/gallery-next-4fe893b7a611387276ef45cd74632759.png" height="32" width="32" alt="" class="navControl" id="next" />
-          <img src="https://static-s.foursquare.com/img/gallery-prev-6da401eecb2e8a276e2a89bea5ac3819.png" height="32" width="32" alt="" class="navControl" id="previous" />
-          <img width="32" height="32" alt="" src="" id="userPic" />
-          <h5 id="userName"><a href="#"></a></h5>
-          <p id="date"></p>
-        </div>
-      </div>
-      <div id="mainPhoto"></div>
-
-      <div style="display:none" class="flagFrame unknown">
-        <div class="flagForm translate">
-          <h3>Flag this Photo</h3>
-          <ul>
-            <li><input id="spam_scam" value="spam_scam" type="radio" name="problem" /> <label for="spam_scam">Spam/Scam</label></li>
-            <li><input id="nudity" value="nudity" type="radio" name="problem" /> <label for="nudity">Nudity</label></li>
-            <li><input id="hate_violence" value="hate_violence" type="radio" name="problem" /> <label for="hate_violence">Hate/Violence</label></li>
-            <li><input id="illegal" value="illegal" type="radio" name="problem" /> <label for="illegal">Illegal</label></li>
-            <li><input id="unrelated" value="unrelated" type="radio" name="problem" /> <label for="unrelated">Unrelated</label></li>
-          </ul>
-          <p class="noProblemMessage">Please select a problem.</p>
-          <p><input class="submitFlag greenButton" value="Submit Flag" name="submitFlag" type="button" name="problem" /></p>
-        </div>
-        <div class="flagStatus translate">
-          <div class="status success">
-            <h3>Flag this Photo</h3>
-            <p>Your flag was submitted successfully.</p>
-          </div>
-          <div class="status failure">
-            <h3>Flag this Photo</h3>
-            <p>Your flag did not submit. Please try again later.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-
-
-    <script src="https://ssl.google-analytics.com/ga.js" type="text/javascript"></script>
-
-
-
-  <script type="text/javascript">
-    try {
-      var pageTracker = _gat._getTracker('UA-2322480-5');
-      pageTracker._trackPageview();
-      pageTracker._trackPageLoadTime();
-      } catch(err) {
-      }
-  </script>
-  <script type="text/javascript">var _sf_startpt=(new Date()).getTime()</script>
-  <script type="text/javascript">
-  var _sf_async_config={uid:11280,domain:'foursquare.com'};
-  if (window.chartbeat_path) {
-    _sf_async_config.path = chartbeat_path;
-  }
-  (function(){
-    function loadChartbeat() {
-      window._sf_endpt=(new Date()).getTime();
-      var e = document.createElement('script');
-      e.setAttribute('language', 'javascript');
-      e.setAttribute('type', 'text/javascript');
-      e.setAttribute('src',
-         (('https:' == document.location.protocol) ? 'https://s3.amazonaws.com/' : 'http://') +
-         'static.chartbeat.com/js/chartbeat.js');
-      document.body.appendChild(e);
-    }
-    var oldonload = window.onload;
-    window.onload = (typeof window.onload != 'function') ?
-       loadChartbeat : function() { oldonload(); loadChartbeat(); };
-  })();
-
-  </script>
-
-
-
-
-
-
-    <script src="/ajax_request/liftAjax.js" type="text/javascript"></script>
-
-
-  </body>
-  </html>  
+  Curl::Easy.any_instance.stub(:body_str).and_return %^<div id="container" class="wrap"><div class="checkinDetail"><div id="checkinDetailPage" class=""><div id="mapContainer" class="leaflet-container leaflet-fade-anim"><div class="leaflet-map-pane" style="left: 0px; top: 0px;"><div class="leaflet-tile-pane"><div class="leaflet-layer"><img class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; left: 542px; top: 65px;" src="https://dnv9my2eseobd.cloudfront.net/v3/foursquare.map-0y1jh28j/16/34580/21178.png"><img class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; left: 542px; top: 321px;" src="https://dnv9my2eseobd.cloudfront.net/v3/foursquare.map-0y1jh28j/16/34580/21179.png"><img class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; left: 798px; top: 65px;" src="https://dnv9my2eseobd.cloudfront.net/v3/foursquare.map-0y1jh28j/16/34581/21178.png"><img class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; left: 286px; top: 65px;" src="https://dnv9my2eseobd.cloudfront.net/v3/foursquare.map-0y1jh28j/16/34579/21178.png"><img class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; left: 542px; top: -191px;" src="https://dnv9my2eseobd.cloudfront.net/v3/foursquare.map-0y1jh28j/16/34580/21177.png"><img class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; left: 798px; top: 321px;" src="https://dnv9my2eseobd.cloudfront.net/v3/foursquare.map-0y1jh28j/16/34581/21179.png"><img class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; left: 798px; top: -191px;" src="https://dnv9my2eseobd.cloudfront.net/v3/foursquare.map-0y1jh28j/16/34581/21177.png"><img class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; left: 286px; top: -191px;" src="https://dnv9my2eseobd.cloudfront.net/v3/foursquare.map-0y1jh28j/16/34579/21177.png"><img class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; left: 286px; top: 321px;" src="https://dnv9my2eseobd.cloudfront.net/v3/foursquare.map-0y1jh28j/16/34579/21179.png"><img class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; left: 542px; top: -447px;" src="https://dnv9my2eseobd.cloudfront.net/v3/foursquare.map-0y1jh28j/16/34580/21176.png"><img class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; left: 542px; top: 577px;" src="https://dnv9my2eseobd.cloudfront.net/v3/foursquare.map-0y1jh28j/16/34580/21180.png"><img class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; left: 30px; top: 65px;" src="https://dnv9my2eseobd.cloudfront.net/v3/foursquare.map-0y1jh28j/16/34578/21178.png"><img class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; left: 1054px; top: 65px;" src="https://dnv9my2eseobd.cloudfront.net/v3/foursquare.map-0y1jh28j/16/34582/21178.png"><img class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; left: 30px; top: -191px;" src="https://dnv9my2eseobd.cloudfront.net/v3/foursquare.map-0y1jh28j/16/34578/21177.png"><img class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; left: 286px; top: -447px;" src="https://dnv9my2eseobd.cloudfront.net/v3/foursquare.map-0y1jh28j/16/34579/21176.png"><img class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; left: 798px; top: 577px;" src="https://dnv9my2eseobd.cloudfront.net/v3/foursquare.map-0y1jh28j/16/34581/21180.png"><img class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; left: 30px; top: 321px;" src="https://dnv9my2eseobd.cloudfront.net/v3/foursquare.map-0y1jh28j/16/34578/21179.png"><img class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; left: 1054px; top: -191px;" src="https://dnv9my2eseobd.cloudfront.net/v3/foursquare.map-0y1jh28j/16/34582/21177.png"><img class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; left: 798px; top: -447px;" src="https://dnv9my2eseobd.cloudfront.net/v3/foursquare.map-0y1jh28j/16/34581/21176.png"><img class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; left: 1054px; top: 321px;" src="https://dnv9my2eseobd.cloudfront.net/v3/foursquare.map-0y1jh28j/16/34582/21179.png"><img class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; left: 286px; top: 577px;" src="https://dnv9my2eseobd.cloudfront.net/v3/foursquare.map-0y1jh28j/16/34579/21180.png"><img class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; left: 30px; top: 577px;" src="https://dnv9my2eseobd.cloudfront.net/v3/foursquare.map-0y1jh28j/16/34578/21180.png"><img class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; left: 1054px; top: -447px;" src="https://dnv9my2eseobd.cloudfront.net/v3/foursquare.map-0y1jh28j/16/34582/21176.png"><img class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; left: 1054px; top: 577px;" src="https://dnv9my2eseobd.cloudfront.net/v3/foursquare.map-0y1jh28j/16/34582/21180.png"><img class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; left: 30px; top: -447px;" src="https://dnv9my2eseobd.cloudfront.net/v3/foursquare.map-0y1jh28j/16/34578/21176.png"><img class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; left: 1310px; top: 65px;" src="https://dnv9my2eseobd.cloudfront.net/v3/foursquare.map-0y1jh28j/16/34583/21178.png"><img class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; left: -226px; top: 65px;" src="https://dnv9my2eseobd.cloudfront.net/v3/foursquare.map-0y1jh28j/16/34577/21178.png"><img class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; left: -226px; top: 321px;" src="https://dnv9my2eseobd.cloudfront.net/v3/foursquare.map-0y1jh28j/16/34577/21179.png"><img class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; left: 1310px; top: -191px;" src="https://dnv9my2eseobd.cloudfront.net/v3/foursquare.map-0y1jh28j/16/34583/21177.png"><img class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; left: -226px; top: -191px;" src="https://dnv9my2eseobd.cloudfront.net/v3/foursquare.map-0y1jh28j/16/34577/21177.png"><img class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; left: 1310px; top: 321px;" src="https://dnv9my2eseobd.cloudfront.net/v3/foursquare.map-0y1jh28j/16/34583/21179.png"><img class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; left: 1310px; top: 577px;" src="https://dnv9my2eseobd.cloudfront.net/v3/foursquare.map-0y1jh28j/16/34583/21180.png"><img class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; left: 1310px; top: -447px;" src="https://dnv9my2eseobd.cloudfront.net/v3/foursquare.map-0y1jh28j/16/34583/21176.png"><img class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; left: -226px; top: 577px;" src="https://dnv9my2eseobd.cloudfront.net/v3/foursquare.map-0y1jh28j/16/34577/21180.png"><img class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; left: -226px; top: -447px;" src="https://dnv9my2eseobd.cloudfront.net/v3/foursquare.map-0y1jh28j/16/34577/21176.png"><img class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; left: 1566px; top: 65px;" src="https://dnv9my2eseobd.cloudfront.net/v3/foursquare.map-0y1jh28j/16/34584/21178.png"><img class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; left: -482px; top: 65px;" src="https://dnv9my2eseobd.cloudfront.net/v3/foursquare.map-0y1jh28j/16/34576/21178.png"><img class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; left: 1566px; top: 321px;" src="https://dnv9my2eseobd.cloudfront.net/v3/foursquare.map-0y1jh28j/16/34584/21179.png"><img class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; left: -482px; top: 321px;" src="https://dnv9my2eseobd.cloudfront.net/v3/foursquare.map-0y1jh28j/16/34576/21179.png"><img class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; left: 1566px; top: -191px;" src="https://dnv9my2eseobd.cloudfront.net/v3/foursquare.map-0y1jh28j/16/34584/21177.png"><img class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; left: -482px; top: -191px;" src="https://dnv9my2eseobd.cloudfront.net/v3/foursquare.map-0y1jh28j/16/34576/21177.png"><img class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; left: -482px; top: -447px;" src="https://dnv9my2eseobd.cloudfront.net/v3/foursquare.map-0y1jh28j/16/34576/21176.png"><img class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; left: -482px; top: 577px;" src="https://dnv9my2eseobd.cloudfront.net/v3/foursquare.map-0y1jh28j/16/34576/21180.png"><img class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; left: 1566px; top: -447px;" src="https://dnv9my2eseobd.cloudfront.net/v3/foursquare.map-0y1jh28j/16/34584/21176.png"><img class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; left: 1566px; top: 577px;" src="https://dnv9my2eseobd.cloudfront.net/v3/foursquare.map-0y1jh28j/16/34584/21180.png"></div></div><div class="leaflet-objects-pane"><div class="leaflet-shadow-pane  leaflet-zoom-hide"></div><div class="leaflet-overlay-pane"></div><div class="leaflet-marker-pane  leaflet-zoom-hide"><div class="leaflet-marker-icon mapMarker leaflet-zoom-hide" style="margin-left: -6px; margin-top: -6px; width: 12px; height: 12px; left: 1012px; top: 148px; z-index: 148;"><div class="bigBlueMapPin"><img alt="Café" src="https://foursquare.com/img/categories_v2/food/cafe_44.png"></div></div></div><div class="leaflet-popup-pane  leaflet-zoom-hide"></div></div></div><div class="leaflet-control-container"><div class="leaflet-top leaflet-left"><div class="leaflet-control-zoom leaflet-control"><a href="#" class="leaflet-control-zoom-in" title="Zoom in"></a><a href="#" class="leaflet-control-zoom-out" title="Zoom out"></a></div></div><div class="leaflet-top leaflet-right"></div><div class="leaflet-bottom leaflet-left"></div><div class="leaflet-bottom leaflet-right"><div class="leaflet-control-attribution leaflet-control"><a class="footerLink terms" href="/about#maps" target="_blank">Über unsere Karten</a></div></div></div></div><div class="venueHeader"><div class="venueDetailsContainer"><div class="venueDetails"><span class="venueName"><a href="https://foursquare.com/kopiba">kopiba</a><a href="https://foursquare.com/kopiba"><img src="https://ss1.4sqi.net/img/specials/check-in-f870bc36c0cc2a842fac06c35a6dccdf.png" class="tooltip" title="" alt="Check-in Special"></a></span><div><div class="venueScore tooltip score positive" title="">9.3</div><div class="venueAddress"><span class="local">Beim Grünen Jäger 24, Hamburg</span></div><div class="venueCats"><span>Café</span></div></div></div><div class="venueHistoryTopRight"><div class="saveButton saveToListAction inactive" title="Save to my to-do list!"><span class="buttonLeft"><img src="https://ss0.4sqi.net/img/lists/button_icon_saveribbon-9c5999c47028ca670954422ee53e7d96.png" height="16" width="16" data-retina-url="https://ss1.4sqi.net/img/lists/button_icon_saveribbon@2x-d809e5af932a66d1725c40dfddcc2855.png"></span><span class="buttonRight unsaved"><span class="label">Speichern</span></span></div></div><div class="venuePhotoContainer"><span class="photoThumb link"><img src="https://irs1.4sqi.net/img/general/125x125/39861258_Ulcg4M_vZ0Gkfce9Y6Han4mDkR-83QTumS5wV2RLij8.jpg" photo-id="5084ff52e4b068d89dd5dbf9" width="125" height="125" alt="" data-retina-url="https://irs1.4sqi.net/img/general/250x250/39861258_Ulcg4M_vZ0Gkfce9Y6Han4mDkR-83QTumS5wV2RLij8.jpg"></span><span class="photoThumb link"><img src="https://irs1.4sqi.net/img/general/125x125/x1mhxhrpvjgAtQHgJLtII38EKNOA46aA7fQ0KfzMB6g.jpg" photo-id="50181552e4b0a0721fc746a5" width="125" height="125" alt="" data-retina-url="https://irs1.4sqi.net/img/general/250x250/x1mhxhrpvjgAtQHgJLtII38EKNOA46aA7fQ0KfzMB6g.jpg"></span><span class="photoThumb link"><img src="https://irs2.4sqi.net/img/general/125x125/8352028_BmwTYQ1KnCk522ISUVo-e8Mgn5sz42u-DRu968m0MhQ.jpg" photo-id="50f6aa1ce4b07eb72279543e" width="125" height="125" alt="" data-retina-url="https://irs2.4sqi.net/img/general/250x250/8352028_BmwTYQ1KnCk522ISUVo-e8Mgn5sz42u-DRu968m0MhQ.jpg"></span><span class="photoThumb link"><img src="https://irs1.4sqi.net/img/general/125x125/2653854_W_immUSqq2SjUyVC_2zuP84A-dOubiwBYla9CVZKO8s.jpg" photo-id="50ba05eae4b0e2256067a77d" width="125" height="125" alt="" data-retina-url="https://irs1.4sqi.net/img/general/250x250/2653854_W_immUSqq2SjUyVC_2zuP84A-dOubiwBYla9CVZKO8s.jpg"></span></div><span class="link returnToCheckin returnToCheckinAction">Return to check-in</span></div></div><div class="checkinWrapper"><div class="checkInHeader"><div class="leftCheckInHeader"><a href="https://foursquare.com/sven_kr" class="currentUser"><img src="https://irs1.4sqi.net/img/user/64x64/UWZCDYXIH51YAMWC.jpg" alt="Sven K." class="avatar " width="64" height="64" title="Sven K." data-retina-url="https://irs1.4sqi.net/img/user/128x128/UWZCDYXIH51YAMWC.jpg"></a><div class="detailsWrap"><h3><div class="iconButton likeButton"><div class="buttonLeft icon"><img src="https://ss1.4sqi.net/img/button_icon_heart-867354611744be6d0146ffca1b3bdad6.png" alt="Gefällt mir "></div><div class="buttonRight label">Gefällt mir </div></div><span class="userName"><a href="https://foursquare.com/sven_kr">Sven Kräuter</a></span> hat eingecheckt bei <a href="https://foursquare.com/v/kopiba/4b169255f964a52072ba23e3">kopiba</a></h3><div class="timeStamp">Hamburg, Germany  <span class="lightPipe">|</span>  Januar 10, 2012  via <a href="https://foursquare.com/download/#/iphone">foursquare for iPhone</a></div></div></div></div><div class="shout"><p>#coffeediary</p></div><div class="commentsContainer" style=""><div class="page commentsWrapper commentThread"><div class="comments"><div class="commentsList"><div id="4f0c4020e4b0261c93fd4ede" class="comment withPhoto"><a href="https://foursquare.com/sven_kr"><img src="https://irs1.4sqi.net/img/user/35x35/UWZCDYXIH51YAMWC.jpg" alt="Sven K." class="avatar " width="35" height="35" title="Sven K." data-retina-url="https://irs1.4sqi.net/img/user/70x70/UWZCDYXIH51YAMWC.jpg"></a><div class="contentWrap"><img class="featured" src="https://irs0.4sqi.net/img/general/680x680/NKFGXXX41TIQJA0P25ZYSUYKUUROQLLWGUXXSA5ABUQFDDYE.jpg" photo-id="4f0c4020e4b0261c93fd4ede" width="680" height="680" alt="" data-retina-url="https://irs0.4sqi.net/img/general/1360x1360/NKFGXXX41TIQJA0P25ZYSUYKUUROQLLWGUXXSA5ABUQFDDYE.jpg"></div></div></div></div><div class="addCommentForm" style=""><img src="https://irs2.4sqi.net/img/user/64x64/EEI0WTBYZ32OGRSV.png" alt="Makers And C." class="avatar " width="64" height="64" title="Makers And C." data-retina-url="https://irs2.4sqi.net/img/user/128x128/EEI0WTBYZ32OGRSV.png"><div class="prompt">Hey <strong>Makers And</strong>, hinterlasse einen Kommentar:</div><span class="commentCharCount"></span><span class="posting hidden"><img class="spinner" src="/img/spinner_14.gif"></span><div class="inputWrapper"><div class="inputBackground"><div class="mentions"><div class="mirror"></div></div><textarea placeholder="Kommentieren" class="commentTextInput"></textarea></div><div class="suggestions"></div></div><div class="commentErrors"></div><div class="checkinActionButtons"><input type="submit" tabindex="2" class="greenButton addComment" value="Kommentar hinzufügen"></div></div></div></div><div class="likesFacepileSection" style="display: none;"><div class="likesTitle"><strong>0 Leuten</strong> gefällt das. </div><div class="likesFacepile empty"></div></div><div class="eventsForCheckInContainer"><div id="events"><p class="eventsHeader"><strong>About this check-in</strong></p><div class="event"><img src="https://foursquare.com/img/points/defaultpointsicon2.png" alt=""><p>Jeder Check-in verbessert deine Empfehlungen</p></div></div></div><div class="venueDetailsContainer"><div class="venueDetails"><span class="venueName"><a href="https://foursquare.com/kopiba">kopiba</a><a href="https://foursquare.com/kopiba"><img src="https://ss1.4sqi.net/img/specials/check-in-f870bc36c0cc2a842fac06c35a6dccdf.png" class="tooltip" title="" alt="Check-in Special"></a></span><div><div class="venueScore tooltip score positive" title="">9.3</div><div class="venueAddress"><span class="local">Beim Grünen Jäger 24, Hamburg</span></div><div class="venueCats"><span>Café</span></div></div></div><div class="venueHistoryTopRight"><div class="saveButton saveToListAction inactive" title="Save to my to-do list!"><span class="buttonLeft"><img src="https://ss0.4sqi.net/img/lists/button_icon_saveribbon-9c5999c47028ca670954422ee53e7d96.png" height="16" width="16" data-retina-url="https://ss1.4sqi.net/img/lists/button_icon_saveribbon@2x-d809e5af932a66d1725c40dfddcc2855.png"></span><span class="buttonRight unsaved"><span class="label">Speichern</span></span></div></div><div class="venuePhotoContainer"><span class="photoThumb link"><img src="https://irs1.4sqi.net/img/general/125x125/39861258_Ulcg4M_vZ0Gkfce9Y6Han4mDkR-83QTumS5wV2RLij8.jpg" photo-id="5084ff52e4b068d89dd5dbf9" width="125" height="125" alt="" data-retina-url="https://irs1.4sqi.net/img/general/250x250/39861258_Ulcg4M_vZ0Gkfce9Y6Han4mDkR-83QTumS5wV2RLij8.jpg"></span><span class="photoThumb link"><img src="https://irs1.4sqi.net/img/general/125x125/x1mhxhrpvjgAtQHgJLtII38EKNOA46aA7fQ0KfzMB6g.jpg" photo-id="50181552e4b0a0721fc746a5" width="125" height="125" alt="" data-retina-url="https://irs1.4sqi.net/img/general/250x250/x1mhxhrpvjgAtQHgJLtII38EKNOA46aA7fQ0KfzMB6g.jpg"></span><span class="photoThumb link"><img src="https://irs2.4sqi.net/img/general/125x125/8352028_BmwTYQ1KnCk522ISUVo-e8Mgn5sz42u-DRu968m0MhQ.jpg" photo-id="50f6aa1ce4b07eb72279543e" width="125" height="125" alt="" data-retina-url="https://irs2.4sqi.net/img/general/250x250/8352028_BmwTYQ1KnCk522ISUVo-e8Mgn5sz42u-DRu968m0MhQ.jpg"></span><span class="photoThumb link"><img src="https://irs1.4sqi.net/img/general/125x125/2653854_W_immUSqq2SjUyVC_2zuP84A-dOubiwBYla9CVZKO8s.jpg" photo-id="50ba05eae4b0e2256067a77d" width="125" height="125" alt="" data-retina-url="https://irs1.4sqi.net/img/general/250x250/2653854_W_immUSqq2SjUyVC_2zuP84A-dOubiwBYla9CVZKO8s.jpg"></span></div></div><span class="currentLanguageWrapper">Switch Language: <span id="currentLanguage" class="link">Deutsch</span></span></div></div></div><script type="text/javascript">fourSq.currentPage = new fourSq.views.CheckinPage({el: $('#checkinDetailPage').get(0), checkin: {"id":"4f0c401ae4b020a8d96fb0b1","createdAt":1326202906,"type":"checkin","shout":"#coffeediary","timeZoneOffset":60,"user":{"id":"304170","firstName":"Sven","lastName":"Kräuter","gender":"male","relationship":"friend","canonicalUrl":"https:\/\/foursquare.com\/sven_kr","photo":{"prefix":"https:\/\/irs1.4sqi.net\/img\/user\/","suffix":"\/UWZCDYXIH51YAMWC.jpg"}},"venue":{"id":"4b169255f964a52072ba23e3","name":"kopiba","contact":{"phone":"040343824","formattedPhone":"040 343824","twitter":"kopiba","facebook":"130271680341869"},"location":{"address":"Beim Grünen Jäger 24","lat":53.558831084738,"lng":9.963698387145996,"postalCode":"20357","city":"Hamburg","country":"Germany","cc":"DE"},"canonicalUrl":"https:\/\/foursquare.com\/v\/kopiba\/4b169255f964a52072ba23e3","categories":[{"id":"4bf58dd8d48988d16d941735","name":"Café","pluralName":"Cafés","shortName":"Café","icon":{"prefix":"https:\/\/foursquare.com\/img\/categories_v2\/food\/cafe_","mapPrefix":"https:\/\/foursquare.com\/img\/categories_map\/food\/cafe","suffix":".png"},"primary":true}],"verified":true,"stats":{"checkinsCount":5121,"usersCount":885,"tipCount":37},"url":"http:\/\/www.kopiba.de","urlSig":"nK15GTWcjDP4MzV9Co9r6ugWBE8=","specials":{"count":1},"venuePage":{"id":"35040828"}},"source":{"name":"foursquare for iPhone","url":"https:\/\/foursquare.com\/download\/#\/iphone"},"photos":{"count":1,"items":[{"id":"4f0c4020e4b0261c93fd4ede","createdAt":1326202912,"prefix":"https:\/\/irs0.4sqi.net\/img\/general\/","suffix":"\/NKFGXXX41TIQJA0P25ZYSUYKUUROQLLWGUXXSA5ABUQFDDYE.jpg","width":537,"height":720,"user":{"id":"304170","firstName":"Sven","lastName":"Kräuter","gender":"male","relationship":"friend","canonicalUrl":"https:\/\/foursquare.com\/sven_kr","photo":{"prefix":"https:\/\/irs1.4sqi.net\/img\/user\/","suffix":"\/UWZCDYXIH51YAMWC.jpg"}},"visibility":"friends"}]},"posts":{"count":0,"textCount":0},"likes":{"count":0,"groups":[]},"like":false,"comments":{"count":0,"items":[]},"score":{"total":1,"scores":[{"icon":"https:\/\/foursquare.com\/img\/points\/defaultpointsicon2.png","message":"Jeder Check-in verbessert deine Empfehlungen","points":1}]},"canonicalUrl":"https:\/\/foursquare.com\/sven_kr\/checkin\/4f0c401ae4b020a8d96fb0b1"},currentUser: {"lists":{"groups":[{"type":"created","count":1,"items":[]}]},"capabilities":{"canHaveFollowers":false,"canManageOtherAccounts":false,"canReceiveBadges":true,"canHaveFriends":true,"canAddTips":true},"experiments":[{"experimentName":"allowSmartCheckinPings","groupId":0.0,"enrollmentDate":1351031330},{"experimentName":"frrsvb","groupId":0.0,"enrollmentDate":1364300941},{"experimentName":"frrsvb2","groupId":1.0,"enrollmentDate":1365149578},{"experimentName":"ecgh","groupId":1.0,"enrollmentDate":1365365780},{"experimentName":"ese0410","groupId":0.0,"enrollmentDate":1366312102},{"experimentName":"tprefeb28","groupId":1.0,"enrollmentDate":1366312102},{"experimentName":"edb0422","groupId":0.0,"enrollmentDate":1367063108},{"experimentName":"evt0422","groupId":4.0,"enrollmentDate":1367063108},{"experimentName":"eugpfb","groupId":1.0,"enrollmentDate":1367063116}],"location":{"lat":53.58333,"lng":10.0,"location":"Hamburg","countryCode":"DE"},"photo":{"prefix":"https:\/\/irs2.4sqi.net\/img\/user\/","suffix":"\/EEI0WTBYZ32OGRSV.png"},"contact":{"email":"info@makersand.co"},"locale":"en_US","bio":"","lastName":"Co.","firstName":"Makers And","relationship":"self","id":"20659271","hasMobileClientConsumer":false,"canonicalUrl":"https:\/\/foursquare.com\/user\/20659271","roles":[],"isManager":false,"homeCity":"Hamburg","gender":"female"},fullVenue: {"name":"kopiba","beenHere":{"count":1,"marked":true},"stats":{"checkinsCount":5121,"usersCount":885,"tipCount":37},"location":{"city":"Hamburg","lng":9.963698387145996,"country":"Germany","postalCode":"20357","address":"Beim Grünen Jäger 24","cc":"DE","distance":3632,"lat":53.558831084738},"url":"http:\/\/www.kopiba.de","urlSig":"nK15GTWcjDP4MzV9Co9r6ugWBE8=","description":"Best Coffee in Town - Own roasting facility! Familiy run café and bar. Free wifi, coffee brands St. Pauli Deathpresso and Early Byrd.","tags":["bar","café","cocktails","deathpresso","espresso","free wifi","hamburg","kopiba","schanze","self roasted coffee","st. pauli"],"venuePage":{"id":"35040828"},"permissions":{"flagVenue":true,"editVenue":false,"addTips":true,"editCategories":false,"viewFlags":false,"editHours":true,"flagTips":true,"viewEditHistory":false},"hereNow":{"count":0,"groups":[],"summary":"0 Leute hier"},"popular":{"isOpen":false,"status":"None listed","timeframes":[{"days":"Heute","includesToday":true,"open":[{"renderedTime":"10:00\u201319:00"}],"segments":[]},{"days":"Mo","open":[{"renderedTime":"09:00\u201314:00"},{"renderedTime":"16:00\u201320:00"}],"segments":[]},{"days":"Di","open":[{"renderedTime":"11:00\u201314:00"},{"renderedTime":"16:00\u201321:00"}],"segments":[]},{"days":"Mi","open":[{"renderedTime":"Mittag\u201314:00"},{"renderedTime":"16:00\u201321:00"}],"segments":[]},{"days":"Do","open":[{"renderedTime":"Mittag\u201315:00"},{"renderedTime":"17:00\u201321:00"}],"segments":[]},{"days":"Fr","open":[{"renderedTime":"09:00\u201314:00"},{"renderedTime":"18:00\u201323:00"}],"segments":[]},{"days":"Sa","open":[{"renderedTime":"11:00\u201318:00"},{"renderedTime":"20:00\u201323:00"}],"segments":[]}]},"contact":{"twitter":"kopiba","phone":"040343824","formattedPhone":"040 343824","facebook":"130271680341869"},"specials":{"count":1,"items":[{"provider":"foursquare","interaction":{"entryUrl":"https:\/\/foursquare.com\/device\/specials\/51791550e0e2f2d7a70d8280?venueId=4b169255f964a52072ba23e3"},"state":"in progress","description":"You'll unlock this special with every 1st check-in here.","icon":"check-in","page":{"photo":{"prefix":"https:\/\/irs3.4sqi.net\/img\/user\/","suffix":"\/QFKULDPU2Z3JNABT.png"},"contact":{"twitter":"kopiba","facebook":"130271680341869"},"bio":"","firstName":"kopiba","id":"35040828","canonicalUrl":"https:\/\/foursquare.com\/kopiba","type":"venuePage","homeCity":"Hamburg","venue":{"id":"4b169255f964a52072ba23e3"},"gender":"none"},"likes":{"count":1,"groups":[{"type":"others","count":1,"items":[{"photo":{"prefix":"https:\/\/irs0.4sqi.net\/img\/user\/","suffix":"\/FI3TM1SI3K2IR2V2.jpg"},"lastName":"B.","firstName":"Florian","id":"11294478","canonicalUrl":"https:\/\/foursquare.com\/florianbuehler","gender":"male"}]}],"summary":"Florian B"},"id":"51791550e0e2f2d7a70d8280","progress":0,"message":"5% Rabatt für jeden Checkin! (Checkin auf dem Display zeigen)","redemption":"webview","title":"Check-in Special","type":"frequency","like":false}]},"shortUrl":"http:\/\/4sq.com\/9Ff6WJ","likes":{"count":47,"groups":[{"type":"others","count":47,"items":[]}],"summary":"47 Gefällt mir"},"hours":{"isOpen":true,"status":"Open until 02:00, reopens","timeframes":[{"days":"Mo\u2013Do","open":[{"renderedTime":"09:30\u201320:00"}],"segments":[{"label":"Breakfast a la carte","renderedTime":"09:30\u201314:00"},{"label":"Coffee & Cake Special","renderedTime":"14:00\u201320:00"}]},{"days":"Fr","open":[{"renderedTime":"09:30\u201302:00"}],"segments":[{"label":"Breakfast a la carte","renderedTime":"09:30\u201314:00"},{"label":"Cocktail Happy Hour","renderedTime":"19:00\u201322:00"}]},{"days":"Sa","open":[{"renderedTime":"10:00\u201302:00"}],"segments":[{"label":"Breakfast Buffet","renderedTime":"10:00\u201314:00"},{"label":"Cocktail Happy Hour","renderedTime":"19:00\u201322:00"}]},{"days":"So","includesToday":true,"open":[{"renderedTime":"10:00\u201320:00"}],"segments":[{"label":"Breakfast Buffet","renderedTime":"10:00\u201314:00"}]}]},"id":"4b169255f964a52072ba23e3","canonicalUrl":"https:\/\/foursquare.com\/kopiba","rating":9.29,"categories":[{"pluralName":"Cafés","name":"Café","icon":{"prefix":"https:\/\/foursquare.com\/img\/categories_v2\/food\/cafe_","mapPrefix":"https:\/\/foursquare.com\/img\/categories_map\/food\/cafe","suffix":".png"},"id":"4bf58dd8d48988d16d941735","shortName":"Café","primary":true},{"pluralName":"Frühstücksplätze","name":"Frühstücksplatz","icon":{"prefix":"https:\/\/foursquare.com\/img\/categories_v2\/food\/breakfast_","mapPrefix":"https:\/\/foursquare.com\/img\/categories_map\/food\/default","suffix":".png"},"id":"4bf58dd8d48988d143941735","shortName":"Frühstück \/ Brunch"},{"pluralName":"Bars ","name":"Bar","icon":{"prefix":"https:\/\/foursquare.com\/img\/categories_v2\/nightlife\/bar_","mapPrefix":"https:\/\/foursquare.com\/img\/categories_map\/nightlife\/bar","suffix":".png"},"id":"4bf58dd8d48988d116941735","shortName":"Bar"}],"createdAt":1259770453,"tips":{"count":37,"groups":[{"count":6,"items":[{"url":"","urlSig":"CQD3KKqxEwwqY7lJ5kNrlSJ1tn8=","text":"There is free Wifi. Just ask for the passphrase.","likes":{"count":17,"groups":[{"type":"others","count":17,"items":[]}],"summary":"17 Gefällt mir"},"id":"4c9665eff6c8ef3b952a82cf","canonicalUrl":"https:\/\/foursquare.com\/item\/4c9665eff6c8ef3b952a82cf","createdAt":1284924911,"todo":{"count":1},"user":{"photo":{"prefix":"https:\/\/irs1.4sqi.net\/img\/user\/","suffix":"\/JNYLLBOCW0WANBGU.jpg"},"lastName":"Bauer","firstName":"Matthias","relationship":"friend","id":"93567","canonicalUrl":"https:\/\/foursquare.com\/moeffju","gender":"male"},"like":false},{"text":"Self roasted coffee beans - absolutely delicious espresso.","likes":{"count":16,"groups":[{"type":"others","count":16,"items":[]}],"summary":"16 Gefällt mir"},"id":"4b681b0270c603bbba5791b4","canonicalUrl":"https:\/\/foursquare.com\/item\/4b681b0270c603bbba5791b4","createdAt":1265113858,"todo":{"count":2},"user":{"photo":{"prefix":"https:\/\/irs1.4sqi.net\/img\/user\/","suffix":"\/UWZCDYXIH51YAMWC.jpg"},"lastName":"Kräuter","firstName":"Sven","relationship":"friend","id":"304170","canonicalUrl":"https:\/\/foursquare.com\/sven_kr","gender":"male"},"like":false},{"url":"http:\/\/www.kopiba.de","urlSig":"nK15GTWcjDP4MzV9Co9r6ugWBE8=","text":"Best coffee in Schanzenviertel","likes":{"count":15,"groups":[{"type":"others","count":15,"items":[]}],"summary":"15 Gefällt mir"},"id":"4c3db0460928b713d23695ef","canonicalUrl":"https:\/\/foursquare.com\/item\/4c3db0460928b713d23695ef","createdAt":1279111238,"todo":{"count":1},"user":{"photo":{"prefix":"https:\/\/irs1.4sqi.net\/img\/user\/","suffix":"\/EDQTGEXLUIAKAWQG.png"},"firstName":"kopiba","relationship":"friend","id":"2085682","canonicalUrl":"https:\/\/foursquare.com\/user\/2085682","gender":"male"},"like":false},{"text":"Get a Deathpresso t-shirt or bag and flaunt your coffee stylez.","likes":{"count":9,"groups":[{"type":"others","count":9,"items":[{"photo":{"prefix":"https:\/\/irs0.4sqi.net\/img\/user\/","suffix":"\/VWQUWDEMZDJHZORT.jpg"},"lastName":"L.","firstName":"Judith","id":"9823634","canonicalUrl":"https:\/\/foursquare.com\/juedithe","gender":"female"},{"photo":{"prefix":"https:\/\/irs0.4sqi.net\/img\/user\/","suffix":"\/IKG0KJD245Z2EDC4.jpg"},"lastName":"K.","firstName":"Rouven","id":"2955841","canonicalUrl":"https:\/\/foursquare.com\/gestalterhuette","gender":"male"}]}],"summary":"9 Gefällt mir"},"id":"4ecceab4cc21561612614eb1","canonicalUrl":"https:\/\/foursquare.com\/item\/4ecceab4cc21561612614eb1","createdAt":1322052276,"todo":{"count":3},"user":{"photo":{"prefix":"https:\/\/irs1.4sqi.net\/img\/user\/","suffix":"\/JNYLLBOCW0WANBGU.jpg"},"lastName":"Bauer","firstName":"Matthias","relationship":"friend","id":"93567","canonicalUrl":"https:\/\/foursquare.com\/moeffju","gender":"male"},"like":false},{"url":"","urlSig":"CQD3KKqxEwwqY7lJ5kNrlSJ1tn8=","text":"You can get everything with decaf Espresso. Yum!","likes":{"count":9,"groups":[{"type":"others","count":9,"items":[]}],"summary":"9 Gefällt mir"},"id":"4c96657ff6c8ef3b2d2882cf","canonicalUrl":"https:\/\/foursquare.com\/item\/4c96657ff6c8ef3b2d2882cf","createdAt":1284924799,"todo":{"count":1},"user":{"photo":{"prefix":"https:\/\/irs1.4sqi.net\/img\/user\/","suffix":"\/JNYLLBOCW0WANBGU.jpg"},"lastName":"Bauer","firstName":"Matthias","relationship":"friend","id":"93567","canonicalUrl":"https:\/\/foursquare.com\/moeffju","gender":"male"},"like":false},{"text":"Decaf chocolate frappissimo, yum! Goes well with chocolate cake :)","likes":{"count":3,"groups":[{"type":"others","count":3,"items":[]}],"summary":"3 Gefällt mir"},"id":"4d4eb9854f67224b38a76550","canonicalUrl":"https:\/\/foursquare.com\/item\/4d4eb9854f67224b38a76550","createdAt":1297004933,"todo":{"count":1},"user":{"photo":{"prefix":"https:\/\/irs1.4sqi.net\/img\/user\/","suffix":"\/JNYLLBOCW0WANBGU.jpg"},"lastName":"Bauer","firstName":"Matthias","relationship":"friend","id":"93567","canonicalUrl":"https:\/\/foursquare.com\/moeffju","gender":"male"},"like":false}],"type":"friends","name":"Tipps von Freunden"},{"count":31,"items":[{"url":"http:\/\/www.facebook.com\/pages\/kopiba-Kaffeerosterei-Bar\/130271680341869","urlSig":"juS1uGDDmuOmzgmdyDspbaoDXhI=","text":"Check them on Facebook!","likes":{"count":24,"groups":[{"type":"others","count":24,"items":[]}],"summary":"24 Gefällt mir"},"id":"4d0f776db3692d43f18535de","canonicalUrl":"https:\/\/foursquare.com\/item\/4d0f776db3692d43f18535de","createdAt":1292859245,"todo":{"count":4},"user":{"photo":{"prefix":"https:\/\/irs1.4sqi.net\/img\/user\/","suffix":"\/JH4NWSXXPOVJYA41.jpg"},"lastName":"W.","firstName":"Sven","id":"143490","canonicalUrl":"https:\/\/foursquare.com\/svenwiesner","gender":"male"},"like":false},{"text":"Seit März 2011: ec-Kartenzahlung möglich, bald Kreditkarte auch","likes":{"count":12,"groups":[{"type":"others","count":12,"items":[]}],"summary":"12 Gefällt mir"},"id":"4d7680ce3798a1cd7a0a33ca","canonicalUrl":"https:\/\/foursquare.com\/item\/4d7680ce3798a1cd7a0a33ca","createdAt":1299611854,"todo":{"count":1},"user":{"photo":{"prefix":"https:\/\/irs1.4sqi.net\/img\/user\/","suffix":"\/F3WIPHXNSSPS415H.jpg"},"lastName":"M.","firstName":"Romy","id":"110666","canonicalUrl":"https:\/\/foursquare.com\/snoopsmaus","gender":"female"},"like":false},{"text":"Best coffee in town!","likes":{"count":9,"groups":[{"type":"others","count":9,"items":[{"photo":{"prefix":"https:\/\/irs1.4sqi.net\/img\/user\/","suffix":"\/UW2MQ3H1B04BRG4H.gif"},"firstName":"Felix","id":"1758999","canonicalUrl":"https:\/\/foursquare.com\/user\/1758999","gender":"male"}]}],"summary":"9 Gefällt mir"},"id":"4dcc0cc01f6ea1401d4d8ce9","canonicalUrl":"https:\/\/foursquare.com\/item\/4dcc0cc01f6ea1401d4d8ce9","createdAt":1305218240,"todo":{"count":1},"user":{"photo":{"prefix":"https:\/\/irs1.4sqi.net\/img\/user\/","suffix":"\/44ZH22TR0E3EXMQG.jpg"},"lastName":"S.","firstName":"Frank","id":"135275","canonicalUrl":"https:\/\/foursquare.com\/franks","gender":"male"},"like":false},{"photo":{"source":{"name":"foursquare for Android","url":"https:\/\/foursquare.com\/download\/#\/android"},"prefix":"https:\/\/irs0.4sqi.net\/img\/general\/","suffix":"\/uH8uPFG_MPI4kAC9PvhgzFYpXlERyNgBRsQpmiv3A1c.jpg","height":720,"id":"50324471e4b01a9da00b361e","createdAt":1345471601,"width":406},"text":"Auf Wunsch gibt's \"Mipfel\". Minz-Apfel Granizado","likes":{"count":6,"groups":[{"type":"others","count":6,"items":[{"photo":{"prefix":"https:\/\/irs1.4sqi.net\/img\/user\/","suffix":"\/UW2MQ3H1B04BRG4H.gif"},"firstName":"Felix","id":"1758999","canonicalUrl":"https:\/\/foursquare.com\/user\/1758999","gender":"male"},{"photo":{"prefix":"https:\/\/irs1.4sqi.net\/img\/user\/","suffix":"\/RX051IGZPR43V1IO.jpg"},"firstName":"Elo","id":"389736","canonicalUrl":"https:\/\/foursquare.com\/frauelo","gender":"female"},{"photo":{"prefix":"https:\/\/irs3.4sqi.net\/img\/user\/","suffix":"\/1PBBQY3IKLHT4I5Z.jpg"},"firstName":"Malte","id":"12007792","canonicalUrl":"https:\/\/foursquare.com\/sanktpony","gender":"male"},{"photo":{"prefix":"https:\/\/irs1.4sqi.net\/img\/user\/","suffix":"\/2XCZOYXBYWLMHA05.jpg"},"lastName":"M.","firstName":"Christina","id":"31482063","canonicalUrl":"https:\/\/foursquare.com\/user\/31482063","gender":"female"}]}],"summary":"6 Gefällt mir"},"id":"5032446fe4b07d6b3648da7e","canonicalUrl":"https:\/\/foursquare.com\/item\/5032446fe4b07d6b3648da7e","createdAt":1345471599,"todo":{"count":0},"user":{"photo":{"prefix":"https:\/\/irs0.4sqi.net\/img\/user\/","suffix":"\/VWQUWDEMZDJHZORT.jpg"},"lastName":"L.","firstName":"Judith","id":"9823634","canonicalUrl":"https:\/\/foursquare.com\/juedithe","gender":"female"},"like":false},{"text":"Ab jetzt auch hausgemachte Pasta zum Lunch. Yummy!","likes":{"count":6,"groups":[{"type":"others","count":6,"items":[{"photo":{"prefix":"https:\/\/irs1.4sqi.net\/img\/user\/","suffix":"\/UW2MQ3H1B04BRG4H.gif"},"firstName":"Felix","id":"1758999","canonicalUrl":"https:\/\/foursquare.com\/user\/1758999","gender":"male"}]}],"summary":"6 Gefällt mir"},"id":"4e78a8277d8b90e4422a9cec","canonicalUrl":"https:\/\/foursquare.com\/item\/4e78a8277d8b90e4422a9cec","createdAt":1316530215,"todo":{"count":4},"user":{"photo":{"prefix":"https:\/\/irs2.4sqi.net\/img\/user\/","suffix":"\/DHPLMBHTGZJNXFZC.jpg"},"lastName":"S.","firstName":"Friederike","id":"1643859","canonicalUrl":"https:\/\/foursquare.com\/miss_r_e","gender":"female"},"like":false},{"text":"Try 'judiths gaypefruit happy  peppermint party' !! Awesome cocktail !!!","likes":{"count":5,"groups":[{"type":"friends","count":1,"items":[{"photo":{"prefix":"https:\/\/irs1.4sqi.net\/img\/user\/","suffix":"\/JNYLLBOCW0WANBGU.jpg"},"lastName":"Bauer","firstName":"Matthias","relationship":"friend","id":"93567","canonicalUrl":"https:\/\/foursquare.com\/moeffju","gender":"male"}]},{"type":"others","count":4,"items":[{"photo":{"prefix":"https:\/\/irs1.4sqi.net\/img\/user\/","suffix":"\/UW2MQ3H1B04BRG4H.gif"},"firstName":"Felix","id":"1758999","canonicalUrl":"https:\/\/foursquare.com\/user\/1758999","gender":"male"}]}],"summary":"5 Personen gefällt das - Matthias B"},"id":"4ec7d2c661af9e14301ede37","canonicalUrl":"https:\/\/foursquare.com\/item\/4ec7d2c661af9e14301ede37","createdAt":1321718470,"todo":{"count":3},"user":{"photo":{"prefix":"https:\/\/irs0.4sqi.net\/img\/user\/","suffix":"\/VWQUWDEMZDJHZORT.jpg"},"lastName":"L.","firstName":"Judith","id":"9823634","canonicalUrl":"https:\/\/foursquare.com\/juedithe","gender":"female"},"like":false},{"text":"Die Frische Minze ist super, wenn es mal kein Kaffee sein soll und es draussen kalt ist.","likes":{"count":4,"groups":[{"type":"friends","count":1,"items":[{"photo":{"prefix":"https:\/\/irs1.4sqi.net\/img\/user\/","suffix":"\/JNYLLBOCW0WANBGU.jpg"},"lastName":"Bauer","firstName":"Matthias","relationship":"friend","id":"93567","canonicalUrl":"https:\/\/foursquare.com\/moeffju","gender":"male"}]},{"type":"others","count":3,"items":[{"photo":{"prefix":"https:\/\/irs1.4sqi.net\/img\/user\/","suffix":"\/UW2MQ3H1B04BRG4H.gif"},"firstName":"Felix","id":"1758999","canonicalUrl":"https:\/\/foursquare.com\/user\/1758999","gender":"male"},{"photo":{"prefix":"https:\/\/irs0.4sqi.net\/img\/user\/","suffix":"\/VWQUWDEMZDJHZORT.jpg"},"lastName":"L.","firstName":"Judith","id":"9823634","canonicalUrl":"https:\/\/foursquare.com\/juedithe","gender":"female"},{"photo":{"prefix":"https:\/\/irs0.4sqi.net\/img\/user\/","suffix":"\/JLREN2E14QNQX0S3.jpg"},"firstName":"MultaniFX","id":"174058","canonicalUrl":"https:\/\/foursquare.com\/multanifx","gender":"male"}]}],"summary":"4 Personen gefällt das - Matthias B"},"id":"504e1e07e4b03c3db278e273","canonicalUrl":"https:\/\/foursquare.com\/item\/504e1e07e4b03c3db278e273","createdAt":1347296775,"todo":{"count":0},"user":{"photo":{"prefix":"https:\/\/irs1.4sqi.net\/img\/user\/","suffix":"\/F51FECN4M0K2TVFD.jpg"},"lastName":"W.","firstName":"Julian","id":"108955","canonicalUrl":"https:\/\/foursquare.com\/julianwki","gender":"male"},"like":false},{"text":"Hipstercafe für Internethipster. Aber trotzdem nett.","likes":{"count":4,"groups":[{"type":"others","count":4,"items":[{"photo":{"prefix":"https:\/\/irs1.4sqi.net\/img\/user\/","suffix":"\/IVXPACCGH1MGBFZZ.jpg"},"firstName":"JustMeHH","id":"24943698","canonicalUrl":"https:\/\/foursquare.com\/user\/24943698","gender":"female"},{"photo":{"prefix":"https:\/\/irs0.4sqi.net\/img\/user\/","suffix":"\/BIEZ5QKYQMRZTUPZ.jpg"},"lastName":"S.","firstName":"Sarah","id":"17845224","canonicalUrl":"https:\/\/foursquare.com\/hunger24","gender":"none"}]}],"summary":"4 Gefällt mir"},"id":"4f9ec0bbe4b0d2bd64a71b1c","canonicalUrl":"https:\/\/foursquare.com\/item\/4f9ec0bbe4b0d2bd64a71b1c","createdAt":1335804091,"todo":{"count":0},"user":{"photo":{"prefix":"https:\/\/irs3.4sqi.net\/img\/user\/","suffix":"\/WC5CFOWOKU5DD2JH.jpg"},"lastName":"B.","firstName":"Sebastian","id":"177100","canonicalUrl":"https:\/\/foursquare.com\/infinsternis","gender":"male"},"like":false},{"text":"an warmen tagen kühlt der eiskaffee bestens","likes":{"count":4,"groups":[{"type":"others","count":4,"items":[]}],"summary":"4 Gefällt mir"},"id":"4db56e7081543d71da578df0","canonicalUrl":"https:\/\/foursquare.com\/item\/4db56e7081543d71da578df0","createdAt":1303735920,"todo":{"count":1},"user":{"photo":{"prefix":"https:\/\/irs1.4sqi.net\/img\/user\/","suffix":"\/JPFVX32IWMALDZMJ.jpg"},"firstName":"maxi_b","id":"4339593","canonicalUrl":"https:\/\/foursquare.com\/maxi_b","gender":"female"},"like":false},{"text":"Gin Tonic (Bombays) mit Gurke!","likes":{"count":3,"groups":[{"type":"others","count":3,"items":[{"photo":{"prefix":"https:\/\/irs1.4sqi.net\/img\/user\/","suffix":"\/I2YOYM23VEYKI343.jpg"},"lastName":"v.","firstName":"Cordelia","id":"52732235","canonicalUrl":"https:\/\/foursquare.com\/user\/52732235","gender":"female"},{"photo":{"prefix":"https:\/\/irs0.4sqi.net\/img\/user\/","suffix":"\/1IRKSZWMQ4POA123.jpg"},"lastName":"H.","firstName":"Robert","id":"41972106","canonicalUrl":"https:\/\/foursquare.com\/user\/41972106","gender":"male"},{"photo":{"prefix":"https:\/\/irs0.4sqi.net\/img\/user\/","suffix":"\/NSHSVTSSUQXGHZZX.jpg"},"lastName":"B.","firstName":"Paul","id":"727880","canonicalUrl":"https:\/\/foursquare.com\/paulbaum","gender":"male"}]}],"summary":"3 Gefällt mir"},"id":"51311adde4b02c44577262c7","canonicalUrl":"https:\/\/foursquare.com\/item\/51311adde4b02c44577262c7","createdAt":1362172637,"todo":{"count":0},"user":{"photo":{"prefix":"https:\/\/irs0.4sqi.net\/img\/user\/","suffix":"\/WMMEHEGOZZSXD4RW.jpg"},"firstName":"Christian","id":"4864425","canonicalUrl":"https:\/\/foursquare.com\/schwinaldo","gender":"male"},"like":false},{"text":"Try out the breakfast buffet on weekends","likes":{"count":3,"groups":[{"type":"others","count":3,"items":[{"photo":{"prefix":"https:\/\/irs1.4sqi.net\/img\/user\/","suffix":"\/UW2MQ3H1B04BRG4H.gif"},"firstName":"Felix","id":"1758999","canonicalUrl":"https:\/\/foursquare.com\/user\/1758999","gender":"male"}]}],"summary":"3 Gefällt mir"},"id":"4c3084507cc0c9b6556bed9a","canonicalUrl":"https:\/\/foursquare.com\/item\/4c3084507cc0c9b6556bed9a","createdAt":1278248016,"todo":{"count":0},"user":{"photo":{"prefix":"https:\/\/irs3.4sqi.net\/img\/user\/","suffix":"\/G2EYM2UVCHKPY32C.jpg"},"lastName":"L.","firstName":"Benny","id":"512552","canonicalUrl":"https:\/\/foursquare.com\/laude","gender":"male"},"like":false},{"text":"Wi-Fi network: kopiba Guest. Password: deathpresso","likes":{"count":2,"groups":[{"type":"others","count":2,"items":[{"photo":{"prefix":"https:\/\/irs3.4sqi.net\/img\/user\/","suffix":"\/KDXUMMMUXRLBAENH.png"},"firstName":"Ben","id":"5001785","canonicalUrl":"https:\/\/foursquare.com\/salzig","gender":"male"},{"photo":{"prefix":"https:\/\/irs1.4sqi.net\/img\/user\/","suffix":"\/UW2MQ3H1B04BRG4H.gif"},"firstName":"Felix","id":"1758999","canonicalUrl":"https:\/\/foursquare.com\/user\/1758999","gender":"male"}]}],"summary":"2 Gefällt mir"},"id":"4fffeecbe4b077c7a9e2e30f","canonicalUrl":"https:\/\/foursquare.com\/item\/4fffeecbe4b077c7a9e2e30f","createdAt":1342172875,"todo":{"count":0},"user":{"photo":{"prefix":"https:\/\/irs1.4sqi.net\/img\/user\/","suffix":"\/XTQ4ABMQ2IFORB31.jpg"},"lastName":"P.","firstName":"Dmitry","id":"27670602","canonicalUrl":"https:\/\/foursquare.com\/user\/27670602","gender":"male"},"like":false},{"text":"try kopiba43. best coffeeshot!","likes":{"count":2,"groups":[{"type":"friends","count":1,"items":[{"photo":{"prefix":"https:\/\/irs1.4sqi.net\/img\/user\/","suffix":"\/JNYLLBOCW0WANBGU.jpg"},"lastName":"Bauer","firstName":"Matthias","relationship":"friend","id":"93567","canonicalUrl":"https:\/\/foursquare.com\/moeffju","gender":"male"}]},{"type":"others","count":1,"items":[]}],"summary":"2 Personen gefällt das - Matthias B"},"id":"4ec2d974775b802d2003706b","canonicalUrl":"https:\/\/foursquare.com\/item\/4ec2d974775b802d2003706b","createdAt":1321392500,"todo":{"count":0},"user":{"photo":{"prefix":"https:\/\/irs0.4sqi.net\/img\/user\/","suffix":"\/VWQUWDEMZDJHZORT.jpg"},"lastName":"L.","firstName":"Judith","id":"9823634","canonicalUrl":"https:\/\/foursquare.com\/juedithe","gender":"female"},"like":false},{"text":"Try the lunch special - excellent starters included.","likes":{"count":2,"groups":[{"type":"others","count":2,"items":[]}],"summary":"2 Gefällt mir"},"id":"4e2983e945ddfe8f9dfcaa5a","canonicalUrl":"https:\/\/foursquare.com\/item\/4e2983e945ddfe8f9dfcaa5a","createdAt":1311343593,"todo":{"count":3},"user":{"photo":{"prefix":"https:\/\/irs1.4sqi.net\/img\/user\/","suffix":"\/H5KBTARS2M1NEZ12.jpg"},"lastName":"M.","firstName":"Stefan","id":"3797193","canonicalUrl":"https:\/\/foursquare.com\/erfolgsspur","gender":"male"},"like":false}],"type":"others","name":"Tipps von anderen"}]},"mayor":{"count":25,"user":{"photo":{"prefix":"https:\/\/irs0.4sqi.net\/img\/user\/","suffix":"\/VWQUWDEMZDJHZORT.jpg"},"lastName":"L.","firstName":"Judith","id":"9823634","canonicalUrl":"https:\/\/foursquare.com\/juedithe","gender":"female"}},"friendVisits":{"count":18,"items":[{"visitedCount":1,"liked":false,"user":{"photo":{"prefix":"https:\/\/irs2.4sqi.net\/img\/user\/","suffix":"\/EEI0WTBYZ32OGRSV.png"},"lastName":"Co.","firstName":"Makers And","relationship":"self","id":"20659271","canonicalUrl":"https:\/\/foursquare.com\/user\/20659271","gender":"female"}},{"visitedCount":490,"liked":true,"user":{"photo":{"prefix":"https:\/\/irs1.4sqi.net\/img\/user\/","suffix":"\/JNYLLBOCW0WANBGU.jpg"},"lastName":"Bauer","firstName":"Matthias","relationship":"friend","id":"93567","canonicalUrl":"https:\/\/foursquare.com\/moeffju","gender":"male"}},{"visitedCount":174,"liked":true,"user":{"photo":{"prefix":"https:\/\/irs1.4sqi.net\/img\/user\/","suffix":"\/UWZCDYXIH51YAMWC.jpg"},"lastName":"Kräuter","firstName":"Sven","relationship":"friend","id":"304170","canonicalUrl":"https:\/\/foursquare.com\/sven_kr","gender":"male"}},{"visitedCount":48,"liked":false,"user":{"photo":{"prefix":"https:\/\/irs0.4sqi.net\/img\/user\/","suffix":"\/LDIY5ZMG0OYWNU20.jpg"},"lastName":"HH","firstName":"Kuemmel","relationship":"friend","id":"851159","canonicalUrl":"https:\/\/foursquare.com\/kuemmel_hh","gender":"female"}},{"visitedCount":44,"liked":false,"user":{"photo":{"prefix":"https:\/\/irs1.4sqi.net\/img\/user\/","suffix":"\/ECGA3OT51JXXMP4Q.png"},"lastName":"Lüders","firstName":"Lasse","relationship":"friend","id":"108262","canonicalUrl":"https:\/\/foursquare.com\/lueti","gender":"male"}},{"visitedCount":36,"liked":false,"user":{"photo":{"prefix":"https:\/\/irs2.4sqi.net\/img\/user\/","suffix":"\/MQXJOQTEE2V0NKVD.jpg"},"lastName":"Meyer","firstName":"Inken","relationship":"friend","id":"613731","canonicalUrl":"https:\/\/foursquare.com\/meyola","gender":"female"}},{"visitedCount":23,"liked":true,"user":{"photo":{"prefix":"https:\/\/irs3.4sqi.net\/img\/user\/","suffix":"\/PHSBMWWE30LL5ODJ.jpg"},"lastName":"S.","firstName":"Rene","relationship":"friend","id":"497906","canonicalUrl":"https:\/\/foursquare.com\/renehamburg","gender":"male"}}],"summary":"Du und 17 Freunde seid hier gewesen"},"verified":true,"like":false,"listed":{"groups":[{"type":"friends","name":"Listen von Freunden","count":4,"items":[{"name":"Must-visit Cafés in Hamburg","updatedAt":1.316909702E9,"url":"https:\/\/foursquare.com\/look_now\/list\/mustvisit-caf%C3%A9s-in-hamburg","description":"","followers":{"count":14},"public":true,"id":"4e7e7286f9f43946e7b9c7a2","canonicalUrl":"https:\/\/foursquare.com\/look_now\/list\/mustvisit-caf%C3%A9s-in-hamburg","createdAt":1316909702,"listItems":{"count":8,"items":[{"id":"v4b169255f964a52072ba23e3","createdAt":1316909702}]},"type":"friends","collaborative":false,"user":{"photo":{"prefix":"https:\/\/irs2.4sqi.net\/img\/user\/","suffix":"\/NGDP30ANSUKMPKEN.jpg"},"lastName":"W","firstName":"Nicole","relationship":"friend","id":"1275267","canonicalUrl":"https:\/\/foursquare.com\/look_now","gender":"female"},"editable":false},{"name":"Favorites on the Schanze","updatedAt":1.35610828E9,"url":"https:\/\/foursquare.com\/jormason\/list\/favorites-on-the-schanze","description":"the best places to eat, work, make party in the Schanzenviertel in Hamburg","followers":{"count":3},"public":true,"id":"4e91798edab46521c17639c8","canonicalUrl":"https:\/\/foursquare.com\/jormason\/list\/favorites-on-the-schanze","createdAt":1318156686,"listItems":{"count":14,"items":[{"id":"v4b169255f964a52072ba23e3","createdAt":1318156833}]},"type":"friends","collaborative":true,"user":{"photo":{"prefix":"https:\/\/irs2.4sqi.net\/img\/user\/","suffix":"\/Z4UR55XHNYRGAYZR.jpg"},"lastName":"Ast","firstName":"Joern Hendrik","relationship":"friend","id":"251998","canonicalUrl":"https:\/\/foursquare.com\/jormason","gender":"male"},"editable":true},{"name":"Hamburg","updatedAt":1.366898607E9,"photo":{"prefix":"https:\/\/irs2.4sqi.net\/img\/general\/","suffix":"\/CP6b6ue_nIDJwOBW6tK_UnF6CJw4DhxjtbnsNAUW-Dw.jpg","height":540,"id":"502bfbb4e4b01590f9bdec03","createdAt":1345059764,"width":720,"visibility":"public","user":{"photo":{"prefix":"https:\/\/irs1.4sqi.net\/img\/user\/","suffix":"\/HEZI5XFARZLHXBXP.jpg"},"lastName":"K.","firstName":"Hans-Joachim","id":"3044320","canonicalUrl":"https:\/\/foursquare.com\/werk2","gender":"male"}},"url":"https:\/\/foursquare.com\/sven_kr\/list\/hamburg","description":"","followers":{"count":2},"public":true,"id":"50c385e9e4b085c8e3d3d1d5","canonicalUrl":"https:\/\/foursquare.com\/sven_kr\/list\/hamburg","createdAt":1354991081,"listItems":{"count":28,"items":[{"photo":{"prefix":"https:\/\/irs3.4sqi.net\/img\/general\/","suffix":"\/304170_cr5zUdRg3xQmLREuAi8CZiakZSglIuFNUnUHxgsiSFk.jpg","height":537,"id":"50a9025ae4b0495d7f54b882","createdAt":1353253466,"width":720,"visibility":"public","user":{"photo":{"prefix":"https:\/\/irs1.4sqi.net\/img\/user\/","suffix":"\/UWZCDYXIH51YAMWC.jpg"},"lastName":"Kräuter","firstName":"Sven","relationship":"friend","id":"304170","canonicalUrl":"https:\/\/foursquare.com\/sven_kr","gender":"male"}},"id":"v4b169255f964a52072ba23e3","createdAt":1354998644},{"id":"t4c3db0460928b713d23695ef","createdAt":1354998669,"tip":{"url":"http:\/\/www.kopiba.de","urlSig":"nK15GTWcjDP4MzV9Co9r6ugWBE8=","text":"Best coffee in Schanzenviertel","likes":{"count":15,"groups":[{"type":"others","count":15,"items":[]}],"summary":"15 Gefällt mir"},"id":"4c3db0460928b713d23695ef","canonicalUrl":"https:\/\/foursquare.com\/item\/4c3db0460928b713d23695ef","createdAt":1279111238,"todo":{"count":1},"user":{"photo":{"prefix":"https:\/\/irs1.4sqi.net\/img\/user\/","suffix":"\/EDQTGEXLUIAKAWQG.png"},"firstName":"kopiba","relationship":"friend","id":"2085682","canonicalUrl":"https:\/\/foursquare.com\/user\/2085682","gender":"male"},"like":false}}]},"type":"friends","collaborative":false,"user":{"photo":{"prefix":"https:\/\/irs1.4sqi.net\/img\/user\/","suffix":"\/UWZCDYXIH51YAMWC.jpg"},"lastName":"Kräuter","firstName":"Sven","relationship":"friend","id":"304170","canonicalUrl":"https:\/\/foursquare.com\/sven_kr","gender":"male"},"editable":false}]},{"type":"others","name":"Listen von anderen Leuten","count":60,"items":[{"name":"Alles in Hamburg","updatedAt":1.366700366E9,"url":"https:\/\/foursquare.com\/cps2006\/list\/alles-in-hamburg","description":"","followers":{"count":35},"public":true,"id":"4ed51a767ee5ddf314b432a3","canonicalUrl":"https:\/\/foursquare.com\/cps2006\/list\/alles-in-hamburg","createdAt":1322588790,"listItems":{"count":169,"items":[{"id":"v4b169255f964a52072ba23e3","createdAt":1325976392}]},"type":"others","collaborative":false,"user":{"photo":{"prefix":"https:\/\/irs0.4sqi.net\/img\/user\/","suffix":"\/IWU4GA15KEV2UO2P.jpg"},"lastName":"P.","firstName":"Christian","id":"7459702","canonicalUrl":"https:\/\/foursquare.com\/cps2006","gender":"male"},"editable":false},{"name":"StorefrontSticker #4sqCities: Hamburg","updatedAt":1.358793744E9,"photo":{"prefix":"https:\/\/irs2.4sqi.net\/img\/general\/","suffix":"\/OjQiPvKPYkGp-aycH5F64gCsVv5bb7BkAlH7SRYVtHg.jpg","height":540,"id":"4f7d91dfe4b002615a2e00a1","createdAt":1333629407,"width":720,"visibility":"public","user":{"photo":{"prefix":"https:\/\/irs3.4sqi.net\/img\/user\/","suffix":"\/BY13RPWFYOAIZK4M.jpg"},"lastName":"S.","firstName":"Frauke","id":"21918659","canonicalUrl":"https:\/\/foursquare.com\/user\/21918659","gender":"female"}},"url":"https:\/\/foursquare.com\/storefrontstick\/list\/storefrontsticker-4sqcities-hamburg","description":"","followers":{"count":17},"public":true,"id":"501e9f57e4b0ccb681d26bfa","canonicalUrl":"https:\/\/foursquare.com\/storefrontstick\/list\/storefrontsticker-4sqcities-hamburg","createdAt":1344184151,"listItems":{"count":183,"items":[{"photo":{"prefix":"https:\/\/irs1.4sqi.net\/img\/general\/","suffix":"\/WIImXmWHPJCkiV8SYC0joDk7NaoCmesnjIMGPGSmy88.jpg","height":612,"id":"501d9bb7e4b00e1d08fd13c6","createdAt":1344117687,"width":612,"visibility":"public","user":{"photo":{"prefix":"https:\/\/irs1.4sqi.net\/img\/user\/","suffix":"\/JNYLLBOCW0WANBGU.jpg"},"lastName":"Bauer","firstName":"Matthias","relationship":"friend","id":"93567","canonicalUrl":"https:\/\/foursquare.com\/moeffju","gender":"male"}},"id":"t4b681b0270c603bbba5791b4","createdAt":1344632231,"tip":{"text":"Self roasted coffee beans - absolutely delicious espresso.","likes":{"count":16,"groups":[{"type":"others","count":16,"items":[]}],"summary":"16 Gefällt mir"},"id":"4b681b0270c603bbba5791b4","canonicalUrl":"https:\/\/foursquare.com\/item\/4b681b0270c603bbba5791b4","createdAt":1265113858,"todo":{"count":2},"user":{"photo":{"prefix":"https:\/\/irs1.4sqi.net\/img\/user\/","suffix":"\/UWZCDYXIH51YAMWC.jpg"},"lastName":"Kräuter","firstName":"Sven","relationship":"friend","id":"304170","canonicalUrl":"https:\/\/foursquare.com\/sven_kr","gender":"male"},"like":false}}]},"type":"others","collaborative":false,"user":{"photo":{"prefix":"https:\/\/irs0.4sqi.net\/img\/user\/","suffix":"\/DOKMQQTHVHINKWJW.png"},"firstName":"StorefrontSticker","id":"30390767","canonicalUrl":"https:\/\/foursquare.com\/storefrontstick","type":"page","gender":"none"},"editable":false}]}],"count":64},"timeZone":"Europe\/Berlin","photos":{"count":202,"groups":[{"type":"venue","name":"Venue-Fotos","count":202,"items":[{"source":{"name":"foursquare for iPhone","url":"https:\/\/foursquare.com\/download\/#\/iphone"},"prefix":"https:\/\/irs1.4sqi.net\/img\/general\/","suffix":"\/39861258_Ulcg4M_vZ0Gkfce9Y6Han4mDkR-83QTumS5wV2RLij8.jpg","height":540,"id":"5084ff52e4b068d89dd5dbf9","createdAt":1350893394,"width":540,"visibility":"public","user":{"photo":{"prefix":"https:\/\/irs2.4sqi.net\/img\/user\/","suffix":"\/04N3V20HPMFOBJQI.jpg"},"lastName":"N.","firstName":"Mario","id":"39861258","canonicalUrl":"https:\/\/foursquare.com\/user\/39861258","gender":"male"}},{"source":{"name":"Instagram","url":"http:\/\/instagram.com"},"prefix":"https:\/\/irs1.4sqi.net\/img\/general\/","suffix":"\/x1mhxhrpvjgAtQHgJLtII38EKNOA46aA7fQ0KfzMB6g.jpg","height":612,"id":"50181552e4b0a0721fc746a5","createdAt":1343755602,"width":612,"visibility":"public","user":{"photo":{"prefix":"https:\/\/irs1.4sqi.net\/img\/user\/","suffix":"\/JNYLLBOCW0WANBGU.jpg"},"lastName":"Bauer","firstName":"Matthias","relationship":"friend","id":"93567","canonicalUrl":"https:\/\/foursquare.com\/moeffju","gender":"male"}},{"source":{"name":"foursquare for iPhone","url":"https:\/\/foursquare.com\/download\/#\/iphone"},"prefix":"https:\/\/irs2.4sqi.net\/img\/general\/","suffix":"\/8352028_BmwTYQ1KnCk522ISUVo-e8Mgn5sz42u-DRu968m0MhQ.jpg","height":717,"id":"50f6aa1ce4b07eb72279543e","createdAt":1358342684,"width":959,"visibility":"public","user":{"photo":{"prefix":"https:\/\/irs0.4sqi.net\/img\/user\/","suffix":"\/RKCVDKVCPOIQVKRW.jpg"},"lastName":"K.","firstName":"Steffen","id":"8352028","canonicalUrl":"https:\/\/foursquare.com\/user\/8352028","gender":"male"}},{"source":{"name":"foursquare for Android","url":"https:\/\/foursquare.com\/download\/#\/android"},"prefix":"https:\/\/irs1.4sqi.net\/img\/general\/","suffix":"\/2653854_W_immUSqq2SjUyVC_2zuP84A-dOubiwBYla9CVZKO8s.jpg","height":720,"id":"50ba05eae4b0e2256067a77d","createdAt":1354368490,"width":406,"visibility":"public","user":{"photo":{"prefix":"https:\/\/irs0.4sqi.net\/img\/user\/","suffix":"\/BMLTTVPHP3E1HCBH.jpg"},"firstName":"Christine","id":"2653854","canonicalUrl":"https:\/\/foursquare.com\/fake_empire","gender":"female"}},{"source":{"name":"foursquare for iPhone","url":"https:\/\/foursquare.com\/download\/#\/iphone"},"prefix":"https:\/\/irs2.4sqi.net\/img\/general\/","suffix":"\/39447563_prA36VaH6oDrZVfN7fAUvuP52nTv12oDYgpDgRoquAY.jpg","height":720,"id":"509677f0e4b0e34d638d1286","createdAt":1352038384,"width":537,"visibility":"public","user":{"photo":{"prefix":"https:\/\/irs3.4sqi.net\/img\/user\/","suffix":"\/BGDIUV0JLPU3WILA.jpg"},"lastName":"P.","firstName":"Mine","id":"39447563","canonicalUrl":"https:\/\/foursquare.com\/user\/39447563","gender":"female"}},{"source":{"name":"foursquare for Android","url":"https:\/\/foursquare.com\/download\/#\/android"},"prefix":"https:\/\/irs3.4sqi.net\/img\/general\/","suffix":"\/40529217_Ab39dfegSq-97DVrT6jIl_mOSTM2kfSPAgP5AA89N8k.jpg","height":720,"id":"509f71e3e4b0d60e8e3f8329","createdAt":1352626659,"width":720,"visibility":"public","user":{"photo":{"prefix":"https:\/\/irs3.4sqi.net\/img\/user\/","suffix":"\/44VAA3YZ3VNXLLXG.jpg"},"firstName":"Der josi","id":"40529217","canonicalUrl":"https:\/\/foursquare.com\/derjosihh","gender":"male"}}]}]}},canZoomMap: false, signature: 'eU7t9fpmByekJgPb8IOuchQ9ibw', cannotSeeCommentReason: '', cannotAddCommentReason: ''}).decorate();</script><div id="containerFooter"><div class="wideColumn"><ul class="notranslate"><li><a href="/about">Über</a></li><li><a href="http://blog.foursquare.com">Blog</a></li><li><a href="http://business.foursquare.com">Unternehmen</a></li><li><a href="/cities">Städte</a></li><li><a href="http://developer.foursquare.com">ENTWICKLER:</a></li><li><a href="http://foursquare.com/help">Hilfe</a></li><li><a href="/jobs/">Jobs</a></li><li><a href="/legal/privacy">Datenschutz (Updated)</a></li><li><a href="/legal/terms">AGB (Updated)</a></li><li><a href="http://store.foursquare.com">Store</a></li><li><span id="currentLanguage" class="link">Deutsch</span></li></ul></div><div class="narrowColumn">Foursquare © 2013 <img src="https://ss1.4sqi.net/img/icon-mini-crown-cdef5bfd4afc2ff3038c790ea2ae1e14.png" alt="" width="12" height="9"><span title="und Ithaka, Madison, Edinburgh &amp; London">Liebevoll in NYC &amp; SF hergestellt</span></div></div></div>
   ^
 end
 
