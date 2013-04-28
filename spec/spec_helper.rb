@@ -2,6 +2,9 @@
 require 'simplecov'
 SimpleCov.start
 
+require 'coveralls'
+Coveralls.wear!
+
 require "bundler"
 require "logger"
 require "yaml"
