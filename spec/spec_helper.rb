@@ -1,8 +1,12 @@
 #encoding: utf-8
+require 'simplecov'
+SimpleCov.start
+
 require "bundler"
 require "logger"
 require "yaml"
 require "#{File.dirname(__FILE__)}/../lib/tweetlr"
+
 
 Bundler.require :default, :development, :test
 
