@@ -2,7 +2,7 @@ require 'tweetlr/log_aware'
 require 'tweetlr/core'
 
 module Tweetlr
-  VERSION = '0.1.20'
+  VERSION = '0.1.21'
     
   API_ENDPOINT_TWITTER = 'http://search.twitter.com/search.json'
   API_ENDPOINT_TUMBLR = 'http://www.tumblr.com'
