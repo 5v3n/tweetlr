@@ -1,9 +1,12 @@
 #encoding: utf-8
-require 'simplecov'
-SimpleCov.start
 
-require 'coveralls'
-Coveralls.wear!
+if ENV['RACK_ENV']=='test'
+  require 'coveralls'
+  Coveralls.wear!
+elsif ENV['RACK_ENV']=='development'
+  require 'simplecov'
+  SimpleCov.start
+end
 
 require "bundler"
 require "logger"
