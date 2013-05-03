@@ -41,7 +41,7 @@ module Tweetlr::Processors
     def self.image_url_foursqaure(link_url)
       link_url = follow_redirect(link_url)
       image_url = retrieve_image_url_by_css link_url, 'meta[property="og:image"]', 'content'
-      image_url
+      image_url unless image_url.include? "foursquare.com/img/categories"
     end
     #extract the image of a path.com pic
     def self.image_url_path(link_url)

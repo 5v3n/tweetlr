@@ -35,11 +35,18 @@ describe Tweetlr::Processors::PhotoService do
     link = Tweetlr::Processors::PhotoService::find_image_url 'http://makersand.co/'
     link.should be_nil
   end
-  it "does find an image for foursquare that is not he profile pic" do
-    stub_foursquare
-    link = Tweetlr::Processors::PhotoService::find_image_url @links[:foursquare]
-    link.should be
-    link.index('userpix_thumbs').should_not be
+  describe "for foursqaure" do
+    it "does find an image that is not he profile pic" do
+      stub_foursquare
+      link = Tweetlr::Processors::PhotoService::find_image_url @links[:foursquare]
+      link.should be
+      link.index('userpix_thumbs').should_not be
+    end
+    it "does not extract symbols from tweeted links that contain no images" do
+      stub_foursquare_no_photo
+      link = Tweetlr::Processors::PhotoService::find_image_url @links[:foursquare]
+      link.should_not be
+    end
   end
   it "finds path images for redirected moments as well" do
     stub_path_redirected
