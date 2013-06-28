@@ -17,14 +17,14 @@ module Tweetlr::Processors
     #optional arguments: :tags, :type (default: 'photo') 
     #
     def self.post(options={})
-      log.info "posting to #{options[:tumblr_blog_hostname] || options[:group]}..."
-      base_hostname       = options[:tumblr_blog_hostname] || options[:group]
-      tumblr_oauth_api_key= options[:tumblr_oauth_api_key] 
-      tumblr_oauth_api_secret= options[:tumblr_oauth_api_secret] 
-      access_token_key    = options[:tumblr_oauth_access_token_key]
-      access_token_secret = options[:tumblr_oauth_access_token_secret]
-      type                = options[:type] || 'photo'
-      tags                = options[:tags] || ''
+      log.info "posting to #{options['tumblr_blog_hostname'] || options['group']}..."
+      base_hostname       = options['tumblr_blog_hostname'] || options['group']
+      tumblr_oauth_api_key= options['tumblr_oauth_api_key'] 
+      tumblr_oauth_api_secret= options['tumblr_oauth_api_secret'] 
+      access_token_key    = options['tumblr_oauth_access_token_key']
+      access_token_secret = options['tumblr_oauth_access_token_secret']
+      type                = options['type'] || 'photo'
+      tags                = options['tags'] || ''
       post_response = nil
 
       if base_hostname && access_token_key && access_token_secret

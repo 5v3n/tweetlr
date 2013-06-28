@@ -40,10 +40,13 @@ It's essential that you have a directory called `config` in the directory you ar
 ```yaml
 results_per_page: 100
 result_type: recent
-search_term: 'cat+dog+unicorn' #find tweets containing any of these terms
+search_term: 'cat dog unicorn' #find tweets containing any of these terms
 start_at_tweet_id: 61847783463854082 # the tweet id to start searching at
-api_endpoint_twitter: 'http://search.twitter.com/search.json'
 api_endpoint_tumblr: 'http://www.tumblr.com'
+twitter_app_consumer_key: YOUR APPS TWITTER API KEY
+twitter_app_consumer_secret: YOUR APPS TWITTER API SECRET
+twitter_oauth_token: YOUR APPS TWITTER API OAUTH TOKEN
+twitter_oauth_token_secret: YOUR APPS TWITTER API OAUTH TOKEN SECRET
 tumblr_oauth_api_key: YOUR APPS TUMBLR API TOKEN
 tumblr_oauth_api_secret: YOUR APPS TUMBLR API SECRET
 tumblr_oauth_access_token_key: YOUR BLOGS OAUTH ACCESS TOKEN KEY

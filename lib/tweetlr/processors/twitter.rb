@@ -1,6 +1,7 @@
 local_path=File.dirname(__FILE__)
 require "#{local_path}/http"
 require "#{local_path}/../log_aware"
+require 'twitter'
 
 module Tweetlr::Processors
   #utilities for dealing with twitter
@@ -25,21 +26,53 @@ module Tweetlr::Processors
 
     #fire a new search
     def self.search(config)
-      search_call = "#{config[:api_endpoint_twitter]}?ors=#{config[:search_term]}&result_type=#{config[:result_type]}&rpp=#{config[:results_per_page]}"
-      Tweetlr::Processors::Http::http_get_json search_call
+      search_call = "#{config['search_term'].gsub('+', ' OR ')} filter:links"
+      log.debug "#{self}::search search_call: #{search_call}"
+      response = self.call_twitter_api(search_call, config)
+      log.debug "#{self}::call_twitter_api response:    #{response.inspect}"
+      response
     end
 
     # lazy update - search for a term or refresh the search if a response is available already
     def self.lazy_search(config)
+      log.debug "#{self}::lazy_search called with config #{config}"
       response = nil
       if config
-        search_url = "#{config[:api_endpoint_twitter]}?since_id=#{config[:since_id]}&ors=#{config[:search_term]}&result_type=#{config[:result_type]}&rpp=#{config[:results_per_page]}"
-        log.info "lazy search using '#{search_url}'"
-        response = Tweetlr::Processors::Http::http_get_json search_url
+        search_call = "#{config['search_term'].gsub('+', ' OR ')} filter:links"
+        log.info "lazy search using '#{search_call}, :since_id => #{config['since_id'] || config[:since_id]}, :count => #{config['results_per_page']}, :result_type => #{config['result_type']})'"
+        response = self.call_twitter_api(search_call, config, :lazy)
       else
         log.error "#{self}.lazy_search: no config given!"
       end
       response
+    end
+private
+    def self.call_twitter_api(search_call, config, lazy=false)
+      ::Twitter.configure do |configuration|
+        configuration.consumer_key = config['twitter_app_consumer_key']
+        configuration.consumer_secret = config['twitter_app_consumer_secret']
+        configuration.oauth_token = config['twitter_oauth_token']
+        configuration.oauth_token_secret = config['twitter_oauth_token_secret']
+      end
+      max_attempts = 3
+      num_attempts = 0
+      begin
+        num_attempts += 1
+        if lazy
+          response = ::Twitter.search(search_call, :since_id => config['since_id'] || config[:since_id], :count => config['results_per_page'], :result_type => config['result_type'])
+        else
+          response = ::Twitter.search(search_call, :count => config['results_per_page'], :result_type => config['result_type'])
+        end
+      rescue ::Twitter::Error::TooManyRequests => error
+        if num_attempts <= max_attempts
+          # NOTE: Your process could go to sleep for up to 15 minutes but if you
+          # retry any sooner, it will almost certainly fail with the same exception.
+          sleep error.rate_limit.reset_in
+          retry
+        else
+          log.error "Twitter API rate limit exceeded - going to sleep for error.rate_limit.reset_in seconds. (#{error})"
+        end
+      end
     end
   end
 end
