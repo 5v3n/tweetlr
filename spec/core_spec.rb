@@ -2,13 +2,13 @@ require 'spec_helper'
 
 describe Tweetlr::Core do
 
-  config_file = File.join( Dir.pwd, 'config', 'tweetlr.yml.dev')
+  config_file = File.join( Dir.pwd, 'config', TWEETLR_CONFIG_FILE)
   config = YAML.load_file(config_file)
   TIMESTAMP = config['twitter_timestamp']
   WHITELIST = config['whitelist']
 
   before :all do
-    config_file = File.join( Dir.pwd, 'config', 'tweetlr.yml.dev')
+    config_file = File.join( Dir.pwd, 'config', TWEETLR_CONFIG_FILE)
     config = YAML.load_file(config_file)
     @tweetlr_config = config
   end

@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe Tweetlr::Processors::Twitter do
   before :all do
-    config_file = File.join( Dir.pwd, 'config', 'tweetlr.yml.dev')
+    config_file = File.join( Dir.pwd, 'config', TWEETLR_CONFIG_FILE)
     @twitter_config = YAML.load_file(config_file)
   end
   before :each do
