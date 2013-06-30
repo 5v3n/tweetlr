@@ -53,15 +53,9 @@ private
       num_attempts = 0
       begin
         num_attempts += 1
-        if lazy
-          response = ::Twitter.search(search_call, :since_id => config['since_id'] || config[:since_id], :count => config['results_per_page'], :result_type => config['result_type'])
-        else
-          response = ::Twitter.search(search_call, :count => config['results_per_page'], :result_type => config['result_type'])
-        end
+        call_twitter_with search_call, config, lazy
       rescue ::Twitter::Error::TooManyRequests => error
         if num_attempts <= max_attempts
-          # NOTE: Your process could go to sleep for up to 15 minutes but if you
-          # retry any sooner, it will almost certainly fail with the same exception.
           sleep error.rate_limit.reset_in
           retry
         else
@@ -76,6 +70,14 @@ private
         configuration.oauth_token = config['twitter_oauth_token']
         configuration.oauth_token_secret = config['twitter_oauth_token_secret']
       end
+    end
+    def self.call_twitter_with(search_call, config, lazy)
+      if lazy
+        response = ::Twitter.search(search_call, :since_id => config['since_id'] || config[:since_id], :count => config['results_per_page'], :result_type => config['result_type'])
+      else
+        response = ::Twitter.search(search_call, :count => config['results_per_page'], :result_type => config['result_type'])
+      end
+      response
     end
   end
 end
