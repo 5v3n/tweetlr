@@ -23,6 +23,7 @@ Tweetlr::LogAware.log = logger
 TWEETLR_CONFIG_FILE = 'tweetlr.yml'
 
 FakeWeb.allow_net_connect = false
+FakeWeb.allow_net_connect = %r[^https?://coveralls.io/api/v1/jobs]
 twitter_search_api_response = File.open("#{File.dirname(__FILE__)}/support/fixtures/twitter_search_api_response.json", 'rb') { |file| file.read }
 FakeWeb.register_uri(:get, %r|https://api.twitter.com/1.1/search/tweets.json|, :response => twitter_search_api_response)
 
