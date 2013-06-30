@@ -19,6 +19,12 @@ describe Tweetlr::Processors::Twitter do
       tweets.should be
       tweets.should_not be_empty
     end
+    it "copes with errors by retrying, not raising" do
+    ::Twitter.stub(:search).and_raise(::Twitter::Error::TooManyRequests)
+    Tweetlr::Processors::Twitter.stub!(:sleep) #releasing the sleep handbrake...
+    Tweetlr::Processors::Twitter.should_receive(:sleep) #called in rescue block
+    expect { Tweetlr::Processors::Twitter.call_twitter_api('mocky wocky',{})}.to_not raise_error(::Twitter::Error::TooManyRequests)
+  end
   end
   describe "#lazy_search(config)" do
     it "searches twitter for a given term" do
