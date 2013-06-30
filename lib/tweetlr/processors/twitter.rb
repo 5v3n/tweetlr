@@ -48,12 +48,7 @@ module Tweetlr::Processors
     end
 private
     def self.call_twitter_api(search_call, config, lazy=false)
-      ::Twitter.configure do |configuration|
-        configuration.consumer_key = config['twitter_app_consumer_key']
-        configuration.consumer_secret = config['twitter_app_consumer_secret']
-        configuration.oauth_token = config['twitter_oauth_token']
-        configuration.oauth_token_secret = config['twitter_oauth_token_secret']
-      end
+      apply_twitter_api_configuration config
       max_attempts = 3
       num_attempts = 0
       begin
@@ -72,6 +67,14 @@ private
         else
           log.error "Twitter API rate limit exceeded - going to sleep for error.rate_limit.reset_in seconds. (#{error})"
         end
+      end
+    end
+    def self.apply_twitter_api_configuration(config)
+      ::Twitter.configure do |configuration|
+        configuration.consumer_key = config['twitter_app_consumer_key']
+        configuration.consumer_secret = config['twitter_app_consumer_secret']
+        configuration.oauth_token = config['twitter_oauth_token']
+        configuration.oauth_token_secret = config['twitter_oauth_token_secret']
       end
     end
   end
