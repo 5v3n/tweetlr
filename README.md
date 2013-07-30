@@ -1,3 +1,4 @@
+[![Stories in Ready](https://badge.waffle.io/5v3n/tweetlr.png)](http://waffle.io/5v3n/tweetlr)  
 # tweetlr
 
 <a href="http://travis-ci.org/#!/5v3n/tweetlr">![travis-ci](https://api.travis-ci.org/5v3n/tweetlr.png?branch=master)</a>&nbsp;
