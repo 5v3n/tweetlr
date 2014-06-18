@@ -25,7 +25,6 @@ tweetlr supports
 - foursquare
 - path.com
 - twitpic
-- yfrog
 - imgly
 - eyeem.com
 - t.co shortened links to pictures

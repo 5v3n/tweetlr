@@ -26,7 +26,7 @@ FakeWeb.allow_net_connect = false
 FakeWeb.allow_net_connect = %r[^https?://coveralls.io/api/v1/jobs]
 twitter_search_api_response = File.open("#{File.dirname(__FILE__)}/support/fixtures/twitter_search_api_response.json", 'rb') { |file| file.read }
 FakeWeb.register_uri(:get, %r|https://api.twitter.com/1.1/search/tweets.json|, :response => twitter_search_api_response)
-
+FakeWeb.register_uri(:post, "https://@api.twitter.com/oauth2/token", response: Net::HTTPCreated.new("Created.", "201", true))
 def check_pic_url_extraction(service)
   image_url = Tweetlr::Processors::PhotoService.find_image_url @links[service]
   (image_url =~ Tweetlr::Processors::PhotoService::PIC_REGEXP).should be, "service #{service} not working, no picture extracted!"

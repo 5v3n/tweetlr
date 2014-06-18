@@ -124,16 +124,18 @@ module Tweetlr::Processors
 private
     def self.process_link(link, embedly_key)
       url = nil
-      url = image_url_eyeem link if link.index 'eyeem.com'
-      url = image_url_instagram link if (link.index('instagr.am') || link.index('instagram.com'))
-      url = image_url_twitpic link if link.index 'twitpic'
-      url = image_url_yfrog link if link.index 'yfrog'
-      url = image_url_imgly link, embedly_key if link.index 'img.ly'
-      url = image_url_tco link, embedly_key if link.index 't.co'
-      url = image_url_twimg link if link.index 'twitter.com'
-      url = image_url_path link if link.index 'path.com'
-      url = image_url_foursqaure link if (link.index('4sq.com') || link.index('foursquare.com'))
-      url = image_url_embedly link, embedly_key if url.nil? #just try embed.ly for anything else. could do all image url processing w/ embedly, but there's probably some kind of rate limit invovled.
+      url = image_url_embedly link, embedly_key
+      if url.nil? #fallback to self written image extractors
+        url = image_url_eyeem link if link.index 'eyeem.com'
+        url = image_url_instagram link if (link.index('instagr.am') || link.index('instagram.com'))
+        url = image_url_twitpic link if link.index 'twitpic'
+        url = image_url_yfrog link if link.index 'yfrog'
+        url = image_url_imgly link, embedly_key if link.index 'img.ly'
+        url = image_url_tco link, embedly_key if link.index 't.co'
+        url = image_url_twimg link if link.index 'twitter.com'
+        url = image_url_path link if link.index 'path.com'
+        url = image_url_foursqaure link if (link.index('4sq.com') || link.index('foursquare.com'))
+      end
       url
     end
     def self.process_reponse_header(resp, stop_indicator)

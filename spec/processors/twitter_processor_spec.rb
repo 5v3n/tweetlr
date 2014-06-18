@@ -13,7 +13,6 @@ describe Tweetlr::Processors::Twitter do
   end
   describe "#search(config)" do
     it "searches twitter for a given term" do
-      #stub_twitter
       response = Tweetlr::Processors::Twitter::search @twitter_config
       tweets = response.statuses
       tweets.should be

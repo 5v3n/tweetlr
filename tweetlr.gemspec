@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name        = "tweetlr"
-  s.version     = "0.1.30"
+  s.version     = "0.1.31"
   s.author      = "Sven Kraeuter"
   s.email       = "sven.kraeuter@gmail.com"
   s.homepage    = "http://tweetlr.5v3n.com"
@@ -16,7 +16,7 @@ Gem::Specification.new do |s|
   s.add_dependency "json", ">= 1.7.7"
   s.add_dependency "nokogiri"
   s.add_dependency "oauth"
-  s.add_dependency "twitter"
+  s.add_dependency "twitter", "4.8.1"
 
   s.add_development_dependency "rake"
   s.add_development_dependency "rspec"

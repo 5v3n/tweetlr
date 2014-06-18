@@ -51,6 +51,10 @@ module Tweetlr
         :tumblr_blog_hostname => config['tumblr_blog_hostname'],
         :tumblr_oauth_access_token_key => config['tumblr_oauth_access_token_key'],
         :tumblr_oauth_access_token_secret => config['tumblr_oauth_access_token_secret'],
+        twitter_app_consumer_key: config['twitter_app_consumer_key'],
+        twitter_app_consumer_secret: config['twitter_app_consumer_secret'],
+        twitter_oauth_token: config['twitter_oauth_token'],
+        twitter_oauth_token_secret: config['twitter_oauth_token_secret'],
         :whitelist => config['whitelist'], 
         :shouts => config['shouts'], 
         :since_id => config['start_at_tweet_id'] , 
@@ -62,7 +66,7 @@ module Tweetlr
         :results_per_page => config['results_per_page'],
         :result_type => config['result_type'],
         :embedly_key => config['embedly_key']
-        }
+        }.merge(config)
     end
   end
 end
