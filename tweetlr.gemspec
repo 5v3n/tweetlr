@@ -19,7 +19,7 @@ Gem::Specification.new do |s|
   s.add_dependency "twitter", "4.8.1"
 
   s.add_development_dependency "rake"
-  s.add_development_dependency "rspec"
+  s.add_development_dependency "rspec", ["~> 2.13"]
   s.add_development_dependency "rdoc"
   s.add_development_dependency "simplecov"
   s.add_development_dependency "coveralls"
