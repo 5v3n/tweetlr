@@ -13,7 +13,7 @@ module Tweetlr::Processors
     
     #checks if the message is a retweet
     def self.retweet?(message)
-      message.index('RT @') || message.index(%{"@}) || message.index("\u201c@") #detect retweets
+      message.index('RT @') || message.index(%{"@}) || message.index("\u201c@") || message.index('MT @') #detect retweets
     end
   
     #extract the links from a given tweet

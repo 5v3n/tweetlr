@@ -7,6 +7,7 @@ describe Tweetlr::Combinators::TwitterTumblr do
     @third_link = "https://imageurl.com"
     @twitter_response = {"from_user_id_str"=>"1915714", "profile_image_url"=>"http://a0.twimg.com/profile_images/386000279/2_normal.jpg", "created_at"=>"Sun, 17 Apr 2011 16:48:42 +0000", "from_user"=>"whitey_Mc_whIteLIst", "id_str"=>"59659561224765440", "metadata"=>{"result_type"=>"recent"}, "to_user_id"=>nil, "text"=>"Rigaer #wirsounterwegs #{@first_link}  @ Augenarzt Dr. Lierow #{@second_link} #{@third_link}", "id"=>59659561224765440, "from_user_id"=>1915714, "geo"=>{"type"=>"Point", "coordinates"=>[52.5182, 13.454]}, "iso_language_code"=>"de", "place"=>{"id"=>"3078869807f9dd36", "type"=>"city", "full_name"=>"Berlin, Berlin"}, "to_user_id_str"=>nil, "source"=>"&lt;a href=&quot;http://instagr.am&quot; rel=&quot;nofollow&quot;&gt;instagram&lt;/a&gt;"}
     @retweet = @twitter_response.merge "text" => "bla bla RT @fgd: tueddelkram"
+    @mt_retweet = @twitter_response.merge "text" => "bla bla MT @fgd: tueddelkram"
     @new_style_retweet = @twitter_response.merge "text" => "and it scales! \u201c@moeffju: http://t.co/8gUSPKu #hktbl1 #origami success! :)\u201d"
     @new_style_retweet_no_addition = @twitter_response.merge "text" => "\u201c@moeffju: http://t.co/8gUSPKu #hktbl1 #origami success! :)\u201d"
     @non_whitelist_tweet = @twitter_response.merge 'from_user' => 'nonwhitelist user' 
@@ -79,6 +80,10 @@ describe Tweetlr::Combinators::TwitterTumblr do
   end
   it "should not use retweets which would produce double blog posts" do
     post = Tweetlr::Combinators::TwitterTumblr::generate_photo_post_from_tweet @retweet, :whitelist => @whitelist
+    post.should_not be
+  end
+  it "should not use old school 'MT' retweets which would produce double blog posts" do
+    post = Tweetlr::Combinators::TwitterTumblr::generate_photo_post_from_tweet @mt_retweet, :whitelist => @whitelist
     post.should_not be
   end
   context "should not use new style retweets which would produce double blog posts" do
