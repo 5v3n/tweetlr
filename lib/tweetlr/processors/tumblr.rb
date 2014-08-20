@@ -28,29 +28,33 @@ module Tweetlr::Processors
       post_response = nil
 
       if base_hostname && access_token_key && access_token_secret
+        begin
+          consumer = OAuth::Consumer.new(tumblr_oauth_api_key, tumblr_oauth_api_secret,
+                                         { :site => 'http://www.tumblr.com',
+                                           :request_token_path => '/oauth/request_token',
+                                           :authorize_path => '/oauth/authorize',
+                                           :access_token_path => '/oauth/access_token',
+                                           :http_method => :post } )
 
-        consumer = OAuth::Consumer.new(tumblr_oauth_api_key, tumblr_oauth_api_secret,
-                                       { :site => 'http://www.tumblr.com',
-                                         :request_token_path => '/oauth/request_token',
-                                         :authorize_path => '/oauth/authorize',
-                                         :access_token_path => '/oauth/access_token',
-                                         :http_method => :post } )
+          access_token = OAuth::AccessToken.new(consumer, access_token_key, access_token_secret)
 
-        access_token = OAuth::AccessToken.new(consumer, access_token_key, access_token_secret)
-
-        post_response = access_token.post(
-          "http://api.tumblr.com/v2/blog/#{base_hostname}/post", { 
-            :type => type, 
-            :source => options[:source], 
-            :caption => options[:caption],
-            :date => options[:date],
-            :tags => tags,
-            :state => options[:state],
-            :generator => GENERATOR
-             }
-            )
+          post_response = access_token.post(
+            "http://api.tumblr.com/v2/blog/#{base_hostname}/post", { 
+              :type => type, 
+              :source => options[:source], 
+              :caption => options[:caption],
+              :date => options[:date],
+              :tags => tags,
+              :state => options[:state],
+              :generator => GENERATOR
+               }
+              )
+        rescue Exception => e
+          log.error "Error posting to tumblr: #{e}"
+          raise e
+        end
+        post_response
       end
-      post_response
     end
   end
 end
