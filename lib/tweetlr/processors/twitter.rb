@@ -73,10 +73,15 @@ private
       end
     end
     def self.call_twitter_with(search_call, config, lazy)
-      if lazy
-        response = ::Twitter.search(search_call, :since_id => config['since_id'] || config[:since_id], :count => config[:results_per_page], :result_type => config[:result_type])
-      else
-        response = ::Twitter.search(search_call, :count => config[:results_per_page], :result_type => config[:result_type])
+      begin
+        if lazy
+          response = ::Twitter.search(search_call, :since_id => config['since_id'] || config[:since_id], :count => config[:results_per_page], :result_type => config[:result_type])
+        else
+          response = ::Twitter.search(search_call, :count => config[:results_per_page], :result_type => config[:result_type])
+        end
+      rescue ::Twitter::Error::Client => error
+        log.error "Twitter client error: (#{error})"
+        response
       end
       response
     end
