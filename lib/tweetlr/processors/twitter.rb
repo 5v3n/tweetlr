@@ -79,7 +79,7 @@ private
         else
           response = ::Twitter.search(search_call, :count => config[:results_per_page], :result_type => config[:result_type])
         end
-      rescue ::Twitter::Error::Client => error
+      rescue ::Twitter::Error::ClientError => error
         log.error "Twitter client error: (#{error})"
         response
       end
