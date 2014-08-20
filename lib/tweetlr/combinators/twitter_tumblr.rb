@@ -12,6 +12,7 @@ module Tweetlr::Combinators
     end
     #extract a linked image file's url from a tweet. first found image will be used.
     def self.extract_image_url(tweet, embedly_key=nil)
+      log.debug "extracting image url..."
       links = Tweetlr::Processors::Twitter::extract_links tweet
       image_url = nil
       if links
@@ -20,6 +21,7 @@ module Tweetlr::Combinators
           return image_url if Tweetlr::Processors::PhotoService::photo? image_url
         end
       end
+      log.debug "extracting image url done."
       image_url
     end
     #generate the data for a tumblr photo entry by parsing a tweet
@@ -32,8 +34,10 @@ private
       whitelist = options[:whitelist]
       whitelist.each {|entry| entry.downcase!} if (whitelist && whitelist.size != 0)
       if !Tweetlr::Processors::Twitter::retweet? tweet['text']
-        log.debug "tweet: #{tweet}"
+        log.debug "tweet: #{tweet['text']}"
         tumblr_post = prepare_tumblr_post options, tweet, whitelist
+        log.debug "tumblr post: #{tumblr_post}"
+        tumblr_post
       end
     end
     def self.prepare_tumblr_post(options, tweet, whitelist)

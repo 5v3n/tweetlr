@@ -124,8 +124,10 @@ module Tweetlr::Processors
 private
     def self.process_link(link, embedly_key)
       url = nil
+      log.info "embedly processing the link..."
       url = image_url_embedly link, embedly_key
       if url.nil? #fallback to self written image extractors
+        log.info "embedly wasn't able to process the link, using self written extractors..."
         url = image_url_eyeem link if link.index 'eyeem.com'
         url = image_url_instagram link if (link.index('instagr.am') || link.index('instagram.com'))
         url = image_url_twitpic link if link.index 'twitpic'
